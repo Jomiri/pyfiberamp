@@ -2,6 +2,7 @@ from scipy.interpolate import UnivariateSpline
 import matplotlib.pyplot as plt
 
 from fiberamp.helper_funcs import *
+from fiberamp.optical_channel import *
 
 CROSS_SECTION_SMOOTHING_FACTOR = 1e-51
 SPECTRUM_PLOT_NPOINTS = 1000
@@ -78,6 +79,24 @@ class ActiveFiber:
         overlap[predefined_radii_mask] = overlap_integral(self.core_r, mode_field_radii[predefined_radii_mask])
         return overlap
 
+    def make_single_overlap(self, mode_field_radius):
+        if self.overlap_is_constant:
+            return self.overlap
+        elif mode_field_radius > 0:
+            return overlap_integral(self.core_r, mode_field_radius)
+
+    def get_channel_gain(self, freq, mode_field_radius):
+        return self.gain_cs_interp(freq) * self.make_single_overlap(mode_field_radius) * self.ion_number_density
+
+    def get_channel_absorption(self, freq, mode_field_radius):
+        return self.absorption_cs_interp(freq) * self.make_single_overlap(mode_field_radius) * self.ion_number_density
+
+    def get_mfd(self, freq, preset_mfd):
+        if preset_mfd > 0:
+            return preset_mfd
+        else:
+            return fundamental_mode_mfd_petermann_2(freq_to_wl(freq), self.core_r, self.core_na)
+
     def eta(self):
         return eta_from_fiber_parameters(self.core_r, self.tau, self.ion_number_density)
 
@@ -116,3 +135,55 @@ class ActiveFiber:
         ax.legend()
         ax.set_xlabel('Wavelength (nm)', fontsize=18)
         ax.set_ylabel('Gain/Absorption cross sections', fontsize=18)
+
+    def create_in_core_forward_single_frequency_channel(self, wl, power, preset_mfd):
+        return self.create_in_core_single_frequency_channel(wl, power, preset_mfd, direction=+1)
+
+    def create_in_core_backward_single_frequency_channel(self, wl, power, preset_mfd):
+        return self.create_in_core_single_frequency_channel(wl, power, preset_mfd, direction=-1)
+
+    def create_forward_pump_channel(self, wl, power, preset_mfd):
+        return self.create_in_core_single_frequency_channel(wl, power, preset_mfd, direction=+1)
+
+    def create_backward_pump_channel(self, wl, power, preset_mfd):
+        return self.create_in_core_single_frequency_channel(wl, power, preset_mfd, direction=-1)
+
+    def create_in_core_forward_finite_bandwidth_channel(self, wl, wl_bandwidth, power, preset_mfd):
+        return self.create_in_core_finite_bandwidth_channel(wl, wl_bandwidth, power, preset_mfd, direction=+1)
+
+    def create_in_core_backward_finite_bandwidth_channel(self, wl, wl_bandwidth, power, preset_mfd):
+        return self.create_in_core_finite_bandwidth_channel(wl, wl_bandwidth, power, preset_mfd, direction=-1)
+
+    def create_in_core_single_frequency_channel(self, wl, power, preset_mfd, direction):
+        frequency = wl_to_freq(wl)
+        frequency_bandwidth = 0
+        mfd = self.get_mfd(frequency, preset_mfd)
+        mode_field_radius = mfd / 2
+        gain = self.get_channel_gain(frequency, mode_field_radius)
+        absorption = self.get_channel_absorption(frequency, mode_field_radius)
+        loss = self.background_loss
+        return OpticalChannel(frequency, frequency_bandwidth, power, direction, mfd, gain, absorption, loss)
+
+    def create_in_core_finite_bandwidth_channel(self, wl, wl_bandwidth, power, preset_mfd, direction):
+        center_frequency = wl_to_freq(wl)
+        frequency_bandwidth = wl_bw_to_freq_bw(wl_bandwidth, wl)
+        mfd = self.get_mfd(center_frequency, preset_mfd)
+        mode_field_radius = mfd / 2
+        gain = self.finite_bandwidth_gain(center_frequency, frequency_bandwidth, mode_field_radius)
+        absorption = self.finite_bandwidth_absorption(center_frequency, frequency_bandwidth, mode_field_radius)
+        loss = self.background_loss
+        return OpticalChannel(center_frequency, frequency_bandwidth, power, direction, mfd, gain, absorption, loss)
+
+    def finite_bandwidth_gain(self, center_frequency, frequency_bandwidth, mode_field_radius):
+        start_frequency = center_frequency - frequency_bandwidth / 2
+        end_frequency = center_frequency + frequency_bandwidth / 2
+        start_gain = self.get_channel_gain(start_frequency, mode_field_radius)
+        end_gain = self.get_channel_gain(end_frequency, mode_field_radius)
+        return np.mean([start_gain, end_gain])
+
+    def finite_bandwidth_absorption(self, center_frequency, frequency_bandwidth, mode_field_radius):
+        start_frequency = center_frequency - frequency_bandwidth / 2
+        end_frequency = center_frequency + frequency_bandwidth / 2
+        start_absorption = self.get_channel_absorption(start_frequency, mode_field_radius)
+        end_absorption = self.get_channel_absorption(end_frequency, mode_field_radius)
+        return np.mean([start_absorption, end_absorption])

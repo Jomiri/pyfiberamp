@@ -15,13 +15,12 @@ tolerance = 1e-5
 fiber = YbDopedDoubleCladFiber(length,
                         core_r, Yb_number_density,
                         background_loss, core_NA, core_to_cladding_ratio)
-simulation = FiberAmplifierSimulation()
-simulation.fiber = fiber
-simulation.add_cw_signal(wl=1030e-9, power=0.4, mode_field_radius=4.8e-6)
+simulation = FiberAmplifierSimulation(fiber)
+simulation.add_cw_signal(wl=1030e-9, power=0.4, mode_field_diameter=2*4.8e-6)
 simulation.add_counter_pump(wl=914e-9, power=47.2)
 #simulation.include_ase(wl_start=1000e-9, wl_end=1100e-9, n_bins=50)
 
 result = simulation.run(npoints, tol=tolerance)
 assert(result.success())
-result.db_scale = True
+result.db_scale = False
 result.plot_amplifier_result()

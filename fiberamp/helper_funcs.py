@@ -92,6 +92,6 @@ def linspace_2d(start_arr, end_arr, length):
     return start_arr[:, np.newaxis] + np.arange(length) * diff[:, np.newaxis] / (length - 1)
 
 
-def check_signal_reprate(f_rep, f_rep_lower_limit):
-    if f_rep < f_rep_lower_limit:
+def check_signal_reprate(f_rep):
+    if f_rep < REP_RATE_LOWER_LIMIT:
         warnings.warn('Signal with repetition rate of {:.1f} Hz cannot be treated as quasi-continuous.'.format(f_rep))

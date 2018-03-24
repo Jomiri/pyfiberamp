@@ -11,25 +11,45 @@ class SimulationResult:
         self.P = self.sol.y
         self.db_scale = False
         self.slices = {}
-        self.signal_wls = None
-        self.co_pump_wls = None
-        self.counter_pump_wls = None
-        self.ase_wls = None
-        self.raman_wls = None
+        self.wavelengths = None
         self.backward_raman_allowed = True
         self.upper_level_fraction = None
 
     @property
-    def signals(self):
-        return self.P[self.slices['signal_slice']]
+    def signal_wls(self):
+        return self.wavelengths[self.slices['forward_signal_slice']]
 
     @property
-    def co_pumps(self):
-        return self.P[self.slices['co_pump_slice']]
+    def forward_pump_wls(self):
+        return self.wavelengths[self.slices['forward_pump_slice']]
 
     @property
-    def counter_pumps(self):
-        return self.P[self.slices['counter_pump_slice']]
+    def backward_pump_wls(self):
+        return self.wavelengths[self.slices['backward_pump_slice']]
+
+    @property
+    def ase_wls(self):
+        return self.wavelengths[self.slices['forward_ase_slice']]
+
+    @property
+    def raman_wls(self):
+        return self.wavelengths[self.slices['forward_raman_slice']]
+
+    @property
+    def forward_signals(self):
+        return self.P[self.slices['forward_signal_slice']]
+
+    @property
+    def backward_signals(self):
+        return self.P[self.slices['backward_signal_slice']]
+
+    @property
+    def forward_pumps(self):
+        return self.P[self.slices['forward_pump_slice']]
+
+    @property
+    def backward_pumps(self):
+        return self.P[self.slices['backward_pump_slice']]
 
     @property
     def forward_ramans(self):
@@ -51,12 +71,12 @@ class SimulationResult:
         return self.sol.success
 
     def signal_gains(self):
-        signal = self.signals
+        signal = self.forward_signals
         gain = signal[:, -1] / signal[:, 0]
         return to_db(gain)
 
     def co_pump_absorptions(self):
-        co_pump = self.co_pumps
+        co_pump = self.forward_pumps
         absorption = co_pump[:, -1] / co_pump[:, 0]
         return -to_db(absorption)
 
@@ -97,7 +117,7 @@ class SimulationResult:
 
     def plot_signal_evolution(self, ax):
         for i in range(len(self.signal_wls)):
-            signal = self.signals[i, :]
+            signal = self.forward_signals[i, :]
             gain = signal[-1] / signal[0]
             gain_db = to_db(gain)
             ax.plot(self.z, self.plotting_transformation(signal),
@@ -120,21 +140,21 @@ class SimulationResult:
                         label='Backward Raman {:.2f} nm, power={:.3f} W'.format(self.raman_wls[i] * 1e9, power))
 
     def plot_co_pump_evolution(self, ax):
-        for i in range(len(self.co_pump_wls)):
-            co_pump = self.co_pumps[i, :]
+        for i in range(len(self.forward_pump_wls)):
+            co_pump = self.forward_pumps[i, :]
             absorption = co_pump[-1] / co_pump[0]
             absorption_db = -to_db(absorption)
             ax.plot(self.z, self.plotting_transformation(co_pump),
-                    label='Co pump {:.2f} nm, absorption={:.1f} dB'.format(self.co_pump_wls[i] * 1e9,
+                    label='Co pump {:.2f} nm, absorption={:.1f} dB'.format(self.forward_pump_wls[i] * 1e9,
                                                                            absorption_db))
 
     def plot_counter_pump_evolution(self, ax):
-        for i in range(len(self.counter_pump_wls)):
-            counter_pump = self.counter_pumps[i, :]
+        for i in range(len(self.backward_pump_wls)):
+            counter_pump = self.backward_pumps[i, :]
             absorption = counter_pump[0] / counter_pump[-1]
             absorption_db = -to_db(absorption)
             ax.plot(self.z, self.plotting_transformation(counter_pump),
-                    label='Counter pump {:.2f} nm, absorption={:.1f} dB'.format(self.counter_pump_wls[i] * 1e9,
+                    label='Counter pump {:.2f} nm, absorption={:.1f} dB'.format(self.backward_pump_wls[i] * 1e9,
                                                                                 absorption_db))
 
     def plot_ase_evolution(self, ax):
@@ -178,7 +198,7 @@ class SimulationResult:
         ax.set_ylim([0, 100])
 
     def plot_signal_intensity(self, effective_area):
-        intensity = self.signals[0, :] / effective_area
+        intensity = self.forward_signals[0, :] / effective_area
         plt.plot(self.z, intensity)
         plt.show()
 

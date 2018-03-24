@@ -12,9 +12,10 @@ DEFAULT_GUESS_PARAMS = {
 class InitialGuessMaker:
     def __init__(self, input_powers, slices, z, params=DEFAULT_GUESS_PARAMS):
         self.input_powers = input_powers
-        self.signal_powers = input_powers[slices['signal_slice']]
-        self.co_pump_powers = input_powers[slices['co_pump_slice']]
-        self.counter_pump_powers = input_powers[slices['counter_pump_slice']]
+        self.forward_signal_powers = input_powers[slices['forward_signal_slice']]
+        self.backward_signal_powers = input_powers[slices['backward_signal_slice']]
+        self.forward_pump_powers = input_powers[slices['forward_pump_slice']]
+        self.backward_pump_powers = input_powers[slices['backward_pump_slice']]
         self.forward_ase_powers = input_powers[slices['forward_ase_slice']]
         self.backward_ase_powers = input_powers[slices['backward_ase_slice']]
         self.forward_raman_powers = input_powers[slices['forward_raman_slice']]
@@ -29,9 +30,10 @@ class InitialGuessMaker:
 
     def make_guess(self, ):
         guess = np.zeros(self.guess_shape())
-        guess[self.slices['signal_slice']] = self.make_signal_guess()
-        guess[self.slices['co_pump_slice']] = self.make_co_pump_guess()
-        guess[self.slices['counter_pump_slice']] = self.make_counter_pump_guess()
+        guess[self.slices['forward_signal_slice']] = self.make_signal_guess()
+        guess[self.slices['backward_signal_slice']] = np.fliplr(self.make_signal_guess())
+        guess[self.slices['forward_pump_slice']] = self.make_forward_pump_guess()
+        guess[self.slices['backward_pump_slice']] = self.make_backward_pump_guess()
         guess[self.slices['forward_ase_slice']] = self.make_forward_ase_guess()
         guess[self.slices['backward_ase_slice']] = self.make_backward_ase_guess()
         guess[self.slices['forward_raman_slice']] = self.make_forward_raman_guess()
@@ -39,9 +41,8 @@ class InitialGuessMaker:
         return guess
 
     def make_signal_guess(self):
-        total_pump_power = np.sum(self.co_pump_powers) + np.sum(self.counter_pump_powers)
-        signal_start = self.signal_powers
-        signal_end = self.params['signal_conversion_guess'] * total_pump_power + signal_start
+        signal_start = self.forward_signal_powers
+        signal_end = self.params['signal_conversion_guess'] * self.total_pump_power() + signal_start
         signal_gain_shape = self.params['signal_gain_shape']
         if signal_gain_shape == 'linear':
             guess = self.linear_guess(signal_start, signal_end)
@@ -51,14 +52,17 @@ class InitialGuessMaker:
             raise RuntimeError('Unrecognized signal gain shape parameter.')
         return guess
 
-    def make_co_pump_guess(self):
-        co_pump_start = self.co_pump_powers
+    def total_pump_power(self):
+        return np.sum(self.forward_pump_powers) + np.sum(self.backward_pump_powers)
+
+    def make_forward_pump_guess(self):
+        co_pump_start = self.forward_pump_powers
         co_pump_end = self.params['pump_absorption_factor'] * co_pump_start
         return self.linear_guess(co_pump_start, co_pump_end)
 
-    def make_counter_pump_guess(self):
-        counter_pump_start = self.params['pump_absorption_factor'] * self.counter_pump_powers
-        counter_pump_end = self.counter_pump_powers
+    def make_backward_pump_guess(self):
+        counter_pump_start = self.params['pump_absorption_factor'] * self.backward_pump_powers
+        counter_pump_end = self.backward_pump_powers
         return self.linear_guess(counter_pump_start, counter_pump_end)
 
     def make_forward_ase_guess(self):
