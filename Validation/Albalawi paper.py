@@ -23,4 +23,7 @@ simulation.add_counter_pump(wl=914e-9, power=47.2)
 result = simulation.run(npoints, tol=tolerance)
 assert(result.success())
 result.db_scale = False
+print(result.forward_signals[0, -1])
+print(result.backward_pumps[0, 0])
+print(result.average_excitation)
 result.plot_amplifier_result()

@@ -16,8 +16,12 @@ class SimulationResult:
         self.upper_level_fraction = None
 
     @property
-    def signal_wls(self):
+    def forward_signal_wls(self):
         return self.wavelengths[self.slices['forward_signal_slice']]
+
+    @property
+    def backward_signal_wls(self):
+        return self.wavelengths[self.slices['backward_signal_slice']]
 
     @property
     def forward_pump_wls(self):
@@ -70,12 +74,16 @@ class SimulationResult:
     def success(self):
         return self.sol.success
 
-    def signal_gains(self):
+    @property
+    def average_excitation(self):
+        return np.mean(self.upper_level_fraction)
+
+    def forward_signal_gains(self):
         signal = self.forward_signals
         gain = signal[:, -1] / signal[:, 0]
         return to_db(gain)
 
-    def co_pump_absorptions(self):
+    def forward_pump_absorptions(self):
         co_pump = self.forward_pumps
         absorption = co_pump[:, -1] / co_pump[:, 0]
         return -to_db(absorption)
@@ -88,9 +96,9 @@ class SimulationResult:
 
     def plot_power_evolution(self):
         fig, ax = plt.subplots()
-        self.plot_signal_evolution(ax)
-        self.plot_co_pump_evolution(ax)
-        self.plot_counter_pump_evolution(ax)
+        self.plot_forward_signal_evolution(ax)
+        self.plot_forward_pump_evolution(ax)
+        self.plot_backward_pump_evolution(ax)
         self.plot_forward_raman_evolution(ax)
         self.plot_backward_raman_evolution(ax)
         self.plot_ase_evolution(ax)
@@ -115,13 +123,13 @@ class SimulationResult:
         ax.set_xlim([ase_wls_nm[0], ase_wls_nm[-1]])
         ax.legend()
 
-    def plot_signal_evolution(self, ax):
-        for i in range(len(self.signal_wls)):
+    def plot_forward_signal_evolution(self, ax):
+        for i in range(len(self.forward_signal_wls)):
             signal = self.forward_signals[i, :]
             gain = signal[-1] / signal[0]
             gain_db = to_db(gain)
             ax.plot(self.z, self.plotting_transformation(signal),
-                    label='Signal {:.2f} nm, gain={:.1f} dB'.format(self.signal_wls[i] * 1e9, gain_db))
+                    label='Signal {:.2f} nm, gain={:.1f} dB'.format(self.forward_signal_wls[i] * 1e9, gain_db))
 
     def plot_forward_raman_evolution(self, ax):
         for i in range(len(self.raman_wls)):
@@ -139,22 +147,22 @@ class SimulationResult:
                 ax.plot(self.z, self.plotting_transformation(backward_raman),
                         label='Backward Raman {:.2f} nm, power={:.3f} W'.format(self.raman_wls[i] * 1e9, power))
 
-    def plot_co_pump_evolution(self, ax):
+    def plot_forward_pump_evolution(self, ax):
         for i in range(len(self.forward_pump_wls)):
             co_pump = self.forward_pumps[i, :]
             absorption = co_pump[-1] / co_pump[0]
             absorption_db = -to_db(absorption)
             ax.plot(self.z, self.plotting_transformation(co_pump),
-                    label='Co pump {:.2f} nm, absorption={:.1f} dB'.format(self.forward_pump_wls[i] * 1e9,
+                    label='Forward pump {:.2f} nm, absorption={:.1f} dB'.format(self.forward_pump_wls[i] * 1e9,
                                                                            absorption_db))
 
-    def plot_counter_pump_evolution(self, ax):
+    def plot_backward_pump_evolution(self, ax):
         for i in range(len(self.backward_pump_wls)):
             counter_pump = self.backward_pumps[i, :]
             absorption = counter_pump[0] / counter_pump[-1]
             absorption_db = -to_db(absorption)
             ax.plot(self.z, self.plotting_transformation(counter_pump),
-                    label='Counter pump {:.2f} nm, absorption={:.1f} dB'.format(self.backward_pump_wls[i] * 1e9,
+                    label='Backward pump {:.2f} nm, absorption={:.1f} dB'.format(self.backward_pump_wls[i] * 1e9,
                                                                                 absorption_db))
 
     def plot_ase_evolution(self, ax):

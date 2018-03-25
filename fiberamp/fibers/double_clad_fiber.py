@@ -1,4 +1,5 @@
 from .active_fiber import *
+from fiberamp.optical_channel import OpticalChannel
 
 
 class DoubleCladFiber(ActiveFiber):
@@ -16,15 +17,6 @@ class DoubleCladFiber(ActiveFiber):
 
     def pump_cladding_radius(self):
         return self.core_r / self.core_to_cladding_ratio
-
-    def make_overlap(self, freq, mode_field_radii, slices):
-        overlap = super().make_overlap(freq, mode_field_radii, slices)
-        if self.overlap_is_constant:
-            overlap = np.full_like(freq, overlap)
-        overlap[slices['co_pump_slice']] = self.pump_to_core_overlap()
-        overlap[slices['counter_pump_slice']] = self.pump_to_core_overlap()
-        overlap.shape = freq.shape
-        return overlap
 
     def get_pump_channel_gain(self, freq):
         return self.gain_cs_interp(freq) * self.pump_to_core_overlap() * self.ion_number_density
