@@ -10,5 +10,6 @@ examples/
 pyfiberamp/obsolete/
 pyfiberamp/taper_code/
 validation/
+.pypirc
 
 
