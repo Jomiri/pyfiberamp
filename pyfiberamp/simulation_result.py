@@ -122,6 +122,8 @@ class SimulationResult:
         ax.set_xlabel('Wavelength (nm)', fontsize=18)
         ax.set_ylabel('Power spectral density (dBm/nm)', fontsize=18)
         ax.set_xlim([ase_wls_nm[0], ase_wls_nm[-1]])
+        ax.tick_params(which='major', direction='in', left=True, right=True, top=True, bottom=True,
+                       width=3, length=10, labelsize=16)
         ax.legend()
         plt.show()
 
