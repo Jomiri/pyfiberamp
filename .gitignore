@@ -1,5 +1,7 @@
 
 *.egg-info
+.idea/
+.ipynb_checkpoints/
 dist/
 build/
 README.html
