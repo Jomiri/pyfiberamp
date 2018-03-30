@@ -1,8 +1,7 @@
 import unittest
-from fiberamp import FiberAmplifierSimulationWithRaman, decibel_to_exp
-from fiberamp.fibers import PassiveFiber
+from pyfiberamp import FiberAmplifierSimulationWithRaman, decibel_to_exp
+from pyfiberamp.fibers import PassiveFiber
 import numpy as np
-
 
 
 class PassiveRamanTest(unittest.TestCase):
@@ -15,7 +14,6 @@ class PassiveRamanTest(unittest.TestCase):
         fiber = PassiveFiber(length, core_r, background_loss, core_NA)
         fiber.effective_area_type = 'core_area'
         simulation = FiberAmplifierSimulationWithRaman(fiber)
-        simulation.fiber = fiber
         simulation.add_cw_signal(wl=1550e-9, power=0.600)
         simulation.add_raman(backward_raman_allowed=False)
 

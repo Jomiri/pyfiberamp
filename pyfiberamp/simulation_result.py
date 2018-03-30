@@ -1,7 +1,11 @@
-import matplotlib
+import sys
+if 'matplotlib.pyplot' not in sys.modules:
+    import matplotlib
+    matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
+
 from .helper_funcs import *
-matplotlib.use('Qt5Agg')
+
 
 
 class SimulationResult:
@@ -14,6 +18,7 @@ class SimulationResult:
         self.wavelengths = None
         self.backward_raman_allowed = True
         self.upper_level_fraction = None
+        self.is_passive_fiber = False
 
     @property
     def forward_signal_wls(self):
@@ -107,6 +112,7 @@ class SimulationResult:
         ax_right = ax.twinx()
         self.plot_excited_ion_fraction(ax_right)
         self.make_power_evolution_legend(ax, ax_right)
+        plt.show()
 
     def plot_ase_spectrum(self):
         if len(self.ase_wls) == 0:
@@ -122,6 +128,7 @@ class SimulationResult:
         ax.set_ylabel('Power spectral density (dBm/nm)', fontsize=18)
         ax.set_xlim([ase_wls_nm[0], ase_wls_nm[-1]])
         ax.legend()
+        plt.show()
 
     def plot_forward_signal_evolution(self, ax):
         for i in range(len(self.forward_signal_wls)):
@@ -197,6 +204,9 @@ class SimulationResult:
         ax.grid(True)
 
     def plot_excited_ion_fraction(self, ax):
+        if self.is_passive_fiber:
+            ax.set_axis_off()
+            return
         ax.plot(self.z, self.upper_level_fraction * 100, '--', label='Excited ion fraction')
         ax.set_ylabel('Ions at the upper laser level (%)', fontsize=18)
         ax.yaxis.set_ticks_position('right')

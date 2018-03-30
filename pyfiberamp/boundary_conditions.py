@@ -2,6 +2,8 @@ import numpy as np
 
 
 class BasicBoundaryConditions:
+    """Class describing the most basic possible boundary conditions in the Giles model:
+    all input powers should be those given to the model. Backward progapating beams have their inputs at the end."""
     def __init__(self, channels):
         self.expected_powers = channels.get_input_powers()
         self.slices = channels.get_slices()
@@ -29,5 +31,7 @@ class BasicBoundaryConditions:
         self.boundary_condition_func = boundary_condition_func
 
     def __call__(self, powers_start, powers_end):
+        """Returns the residual that tells how much power_start and power_end deviate from the boundary conditions.
+        The bvp solver calls this function."""
         return self.boundary_condition_func(powers_start, powers_end)
 
