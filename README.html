@@ -365,10 +365,25 @@ ul.auto-toc {
 
 <div class="section" id="introduction">
 <h1>Introduction</h1>
-<p>PyFiberAmp is a rate equation simulation module for rare earth fiber amplifiers. It uses the Giles model <a class="footnote-reference" href="#id3" id="id1">[1]</a>.
-Additionally, stimulated and spontaneous Raman scattering effects in both active and passive fibers can be modeled
-with a similar basic rate equation model <a class="footnote-reference" href="#id4" id="id2">[2]</a>.</p>
-<p>The simple example below demonstrates the modeling of a core-pumped Yb-doped fiber amplifier. All units are in SI.</p>
+<p>PyFiberAmp is a rate equation simulation library for rare earth fiber amplifiers. It uses the Giles model <a class="footnote-reference" href="#id4" id="id1">[1]</a>
+originally developed for erbium-doped fiber amplifiers. The library also contains a basic rate equation model <a class="footnote-reference" href="#id5" id="id2">[2]</a>
+for stimulated and spontaneous Raman scattering effects in both active and passive fibers. Both core-pumped and
+double-clad amplifiers can be modeled.</p>
+</div>
+<div class="section" id="download">
+<h1>Download</h1>
+<p>PyFiberAmp is not yet on PyPI. You can clone the repository with</p>
+<pre class="literal-block">
+$ git clone git://github.com/Jomiri/pyfiberamp.git
+</pre>
+<p>and then install the library with</p>
+<pre class="literal-block">
+python setup.py install
+</pre>
+</div>
+<div class="section" id="examples">
+<h1>Examples</h1>
+<p>The simple example below demonstrates a core-pumped Yb-doped fiber amplifier. All units are in SI.</p>
 <pre class="literal-block">
 from pyfiberamp import FiberAmplifierSimulation
 from pyfiberamp.fibers import YbDopedFiber
@@ -395,26 +410,17 @@ assert(result.success())
 result.plot_amplifier_result()
 </pre>
 <p>The script plots the power evolution in the amplifier and the amplified spontaneous emission (ASE) spectra. The
-co-propagating pump is absorbed in the first ~1.8 m after which the signal starts to be reabsorbed by the fiber.
-This design is not perfect first because the fiber is too long and second because the input signal is too weak to
-saturate the gain at the start of the fiber.</p>
+co-propagating pump is absorbed in the first ~1.8 m while the signal experiences gain. When the pump has been depleted,
+the signal starts to be reabsorbed by the fiber. This design is not perfect 1) because the fiber is too long and
+2) because the input signal is too weak to saturate the gain at the start of the fiber.</p>
 <img alt="images/readme_power_evolution.png" class="align-center" src="images/readme_power_evolution.png" style="width: 769px; height: 543px;" />
 <img alt="images/readme_ase_spectra.png" class="align-center" src="images/readme_ase_spectra.png" style="width: 769px; height: 543px;" />
-</div>
-<div class="section" id="download">
-<h1>Download</h1>
-<p>PyFiberAmp is not yet on PyPI. You can clone the repository with</p>
-<pre class="literal-block">
-$ git clone git://github.com/Jomiri/pyfiberamp.git
-</pre>
-<p>and install the library with</p>
-<pre class="literal-block">
-python setup.py install
-</pre>
-</div>
-<div class="section" id="examples">
-<h1>Examples</h1>
 <p>For more usage examples, please see the Examples Jupyter notebook.</p>
+</div>
+<div class="section" id="fiber-data">
+<h1>Fiber data</h1>
+<p>PyFiberAmp comes with spectroscopic data (absorption and emission cross sections) for Yb-doped germanosilicate fibers
+<a class="footnote-reference" href="#id6" id="id3">[3]</a> and supports importing spectra for other dopants/glass-compositions.</p>
 </div>
 <div class="section" id="theory-basics">
 <h1>Theory basics</h1>
@@ -427,22 +433,22 @@ references.</p>
 </div>
 <div class="section" id="references">
 <h1>References</h1>
-<table class="docutils footnote" frame="void" id="id3" rules="none">
+<table class="docutils footnote" frame="void" id="id4" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>C.R. Giles and E. Desurvire, &quot;Modeling erbium-doped fiber amplifiers,&quot; in Journal of Lightwave Technology, vol. 9, no. 2, pp. 271-283, Feb 1991. doi: 10.1109/50.65886</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id4" rules="none">
+<table class="docutils footnote" frame="void" id="id5" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>R.G. Smith, &quot;Optical Power Handling Capacity of Low Loss Optical Fibers as Determined by Stimulated Raman and Brillouin Scattering,&quot; Appl. Opt. 11, 2489-2494 (1972)</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id5" rules="none">
+<table class="docutils footnote" frame="void" id="id6" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[3]</td><td><ol class="first last upperalpha simple" start="18">
+<tr><td class="label"><a class="fn-backref" href="#id3">[3]</a></td><td><ol class="first last upperalpha simple" start="18">
 <li>Paschotta, J. Nilsson, A. C. Tropper and D. C. Hanna, &quot;Ytterbium-doped fiber amplifiers,&quot; in IEEE Journal of Quantum Electronics, vol. 33, no. 7, pp. 1049-1056, Jul 1997. doi: 10.1109/3.594865</li>
 </ol>
 </td></tr>

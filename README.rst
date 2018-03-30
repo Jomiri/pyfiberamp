@@ -4,11 +4,26 @@
 
 Introduction
 ============
-PyFiberAmp is a rate equation simulation module for rare earth fiber amplifiers. It uses the Giles model [1]_.
-Additionally, stimulated and spontaneous Raman scattering effects in both active and passive fibers can be modeled
-with a similar basic rate equation model [2]_.
+PyFiberAmp is a rate equation simulation library for rare earth fiber amplifiers. It uses the Giles model [1]_
+originally developed for erbium-doped fiber amplifiers. The library also contains a basic rate equation model [2]_
+for stimulated and spontaneous Raman scattering effects in both active and passive fibers. Both core-pumped and
+double-clad amplifiers can be modeled.
 
-The simple example below demonstrates the modeling of a core-pumped Yb-doped fiber amplifier. All units are in SI.
+Download
+=========
+PyFiberAmp is not yet on PyPI. You can clone the repository with
+::
+
+    $ git clone git://github.com/Jomiri/pyfiberamp.git
+
+and then install the library with
+::
+
+    python setup.py install
+
+Example
+========
+The simple example below demonstrates a core-pumped Yb-doped fiber amplifier. All units are in SI.
 ::
 
     from pyfiberamp import FiberAmplifierSimulation
@@ -36,9 +51,9 @@ The simple example below demonstrates the modeling of a core-pumped Yb-doped fib
     result.plot_amplifier_result()
 
 The script plots the power evolution in the amplifier and the amplified spontaneous emission (ASE) spectra. The
-co-propagating pump is absorbed in the first ~1.8 m after which the signal starts to be reabsorbed by the fiber.
-This design is not perfect first because the fiber is too long and second because the input signal is too weak to
-saturate the gain at the start of the fiber.
+co-propagating pump is absorbed in the first ~1.8 m while the signal experiences gain. When the pump has been depleted,
+the signal starts to be reabsorbed by the fiber. This design is not perfect 1) because the fiber is too long and
+2) because the input signal is too weak to saturate the gain at the start of the fiber.
 
 .. image:: images/readme_power_evolution.png
     :align: center
@@ -50,26 +65,15 @@ saturate the gain at the start of the fiber.
     :width: 769px
     :height: 543px
 
-Download
-=========
-PyFiberAmp is not yet on PyPI. You can clone the repository with
-::
-
-    $ git clone git://github.com/Jomiri/pyfiberamp.git
-
-and then install the library with
-::
-
-    python setup.py install
-
-
-Examples
-========
 For more usage examples, please see the Examples Jupyter notebook.
+
+Fiber data
+==========
+PyFiberAmp comes with spectroscopic data (absorption and emission cross sections) for Yb-doped germanosilicate fibers
+[3]_ and supports importing spectra for other dopants/glass-compositions.
 
 Theory basics
 ==============
-
 For a quick view on the theory, see the *pyfiberamp theory.pdf* file. A more complete description can be found in the
 references.
 
