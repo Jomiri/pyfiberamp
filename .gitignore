@@ -1,15 +1,14 @@
 
+__pycache__/
+*.py[cod]
 *.egg-info
 .idea/
 .ipynb_checkpoints/
 dist/
 build/
-README.html
 taper_profiles/
 examples/
 pyfiberamp/obsolete/
 pyfiberamp/taper_code/
 validation/
 .pypirc
-
-
