@@ -8,15 +8,16 @@ PyFiberAmp is a rate equation simulation module for rare earth fiber amplifiers.
 Additionally, stimulated and spontaneous Raman scattering effects in both active and passive fibers can be modeled
 with a similar basic rate equation model [2]_.
 
-A simple example::
+The simple example below demonstrates the modeling of a core-pumped Yb-doped fiber amplifier. All units are in SI.
+::
 
     from pyfiberamp import FiberAmplifierSimulation
     from pyfiberamp.fibers import YbDopedFiber
 
-    yb_number_density = 2e25
+    yb_number_density = 2e25 # m^-3
     core_r = 3e-6
     background_loss = 0
-    length = 2.5
+    length = 2.5 # m
     core_na = 0.12
     tolerance = 1e-5
 
@@ -34,16 +35,32 @@ A simple example::
     assert(result.success())
     result.plot_amplifier_result()
 
-The script plots the power evolution in the amplifier and the amplified spontaneous emission (ASE) spectra.
+The script plots the power evolution in the amplifier and the amplified spontaneous emission (ASE) spectra. The
+co-propagating pump is absorbed in the first ~1.8 m after which the signal starts to be reabsorbed by the fiber.
+This design is not perfect first because the fiber is too long and second because the input signal is too weak to
+saturate the gain at the start of the fiber.
 
 .. image:: images/readme_power_evolution.png
     :align: center
+    :width: 769px
+    :height: 543px
 
 .. image:: images/readme_ase_spectra.png
     :align: center
+    :width: 769px
+    :height: 543px
 
-Installation
-============
+Download
+=========
+PyFiberAmp is not yet on PyPI. You can clone the repository with
+::
+
+    $ git clone git://github.com/Jomiri/pyfiberamp.git
+
+and then install the library with
+::
+
+    python setup.py install
 
 
 Examples
