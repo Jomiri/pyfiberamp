@@ -1,11 +1,6 @@
-import sys
-if 'matplotlib.pyplot' not in sys.modules:
-    import matplotlib
-    matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
 
 from .helper_funcs import *
-
 
 
 class SimulationResult:

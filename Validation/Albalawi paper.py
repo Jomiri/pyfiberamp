@@ -1,5 +1,5 @@
-from fiberamp import FiberAmplifierSimulation
-from fiberamp.fibers import YbDopedDoubleCladFiber
+from pyfiberamp import FiberAmplifierSimulation
+from pyfiberamp.fibers import YbDopedDoubleCladFiber
 
 
 Yb_number_density = 3e25
@@ -8,7 +8,7 @@ background_loss = 0
 length = 3
 pump_cladding_r = 50e-6
 core_to_cladding_ratio = core_r / pump_cladding_r
-core_NA = 0.12
+core_NA = 0.12 # does not play a role
 npoints = 20
 tolerance = 1e-5
 
@@ -17,7 +17,7 @@ fiber = YbDopedDoubleCladFiber(length,
                         background_loss, core_NA, core_to_cladding_ratio)
 simulation = FiberAmplifierSimulation(fiber)
 simulation.add_cw_signal(wl=1030e-9, power=0.4, mode_field_diameter=2*4.8e-6)
-simulation.add_counter_pump(wl=914e-9, power=47.2)
+simulation.add_backward_pump(wl=914e-9, power=47.2)
 #simulation.include_ase(wl_start=1000e-9, wl_end=1100e-9, n_bins=50)
 
 result = simulation.run(npoints, tol=tolerance)
