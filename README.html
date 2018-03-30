@@ -358,286 +358,6 @@ ul.auto-toc {
   list-style-type: none }
 
 </style>
-<style type="text/css">
-
-/*
-*   math2html: convert LaTeX equations to HTML output.
-*
-*   Copyright (C) 2009,2010 Alex Fernández
-*
-*   Released under the terms of the `2-Clause BSD license'_, in short:
-*   Copying and distribution of this file, with or without modification,
-*   are permitted in any medium without royalty provided the copyright
-*   notice and this notice are preserved.
-*   This file is offered as-is, without any warranty.
-*
-* .. _2-Clause BSD license: http://www.spdx.org/licenses/BSD-2-Clause
-*
-*   Based on eLyXer: convert LyX source files to HTML output.
-*   http://elyxer.nongnu.org/
-*/
-/* --end--
-* CSS file for LaTeX formulas.
-*/
-
-/* Formulas */
-.formula {
-	text-align: center;
-	font-family: "Droid Serif", "DejaVu Serif", "STIX", serif;
-	margin: 1.2em 0;
-}
-span.formula {
-	white-space: nowrap;
-}
-div.formula {
-	padding: 0.5ex;
-	margin-left: auto;
-	margin-right: auto;
-}
-
-/* Basic features */
-a.eqnumber {
-	display: inline-block;
-	float: right;
-	clear: right;
-	font-weight: bold;
-}
-span.unknown {
-	color: #800000;
-}
-span.ignored, span.arraydef {
-	display: none;
-}
-.formula i {
-	letter-spacing: 0.1ex;
-}
-
-/* Alignment */
-.align-left, .align-l {
-	text-align: left;
-}
-.align-right, .align-r {
-	text-align: right;
-}
-.align-center, .align-c {
-	text-align: center;
-}
-
-/* Structures */
-span.overline, span.bar {
-	text-decoration: overline;
-}
-.fraction, .fullfraction {
-	display: inline-block;
-	vertical-align: middle;
-	text-align: center;
-}
-.fraction .fraction {
-	font-size: 80%;
-	line-height: 100%;
-}
-span.numerator {
-	display: block;
-}
-span.denominator {
-	display: block;
-	padding: 0ex;
-	border-top: thin solid;
-}
-sup.numerator, sup.unit {
-	font-size: 70%;
-	vertical-align: 80%;
-}
-sub.denominator, sub.unit {
-	font-size: 70%;
-	vertical-align: -20%;
-}
-span.sqrt {
-	display: inline-block;
-	vertical-align: middle;
-	padding: 0.1ex;
-}
-sup.root {
-	font-size: 70%;
-	position: relative;
-	left: 1.4ex;
-}
-span.radical {
-	display: inline-block;
-	padding: 0ex;
-	font-size: 150%;
-	vertical-align: top;
-}
-span.root {
-	display: inline-block;
-	border-top: thin solid;
-	padding: 0ex;
-	vertical-align: middle;
-}
-span.symbol {
-	line-height: 125%;
-	font-size: 125%;
-}
-span.bigsymbol {
-	line-height: 150%;
-	font-size: 150%;
-}
-span.largesymbol {
-	font-size: 175%;
-}
-span.hugesymbol {
-	font-size: 200%;
-}
-span.scripts {
-	display: inline-table;
-	vertical-align: middle;
-}
-.script {
-	display: table-row;
-	text-align: left;
-	line-height: 150%;
-}
-span.limits {
-	display: inline-table;
-	vertical-align: middle;
-}
-.limit {
-	display: table-row;
-	line-height: 99%;
-}
-sup.limit, sub.limit {
-	line-height: 100%;
-}
-span.symbolover {
-	display: inline-block;
-	text-align: center;
-	position: relative;
-	float: right;
-	right: 100%;
-	bottom: 0.5em;
-	width: 0px;
-}
-span.withsymbol {
-	display: inline-block;
-}
-span.symbolunder {
-	display: inline-block;
-	text-align: center;
-	position: relative;
-	float: right;
-	right: 80%;
-	top: 0.3em;
-	width: 0px;
-}
-
-/* Environments */
-span.array, span.bracketcases, span.binomial, span.environment {
-	display: inline-table;
-	text-align: center;
-	border-collapse: collapse;
-	margin: 0em;
-	vertical-align: middle;
-}
-span.arrayrow, span.binomrow {
-	display: table-row;
-	padding: 0ex;
-	border: 0ex;
-}
-span.arraycell, span.bracket, span.case, span.binomcell, span.environmentcell {
-	display: table-cell;
-	padding: 0ex 0.2ex;
-	line-height: 99%;
-	border: 0ex;
-}
-/*
-* CSS file for LaTeX formulas, extra stuff:
-* binomials, vertical braces, stackrel, fonts and colors.
-*/
-
-/* Inline binomials */
-span.binom {
-	display: inline-block;
-	vertical-align: middle;
-	text-align: center;
-	font-size: 80%;
-}
-span.binomstack {
-	display: block;
-	padding: 0em;
-}
-
-/* Over- and underbraces */
-span.overbrace {
-	border-top: 2pt solid;
-}
-span.underbrace {
-	border-bottom: 2pt solid;
-}
-
-/* Stackrel */
-span.stackrel {
-	display: inline-block;
-	text-align: center;
-}
-span.upstackrel {
-	display: block;
-	padding: 0em;
-	font-size: 80%;
-	line-height: 64%;
-	position: relative;
-	top: 0.15em;
-
-}
-span.downstackrel {
-	display: block;
-	vertical-align: bottom;
-	padding: 0em;
-}
-
-/* Fonts */
-span.mathsf, span.textsf {
-	font-style: normal;
-	font-family: sans-serif;
-}
-span.mathrm, span.textrm {
-	font-style: normal;
-	font-family: serif;
-}
-span.text, span.textnormal {
-	font-style: normal;
-}
-span.textipa {
-	color: #008080;
-}
-span.fraktur {
-	font-family: "Lucida Blackletter", eufm10, blackletter;
-}
-span.blackboard {
-	font-family: Blackboard, msbm10, serif;
-}
-span.scriptfont {
-	font-family: "Monotype Corsiva", "Apple Chancery", "URW Chancery L", cursive;
-	font-style: italic;
-}
-
-/* Colors */
-span.colorbox {
-	display: inline-block;
-	padding: 5px;
-}
-span.fbox {
-	display: inline-block;
-	border: thin solid black;
-	padding: 2px;
-}
-span.boxed, span.framebox {
-	display: inline-block;
-	border: thin solid black;
-	padding: 5px;
-}
-
-
-</style>
 </head>
 <body>
 <div class="document" id="pyfiberamp">
@@ -645,113 +365,73 @@ span.boxed, span.framebox {
 
 <div class="section" id="introduction">
 <h1>Introduction</h1>
-<p>PyFiberAmp is a rate equation simulation module for rare earth fiber amplifiers. It uses the Giles model <a class="footnote-reference" href="#id5" id="id1">[1]</a>.
+<p>PyFiberAmp is a rate equation simulation module for rare earth fiber amplifiers. It uses the Giles model <a class="footnote-reference" href="#id3" id="id1">[1]</a>.
 Additionally, stimulated and spontaneous Raman scattering effects in both active and passive fibers can be modeled
-with a similar basic rate equation model <a class="footnote-reference" href="#id6" id="id2">[2]</a>.</p>
+with a similar basic rate equation model <a class="footnote-reference" href="#id4" id="id2">[2]</a>.</p>
+<p>A simple example:</p>
+<pre class="literal-block">
+from pyfiberamp import FiberAmplifierSimulation
+from pyfiberamp.fibers import YbDopedFiber
+
+yb_number_density = 2e25
+core_r = 3e-6
+background_loss = 0
+length = 2.5
+core_na = 0.12
+tolerance = 1e-5
+
+fiber = YbDopedFiber(length=length,
+                    core_radius=core_r,
+                    ion_number_density=yb_number_density,
+                    background_loss=background_loss,
+                    core_na=core_na)
+simulation = FiberAmplifierSimulation(fiber)
+simulation.add_cw_signal(wl=1035e-9, power=2e-3)
+simulation.add_forward_pump(wl=976e-9, power=300e-3)
+simulation.add_ase(wl_start=1000e-9, wl_end=1080e-9, n_bins=40)
+
+result = simulation.run(tol=tolerance)
+assert(result.success())
+result.plot_amplifier_result()
+</pre>
+<p>The script plots the power evolution in the amplifier and the amplified spontaneous emission (ASE) spectra.</p>
+<img alt="images/readme_power_evolution.png" class="align-center" src="images/readme_power_evolution.png" />
+<img alt="images/readme_ase_spectra.png" class="align-center" src="images/readme_ase_spectra.png" />
 </div>
 <div class="section" id="installation">
 <h1>Installation</h1>
 </div>
 <div class="section" id="examples">
 <h1>Examples</h1>
-<p>For usage examples, please see the Examples Jupyter notebook.</p>
+<p>For more usage examples, please see the Examples Jupyter notebook.</p>
 </div>
 <div class="section" id="theory-basics">
 <h1>Theory basics</h1>
-<div class="section" id="giles-model">
-<h2>Giles model</h2>
-<p>The original Giles model <a class="footnote-reference" href="#id5" id="id3">[1]</a> describes an active fiber as <em>a two-level system</em> using four spectroscopic parameters:</p>
-<ol class="arabic simple">
-<li>Absorption spectrum <span class="formula"><i>α</i></span> (dB/m vs. wavelength)</li>
-<li>Gain spectrum <span class="formula"><i>g</i><sup>*</sup></span> (dB/m vs. wavelength)</li>
-<li>Saturation parameter <span class="formula"><i>ζ</i></span> (1/(ms))</li>
-<li>Linear loss <span class="formula"><i>l</i></span> (dB/m)</li>
-</ol>
-<p>The absorption and gain spectra are defined as</p>
-<div class="formula">
-<i>α</i>(<i>λ</i>) = <i>σ</i><sub><i>a</i></sub>(<i>λ</i>)Γ(<i>λ</i>)<i>n</i><sub><i>t</i></sub>
+<p>For a quick view on the theory, see the <em>pyfiberamp theory.pdf</em> file. A more complete description can be found in the
+references.</p>
 </div>
-<div class="formula">
-<i>g</i><sup>*</sup>(<i>λ</i>) = <i>σ</i><sub><i>e</i></sub>(<i>λ</i>)Γ(<i>λ</i>)<i>n</i><sub><i>t</i></sub>
-</div>
-<p>where <span class="formula"><i>σ</i><sub><i>a</i></sub>(<i>λ</i>)</span> and <span class="formula"><i>σ</i><sub><i>e</i></sub>(<i>λ</i>)</span> are the absorption and emission cross sections,
-respectively, <span class="formula">Γ(<i>λ</i>)</span> is the overlap integral between the optical beam and the dopant,
-and <span class="formula"><i>n</i><sub><i>t</i></sub></span> is the number density of the dopant ions. The absorption spectrum refers to the small signal absorption
-with all the dopant ions in the lower manifold. The gain spectrum refers to the small signal gain with all the ions in
-the upper manifold.</p>
-<p>The saturation parameter is defined as</p>
-<div class="formula">
-<i>ζ</i> = <i>π</i><i>b</i><span class="scripts"><sup class="script">2</sup><sub class="script"><i>eff</i></sub></span><i>n</i><sub><i>t</i></sub> ⁄ <i>τ</i>
-</div>
-<p>where <span class="formula"><i>b</i><sub><i>eff</i></sub></span> is the effective doped radius (equals to core radius in a uniformly doped fiber),
-and <span class="formula"><i>τ</i></span> is the upper state lifetime of the ions.</p>
-<p>The loss <span class="formula"><i>l</i></span> can typically be assumed to be constant within the limited bandwidth of simulated wavelengths.</p>
-<p>The optical powers (<span class="formula"><i>P</i><sub><i>k</i></sub></span>, the overline denotes spatial averaging) and the fraction of ions in the excited state
-(dfrac{overline{n}_2}{bar{n}_t}) are then described by the following system of equations</p>
-<div class="formula">
-<span class="fullfraction"><span class="ignored">(</span><span class="numerator"><span class="overline"><i>n</i></span><sub>2</sub></span><span class="ignored">)/(</span><span class="denominator"><span class="bar"><i>n</i></span><sub><i>t</i></sub></span><span class="ignored">)</span></span> = <span class="fullfraction"><span class="ignored">(</span><span class="numerator"><span class="limits"><sup class="limit"> </sup><span class="limit">⎲</span><span class="limit">⎳</span><sub class="limit"><i>k</i></sub></span><span class="fullfraction"><span class="ignored">(</span><span class="numerator"><i>P</i><sub><i>k</i></sub>(<i>z</i>)<i>α</i><sub><i>k</i></sub></span><span class="ignored">)/(</span><span class="denominator"><i>h</i><i>ν</i><sub><i>k</i></sub><i>ζ</i></span><span class="ignored">)</span></span></span><span class="ignored">)/(</span><span class="denominator">1 + <span class="limits"><sup class="limit"> </sup><span class="limit">⎲</span><span class="limit">⎳</span><sub class="limit"><i>k</i></sub></span><span class="fullfraction"><span class="ignored">(</span><span class="numerator"><i>P</i><sub><i>k</i></sub>(<i>z</i>)(<i>α</i><sub><i>k</i></sub> + <i>g</i><span class="scripts"><sup class="script">*</sup><sub class="script"><i>k</i></sub></span>)</span><span class="ignored">)/(</span><span class="denominator"><i>h</i><i>ν</i><sub><i>k</i></sub><i>ζ</i></span><span class="ignored">)</span></span></span><span class="ignored">)</span></span>
-</div>
-<div class="formula">
-<span class="fullfraction"><span class="ignored">(</span><span class="numerator"><i>dP</i><sub><i>k</i></sub></span><span class="ignored">)/(</span><span class="denominator"><i>dz</i></span><span class="ignored">)</span></span> = <i>u</i><sub><i>k</i></sub>(<i>α</i><sub><i>k</i></sub> + <i>g</i><span class="scripts"><sup class="script">*</sup><sub class="script"><i>k</i></sub></span>)<span class="fullfraction"><span class="ignored">(</span><span class="numerator"><span class="overline"><i>n</i></span><sub>2</sub></span><span class="ignored">)/(</span><span class="denominator"><span class="bar"><i>n</i></span><sub><i>t</i></sub></span><span class="ignored">)</span></span><i>P</i><sub><i>k</i></sub>(<i>z</i>) + <i>u</i><sub><i>k</i></sub><i>g</i><span class="scripts"><sup class="script">*</sup><sub class="script"><i>k</i></sub></span><span class="fullfraction"><span class="ignored">(</span><span class="numerator"><span class="overline"><i>n</i></span><sub>2</sub></span><span class="ignored">)/(</span><span class="denominator"><span class="bar"><i>n</i></span><sub><i>t</i></sub></span><span class="ignored">)</span></span><i>m</i><i>h</i><i>ν</i><sub><i>k</i></sub>Δ<i>ν</i><sub><i>k</i></sub> − <i>u</i><sub><i>k</i></sub>(<i>α</i><sub><i>k</i></sub> + <i>l</i><sub><i>k</i></sub>)<i>P</i><sub><i>k</i></sub>
-</div>
-<p>where <span class="formula"><i>h</i><i>ν</i><sub><i>k</i></sub></span> is the photon energy at frequency <span class="formula"><i>nu</i></span>, <span class="formula"><i>u</i><sub><i>k</i></sub></span> is the propagation direction of the beam
-(+1 is forward and -1 is backward), <span class="formula"><i>m</i> = 2</span> is the number of modes in a single-mode fiber (two polarization modes)
-and <span class="formula">Δ<i>ν</i><sub><i>k</i></sub></span> is the frequency bandwidth of the beam (can be assumed zero for signals and non-zeros for
-amplified spontaneous emission and Raman).</p>
-<p>The Giles model is an 1D boundary value problem. In the simplest case, the boundary values are just the input powers of
-the beams. If only forward-propagating beams are considered, the problem is reduced to an easily integrable initial value
-problem, but typically both backward-propagating ASE and pump beams must be modeled, so some input powers are know only
-at the end of the fiber and some at the beginning. PyFiberAmp uses the solve_bvp solver from SciPy. The solver typically
-converges rapidly provided that the initial guess is chosen well.</p>
-<p>The Giles model suffers from several limitations, the most important of which are listed below:
-1. As a two-level model, it cannot describe complex transitions such as excited state absorption.
-2. As a steady-state model, it cannot describe pulse propagation at low repetition rates, when the gain varies from pulse to pulse.
-3. As a spatially averaged model, it cannot describe radially varying dopant distributions or power-dependent overlap between the optical beams and the dopant.</p>
-</div>
-<div class="section" id="raman-model">
-<h2>Raman model</h2>
-<p>Stimulated and spontaneous Raman scattering is simulated with the following rate equations:</p>
-<div class="formula">
-<span class="fullfraction"><span class="ignored">(</span><span class="numerator"><i>dP</i><span class="scripts"><sup class="script">±</sup><sub class="script"><i>R</i></sub></span></span><span class="ignored">)/(</span><span class="denominator"><i>dz</i></span><span class="ignored">)</span></span> = ∓(<i>g</i><sub><i>R</i></sub><i>I</i><sub><i>s</i></sub><i>P</i><span class="scripts"><sup class="script">±</sup><sub class="script"><i>R</i></sub></span> + <i>g</i><sub><i>R</i></sub><i>I</i><sub><i>s</i></sub><i>h</i><i>ν</i><sub><i>R</i></sub>Δ<i>ν</i><sub><i>R</i></sub>)
-</div>
-<p>where the first term on the right hand side describes stimulated Raman scattering and the second term describes
-spontaneous Raman scattering, <span class="formula"><i>g</i><sub><i>R</i></sub></span> is the Raman gain coefficient (about <span class="formula">1 × 10<sup> − 13</sup><i>m</i> ⁄ <i>W</i></span>),
-<span class="formula"><i>I</i><sub><i>s</i></sub></span> is the peak intensity of the signal, and the subsript R refers to the Raman channel. The derivative of
-backward-propagating Raman beam is negative.</p>
-<p>The signal is depleted by the amount of power gained by the Raman beams multiplied by the ratio of photon frequencies
-(energies) of the signal and Raman beams because the number of photons is conserved by the Raman photons have smaller
-energies than the signal photons.</p>
-<div class="formula">
-<span class="fullfraction"><span class="ignored">(</span><span class="numerator"><i>dP</i><sub><i>s</i></sub></span><span class="ignored">)/(</span><span class="denominator"><i>dz</i></span><span class="ignored">)</span></span> =  − <span class="fullfraction"><span class="ignored">(</span><span class="numerator"><i>ν</i><sub><i>s</i></sub></span><span class="ignored">)/(</span><span class="denominator"><i>ν</i><sub><i>R</i></sub></span><span class="ignored">)</span></span><span class="array"><span class="arrayrow"><span class="bracket align-left">⎛</span></span><span class="arrayrow"><span class="bracket align-left">⎝</span></span></span><span class="fullfraction"><span class="ignored">(</span><span class="numerator"><i>dP</i><span class="scripts"><sup class="script"> + </sup><sub class="script"><i>R</i></sub></span></span><span class="ignored">)/(</span><span class="denominator"><i>dz</i></span><span class="ignored">)</span></span> − <span class="fullfraction"><span class="ignored">(</span><span class="numerator"><i>dP</i><span class="scripts"><sup class="script"> − </sup><sub class="script"><i>R</i></sub></span></span><span class="ignored">)/(</span><span class="denominator"><i>dz</i></span><span class="ignored">)</span></span><span class="array"><span class="arrayrow"><span class="bracket align-right">⎞</span></span><span class="arrayrow"><span class="bracket align-right">⎠</span></span></span>
-</div>
-<p>In practice, terms on the right hand side of these equations are added to the Giles model rate equations to simulated
-Raman generation in active fibers, where the Raman signal interacts with the dopant ions as well.</p>
-</div>
-</div>
-<div class="section" id="fiber-data">
-<h1>Fiber data</h1>
-<p>PyFiberAmp comes with cross section data for ytterbium in germanosilicate glass <a class="footnote-reference" href="#id7" id="id4">[3]</a> and supports importing
-spectroscopic data of other Yb-doped and rare earth fibers. The default ytterbium upper state lifetime is 1.0 ms,
-but different values can be used as well.</p>
+<div class="section" id="license">
+<h1>License</h1>
+<p>PyFiberAmp is licensed under the MIT license.</p>
 </div>
 <div class="section" id="references">
 <h1>References</h1>
-<table class="docutils footnote" frame="void" id="id5" rules="none">
+<table class="docutils footnote" frame="void" id="id3" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id3">2</a>)</em> C.R. Giles and E. Desurvire, &quot;Modeling erbium-doped fiber amplifiers,&quot; in Journal of Lightwave Technology, vol. 9, no. 2, pp. 271-283, Feb 1991. doi: 10.1109/50.65886</td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>C.R. Giles and E. Desurvire, &quot;Modeling erbium-doped fiber amplifiers,&quot; in Journal of Lightwave Technology, vol. 9, no. 2, pp. 271-283, Feb 1991. doi: 10.1109/50.65886</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id6" rules="none">
+<table class="docutils footnote" frame="void" id="id4" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>R.G. Smith, &quot;Optical Power Handling Capacity of Low Loss Optical Fibers as Determined by Stimulated Raman and Brillouin Scattering,&quot; Appl. Opt. 11, 2489-2494 (1972)</td></tr>
 </tbody>
 </table>
-<table class="docutils footnote" frame="void" id="id7" rules="none">
+<table class="docutils footnote" frame="void" id="id5" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id4">[3]</a></td><td><ol class="first last upperalpha simple" start="18">
+<tr><td class="label">[3]</td><td><ol class="first last upperalpha simple" start="18">
 <li>Paschotta, J. Nilsson, A. C. Tropper and D. C. Hanna, &quot;Ytterbium-doped fiber amplifiers,&quot; in IEEE Journal of Quantum Electronics, vol. 33, no. 7, pp. 1049-1056, Jul 1997. doi: 10.1109/3.594865</li>
 </ol>
 </td></tr>
