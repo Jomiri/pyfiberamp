@@ -1,0 +1,12 @@
+
+*.egg-info
+dist/
+build/
+README.html
+taper_profiles/
+examples/
+pyfiberamp/obsolete/
+pyfiberamp/taper_code/
+validation/
+
+

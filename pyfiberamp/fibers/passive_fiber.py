@@ -2,9 +2,9 @@ from .fiber_base import FiberBase
 
 
 class PassiveFiber(FiberBase):
-    """PassiveFiber describes a step-index single-mode fiber with no dopant ions. It only extends the FiberBase class
-    by stating that there is no emission or absorption by ions.
-     The only possible gain comes of stimulated Raman scattering."""
+    """PassiveFiber describes a step-index single-mode fiber with no dopant ions. It extends the FiberBase class by
+    stating that there is no emission or absorption by ions. The only possible gain comes of stimulated Raman
+     scattering."""
     def __init__(self, length=0, core_radius=0, background_loss=0, core_na=0):
         super().__init__(length=length,
                          core_radius=core_radius,
