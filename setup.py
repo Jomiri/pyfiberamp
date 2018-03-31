@@ -10,7 +10,7 @@ setup(
     version=VERSION,
     author='Joona Rissanen',
     author_email='joona.m.rissanen@gmail.com',
-    url='',
+    url='https://github.com/Jomiri/pyfiberamp',
     description='Fiber amplifier modeling library',
     long_description=long_description,
     license='MIT',

@@ -148,3 +148,4 @@ class ActiveFiber(FiberBase):
         ax.legend()
         ax.set_xlabel('Wavelength (nm)', fontsize=18)
         ax.set_ylabel('Gain/Absorption cross sections', fontsize=18)
+        plt.show()
