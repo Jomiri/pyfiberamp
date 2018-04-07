@@ -59,8 +59,8 @@ class Channels:
             self.backward_ase.append(backward_channel)
 
     def add_raman(self, input_power, backward_raman_allowed):
-        assert(len(self.forward_signals) == 1 and len(self.backward_signals) == 0, 'Raman modeling is supported only '
-                                                                                   'with a single forward signal.')
+        assert len(self.forward_signals) == 1 and len(self.backward_signals) == 0, 'Raman modeling is supported only '\
+                                                                                   'with a single forward signal.'
         raman_freq = self.forward_signals[0].v - RAMAN_FREQ_SHIFT
         raman_wl = freq_to_wl(raman_freq)
         forward_channel = self.fiber.create_in_core_forward_finite_bandwidth_channel(raman_wl, RAMAN_GAIN_WL_BANDWIDTH,

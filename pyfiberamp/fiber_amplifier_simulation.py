@@ -100,16 +100,42 @@ class FiberAmplifierSimulation:
         guess = self.initial_guess.as_array()
         sol = solve_bvp(rate_equation_rhs, boundary_condition_residual,
                         self._start_z(), guess, max_nodes=SOLVER_MAX_NODES, tol=tol, verbose=self.solver_verbosity)
-        assert(sol.success, 'Error: The solver did not converge.')
+        assert sol.success, 'Error: The solver did not converge.'
         return self._finalize(sol, upper_level_func)
 
     def set_guess_parameters(self, guess_parameters):
+        """Override the default initial guess parameters.
+        Parameters
+        ----------
+        guess_parameters : Instance of GuessParameters class
+
+        Usage example:
+        from pyfiberamp import GuessParameters, GainShapes
+        params = GuessParameters()
+        params.signal.set_gain_shape(GainShapes.LINEAR)
+        params.pump.set_gain_db(-20)
+        simulation.set_guess_parameters(params)
+        """
+
         self.initial_guess.params = guess_parameters
 
     def set_guess_array(self, array, force_node_number=None):
+        """Use an existing array as the initial guess. Typically this array is the result of a previous simulation
+        with sligthly different parameters. Note that the number of simulated beams/channels must be the same.
+
+        Parameters
+        ----------
+        array : numpy array
+            The initial guess array
+        force_node_number : int (optional)
+            Used to resize the supplied array. This parameter gives the new number of columns in the resized array.
+        """
+
         self.initial_guess = InitialGuessFromArray(array, force_node_number)
 
     def set_number_of_nodes(self, N):
+        """Override the default number of nodes used by the solver. The solver will increase the number of nodes if
+         necessary."""
         self.initial_guess.npoints = N
 
     def _start_z(self):

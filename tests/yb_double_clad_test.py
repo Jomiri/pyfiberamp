@@ -27,7 +27,6 @@ class YbDoubleCladTestCase(unittest.TestCase):
         simulation.add_backward_pump(wl=914e-9, power=cls.input_pump_power)
         simulation.set_number_of_nodes(npoints)
         cls.result = simulation.run(tol=tolerance)
-        assert(cls.result.success())
 
     def test_input_signal_power(self):
         simulated_input_power = self.result.forward_signals[0, 0]

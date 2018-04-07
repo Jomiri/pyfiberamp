@@ -43,7 +43,7 @@ class ChannelGuessParameters:
         self._output_power_func = lambda x: np.full_like(x, output_power)
 
     def set_gain_shape(self, gain_shape):
-        assert(gain_shape in GainShapes)
+        assert gain_shape in GainShapes
         self._gain_shape = gain_shape
 
     def get_output_power(self, input_power):
