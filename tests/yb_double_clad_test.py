@@ -25,7 +25,8 @@ class YbDoubleCladTestCase(unittest.TestCase):
         simulation = FiberAmplifierSimulation(fiber)
         simulation.add_cw_signal(wl=1030e-9, power=cls.input_signal_power, mode_field_diameter=2 * 4.8e-6)
         simulation.add_backward_pump(wl=914e-9, power=cls.input_pump_power)
-        cls.result = simulation.run(npoints, tol=tolerance)
+        simulation.set_number_of_nodes(npoints)
+        cls.result = simulation.run(tol=tolerance)
         assert(cls.result.success())
 
     def test_input_signal_power(self):

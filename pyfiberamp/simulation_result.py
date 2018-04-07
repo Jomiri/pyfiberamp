@@ -78,6 +78,29 @@ class SimulationResult:
     def average_excitation(self):
         return np.mean(self.upper_level_fraction)
 
+    def make_result_dict(self):
+        keys = ['forward_signal', 'backward_signal',
+                'forward_pump', 'backward_pump',
+                'forward_ase', 'backward_ase',
+                'forward_raman', 'backward_raman']
+        slice_names = [key + '_slice' for key in keys]
+        result_dict = {}
+        for key, slice_name in zip(keys, slice_names):
+            slice = self.slices[slice_name]
+            power = self.P[slice]
+            if len(power) == 0:
+                continue
+            start_idx, end_idx = 0, -1
+            if 'backward' in 'key':
+                start_idx, end_idx = end_idx, start_idx
+            output_powers = power[:, end_idx]
+            input_powers = power[:, start_idx]
+            gain = to_db(output_powers / input_powers)
+            result_dict[key] = {'input_powers': input_powers,
+                                'output_powers': output_powers,
+                                'gain': gain}
+        return result_dict
+
     def forward_signal_gains(self):
         signal = self.forward_signals
         gain = signal[:, -1] / signal[:, 0]

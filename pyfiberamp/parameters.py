@@ -17,6 +17,7 @@ h = 6.62607e-34
 # Constants for the numerical algorithm
 SIMULATION_MIN_POWER = 1e-14
 SOLVER_MAX_NODES = 20000
+START_NODES = 20
 
 
 # Constants for active fiber

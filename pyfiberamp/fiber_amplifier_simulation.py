@@ -3,7 +3,7 @@ from scipy.integrate import solve_bvp
 from pyfiberamp.models.giles_model import GilesModel
 from .boundary_conditions import BasicBoundaryConditions
 from .helper_funcs import *
-from .initial_guess_maker import InitialGuessMaker
+from .initial_guess import InitialGuessFromParameters, InitialGuessFromArray
 from .channels import Channels
 from .simulation_result import SimulationResult
 
@@ -21,8 +21,10 @@ class FiberAmplifierSimulation:
         self.fiber = fiber
         self.model = GilesModel
         self.boundary_conditions = BasicBoundaryConditions
+        self.initial_guess = InitialGuessFromParameters()
         self.channels = Channels(fiber)
         self.slices = {}
+        self.solver_verbosity = 2
 
     def add_cw_signal(self, wl, power, mode_field_diameter=0.0):
         """Adds a new forward propagating single-frequency CW signal to the simulation.
@@ -77,7 +79,7 @@ class FiberAmplifierSimulation:
         """
         self.channels.add_ase(wl_start, wl_end, n_bins)
 
-    def run(self, npoints=20, tol=1e-3):
+    def run(self, tol=1e-3):
         """Runs the simulation, i.e. calculates the steady state of the defined fiber amplifier.
         Paremeters
         ----------
@@ -94,15 +96,25 @@ class FiberAmplifierSimulation:
         model = self.model(self.channels, self.fiber)
         rate_equation_rhs, upper_level_func = model.make_rate_equation_rhs()
 
-        guess_maker = InitialGuessMaker(self.channels.get_input_powers(), self.slices, self._start_z(npoints))
-        guess = guess_maker.make_guess()
+        self.initial_guess.initialize(self.channels.get_input_powers(), self.slices)
+        guess = self.initial_guess.as_array()
         sol = solve_bvp(rate_equation_rhs, boundary_condition_residual,
-                        self._start_z(npoints), guess, max_nodes=SOLVER_MAX_NODES, tol=tol, verbose=2)
+                        self._start_z(), guess, max_nodes=SOLVER_MAX_NODES, tol=tol, verbose=self.solver_verbosity)
+        assert(sol.success, 'Error: The solver did not converge.')
         return self._finalize(sol, upper_level_func)
 
-    def _start_z(self, npoints):
+    def set_guess_parameters(self, guess_parameters):
+        self.initial_guess.params = guess_parameters
+
+    def set_guess_array(self, array, force_node_number=None):
+        self.initial_guess = InitialGuessFromArray(array, force_node_number)
+
+    def set_number_of_nodes(self, N):
+        self.initial_guess.npoints = N
+
+    def _start_z(self):
         """Creates the linear starting grid."""
-        return np.linspace(0, self.fiber.length, npoints)
+        return np.linspace(0, self.fiber.length, self.initial_guess.npoints)
 
     def _finalize(self, sol, upper_level_func):
         """Creates the SimulationResult object from the solution object."""

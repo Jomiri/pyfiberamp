@@ -1,5 +1,6 @@
 import numpy as np
 import warnings
+from scipy.interpolate import interp1d
 
 from .parameters import *
 
@@ -180,6 +181,26 @@ def gaussian_peak_power(average_power, f_rep, fwhm_duration):
     pulse_energy = average_power / f_rep
     peak_power = 2 * np.sqrt(np.log(2)) / np.sqrt(np.pi) * pulse_energy / fwhm_duration
     return peak_power
+
+
+def resample_array(arr, N):
+    """Changes the width of an array to N columns by using linear interpolation to each row.
+    Parameters
+    ----------
+    arr : numpy array
+        Array to be resized
+    N : int
+        New number of columns
+
+    Returns
+    -------
+    The resized array with N colums.
+    """
+    x_original = np.arange(arr.shape[1])
+    x_new = np.linspace(0, x_original[-1], N)
+    interpolant = interp1d(x_original, arr)
+    arr_new = interpolant(x_new)
+    return arr_new
 
 
 def linspace_2d(start_arr, end_arr, length):
