@@ -2,7 +2,7 @@ import numpy as np
 
 
 class BasicBoundaryConditions:
-    """Class describing the most basic possible boundary conditions in the Giles model:
+    """This class implements the most basic possible boundary conditions in the Giles model:
     all input powers should be those given to the model. Backward progapating beams have their inputs at the end."""
     def __init__(self, channels):
         self.expected_powers = channels.get_input_powers()
@@ -32,6 +32,13 @@ class BasicBoundaryConditions:
 
     def __call__(self, powers_start, powers_end):
         """Returns the residual that tells how much power_start and power_end deviate from the boundary conditions.
-        The bvp solver calls this function."""
+        The bvp solver calls this function.
+
+        :param powers_start: Simulated powers at the start of the fiber
+        :type powers_start: 1D numpy array, length = number of optical channels
+        :param powers_end: Simulated powers at the end of the fiber
+        :type powers_end: 1D numpy array, length = number of optical channels
+
+        """
         return self.boundary_condition_func(powers_start, powers_end)
 

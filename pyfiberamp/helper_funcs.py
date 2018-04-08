@@ -39,7 +39,8 @@ def wl_bw_to_freq_bw(wl_bw, center_wl):
     :type name: float or numpy array of floats
     :param center_wl: Central wavelength of the spectrum
     :type center_wl: float or numpy array of floats
-    :returns: float or numpy array -- Frequency bandwidth
+    :returns: Frequency bandwidth
+    :rtype: float or numpy array
     """
     return c/center_wl**2 * wl_bw
 
@@ -80,7 +81,8 @@ def overlap_from_freq(freq, r, na, doped_radius):
     :type na: float
     :param doped_radius: Core radius
     :type doped_radius: float
-    :returns: float -- Overlap factor
+    :returns: Overlap factor
+    :rtype: float
     """
     return overlap_from_wl(freq_to_wl(freq), r, na, doped_radius)
 
@@ -96,7 +98,8 @@ def overlap_from_wl(wl, r, na, doped_radius):
     :type na: float
     :param doped_radius: Core radius
     :type doped_radius: float
-    :returns: float -- Overlap factor
+    :returns: Overlap factor
+    :rtype: float
     """
     mode_radius = fundamental_mode_radius_petermann_2(wl, r, na)
     return overlap_integral(doped_radius, mode_radius)
@@ -111,7 +114,8 @@ def effective_area_from_mfd(wl, r, na):
     :type r: float
     :param na: Core numerical aperture
     :type na: float
-    :returns: float -- Nonlinear effective area
+    :returns: Nonlinear effective area
+    :rtype: float
     """
     half_width_at_e = fundamental_mode_radius_petermann_2(wl, r, na)
     return np.pi * half_width_at_e**2
@@ -126,7 +130,8 @@ def fundamental_mode_mfd_marcuse(wl, r, na):
     :type r: float
     :param na: Core numerical aperture
     :type na: float
-    :returns: float -- Mode field diameter of the fundamental mode
+    :returns: Mode field diameter of the fundamental mode
+    :rtype: float
     """
     v = fiber_v_parameter(wl, r, na)
     return 2 * r * (0.65 + 1.619*v**(-3/2) + 2.879*v**(-6))
@@ -142,7 +147,8 @@ def fundamental_mode_mfd_petermann_2(wl, r, na):
     :type r: float
     :param na: Core numerical aperture
     :type na: float
-    :returns: float -- Mode field diameter of the fundamental mode
+    :returns: Mode field diameter of the fundamental mode
+    :rtype: float
     """
     v = fiber_v_parameter(wl, r, na)
     return 2 * r * (0.65 + 1.619*v**(-3/2) + 2.879*v**(-6) - (0.015 + 1.561*v**(-7)))
@@ -157,7 +163,8 @@ def fundamental_mode_radius_petermann_2(wl, r, na):
     :type r: float
     :param na: Core numerical aperture
     :type na: float
-    :returns: float -- Mode field radius of the fundamental mode
+    :returns: Mode field radius of the fundamental mode
+    :rtype: float
     """
     return fundamental_mode_mfd_petermann_2(wl, r, na) / 2
 
@@ -169,7 +176,8 @@ def overlap_integral(doped_radius, mode_radius):
     :type doped_radius: float
     :param mode_radius: Mode field radius of the propagating optical beam
     :type mode_radius: float
-    :returns: float -- Overlap integral between the mode and the dopant ions
+    :returns: Overlap integral between the mode and the dopant ions
+    :rtype: float
     """
     return 1 - np.exp(-doped_radius**2 / mode_radius**2)
 
@@ -183,7 +191,8 @@ def fiber_v_parameter(wl, r, na):
     :type r: float
     :param na: Core numerical aperture
     :type na: float
-    :returns: float -- V parameter of the mode
+    :returns: V-parameter of the mode
+    :rtype: float
     """
     return 2 * np.pi / wl * r * na
 
@@ -197,7 +206,8 @@ def zeta_from_fiber_parameters(core_radius, upper_state_lifetime, ion_number_den
     :type upper_state_lifetime: float
     :param ion_number_density: Number density of the dopant ions (1/m^3)
     :type ion_number_density: float
-    :returns: float -- Saturation parameter zeta
+    :returns: Saturation parameter zeta
+    :rtype: float
     """
     return np.pi * core_radius**2 * ion_number_density / upper_state_lifetime
 
@@ -211,7 +221,8 @@ def gaussian_peak_power(average_power, f_rep, fwhm_duration):
     :type f_rep: float
     :param fwhm_duration: FWHM duration of the Gaussian pulses
     :type fwhm_duration: float
-    :returns: float -- Peak power of the pulses
+    :returns: Peak power of the pulses
+    :rtype: float
     """
     pulse_energy = average_power / f_rep
     peak_power = 2 * np.sqrt(np.log(2)) / np.sqrt(np.pi) * pulse_energy / fwhm_duration
@@ -224,7 +235,8 @@ def resample_array(arr, N):
     :type arr: 2D numpy array
     :param N: Number of columns in the resized array
     :type N: int
-    :returns: 2D numpy array -- The resized array with N colums.
+    :returns: The resized array with N colums.
+    :rtype: 2D numpy array
     """
     x_original = np.arange(arr.shape[1])
     x_new = np.linspace(0, x_original[-1], N)
@@ -242,7 +254,8 @@ def linspace_2d(start_vec, end_vec, length):
     :param end_vec: Last column of the generated array
     :type end_vec: 1D numpy array
     :param length: Total number of columns in the generated array
-    :returns: 2D numpy array -- Interpolated between the start and end vectors
+    :returns: Array interpolated between the start and end vectors
+    :rtype: 2D numpy array
     """
     diff = end_vec - start_vec
     return start_vec[:, np.newaxis] + np.arange(length) * diff[:, np.newaxis] / (length - 1)

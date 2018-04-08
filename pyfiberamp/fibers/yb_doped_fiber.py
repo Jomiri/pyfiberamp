@@ -6,19 +6,19 @@ class YbDopedFiber(ActiveFiber):
     """YbDopedFiber is a convenience class for Yb-doped single-mode fiber that uses the default spectroscopic data
      for Yb-ions."""
     def __init__(self, length=0, core_radius=0, ion_number_density=0, background_loss=0, core_na=0):
-        """Parameters
-        -------------
+        """
 
-        length : float
-            Fiber length
-        core_radius : float
-            Core radius
-        ion_number_density : float
-            Yb doping concentration (1/m^3)
-        background_loss : float
-            Linear loss of the fiber (1/m, not dB/m)
-        core_na : float
-            Numerical aperture of the core
+        :param length: Fiber length
+        :type length: float
+        :param core_radius: Core radius
+        :type core_radius: float
+        :param ion_number_density: Number density of the dopant ions (1/m^3)
+        :type ion_number_density: float
+        :param background_loss: Linear loss of the core (1/m, NOT in dB/m)
+        :type background_loss: float
+        :param core_na: Numerical aperture of the core
+        :type core_na: float
+
         """
         super().__init__(length=length,
                          absorption_cs_file=YB_ABSORPTION_CS_FILE,

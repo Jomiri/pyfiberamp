@@ -3,25 +3,30 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to pyfiberamp's documentation!
-======================================
+#########################
+PyFiberAmp documentation
+#########################
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-The main simulation classes
----------------------------
 
-.. automodule:: fiber_amplifier_simulation
-   :members: FiberAmplifierSimulation
+.. toctree::
+   :maxdepth: 2
+   :caption: Class and function reference:
 
-The "helper_functions" module
------------------------------
+   /auto_source/class_reference
 
-.. automodule:: helper_funcs
-   :members:
-   :member-order: bysource
+
+
+
+
+
+
+
+
+
 
 Indices and tables
 ==================

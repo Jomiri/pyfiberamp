@@ -9,14 +9,14 @@ from pyfiberamp.simulation_result import SimulationResult
 
 
 class FiberAmplifierSimulation:
-    """FiberAmplifierSimulation is the main class used for running Giles model simulations without Raman. The class
-    defines the fiber, boundary conditions and optical channels used in the simulation."""
+    """FiberAmplifierSimulation is the main class used for running Giles model simulations without Raman scattering.
+    The class defines the fiber, boundary conditions and optical channels used in the simulation."""
     def __init__(self, fiber):
         """
-        Parameters
-        ----------
-        fiber : class instance derived from FiberBase
-            The fiber used in the simulation.
+
+        :param fiber: The fiber used in the simulation.
+        :type fiber: class instance derived from FiberBase
+
         """
         self.fiber = fiber
         self.model = GilesModel
@@ -28,67 +28,67 @@ class FiberAmplifierSimulation:
 
     def add_cw_signal(self, wl, power, mode_field_diameter=0.0):
         """Adds a new forward propagating single-frequency CW signal to the simulation.
-        Parameters
-        ----------
-        wl : float
-            Wavelength of the signal
-        power : float
-            Input power of the signal at the beginning of the fiber
-        mode_field_diameter : float (optional)
-            Mode field diameter of the signal. If left undefined, will be calculated using the Petermann II equation.
+
+        :param wl: Wavelength of the signal
+        :type wl: float
+        :param power: Input power of the signal at the beginning of the fiber
+        :type power: float
+        :param mode_field_diameter: Mode field diameter of the signal.
+         If left undefined, will be calculated using the Petermann II equation.
+        :type mode_field_diameter: float, optional
+
         """
         self.channels.add_forward_signal(wl, power, mode_field_diameter)
 
     def add_forward_pump(self, wl, power, mode_field_diameter=0.0):
         """Adds a new forward propagating single-frequency pump to the simulation.
-        Parameters
-        ----------
-        wl : float
-            Wavelength of the pump
-        power : float
-            Input power of the pump a the beginning of the fiber
-        mode_field_diameter : float (optional)
-            Mode field diameter of the pump. If left undefined, will be calculated using the Petermann II equation.
+
+        :param wl: Wavelength of the signal
+        :type wl: float
+        :param power: Input power of the signal at the beginning of the fiber
+        :type power: float
+        :param mode_field_diameter: Mode field diameter of the signal.
+         If left undefined, will be calculated using the Petermann II equation.
+        :type mode_field_diameter: float, optional
         """
         self.channels.add_forward_pump(wl, power, mode_field_diameter)
 
     def add_backward_pump(self, wl, power, mode_field_diameter=0.0):
         """Adds a new backward propagating single-frequency pump to the simulation.
-        Parameters
-        ----------
-        wl : float
-            Wavelength of the pump
-        power : float
-            Input power of the pump a the beginning of the fiber
-        mode_field_diameter : float (optional)
-            Mode field diameter of the pump. If left undefined, will be calculated using the Petermann II equation.
+
+        :param wl: Wavelength of the signal
+        :type wl: float
+        :param power: Input power of the signal at the beginning of the fiber
+        :type power: float
+        :param mode_field_diameter: Mode field diameter of the signal.
+         If left undefined, will be calculated using the Petermann II equation.
+        :type mode_field_diameter: float, optional
+
         """
         self.channels.add_backward_pump(wl, power, mode_field_diameter)
 
     def add_ase(self, wl_start, wl_end, n_bins):
-        """Adds amplified spontaneous emission (ASE) channels to the simulation.
-        Parameters
-        ----------
-        wl_start : float
-            The shortest wavelength of the ASE band
-        wl_end : float
-            The longest wavelength of the ASE band
-        n_bins : float
-            The number of simulated ASE channels. More channels improves accuracy, but incurs a heavier computational
-            cost.
+        """Adds amplified spontaneous emission (ASE) channels.
+        Using more channels improves accuracy, but incurs a heavier computational cost to the simulation.
+
+        :param wl_start: The shorted wavelength of the ASE band
+        :type wl_start: float
+        :param wl_end: The longest wavelength of the ASE band
+        :type wl_end: float
+        :param n_bins: The number of simulated ASE channels.
+        :type n_bins: float
+
         """
         self.channels.add_ase(wl_start, wl_end, n_bins)
 
     def run(self, tol=1e-3):
-        """Runs the simulation, i.e. calculates the steady state of the defined fiber amplifier.
-        Paremeters
-        ----------
-        npoints : float
-            Initial number of grid points used by the solver. Should be changed only if the solution does not
-            converge.
-        tol : float
-            Target error tolerance of the solver. ASE or raman simulations might require higher tolerance than the
-            default value. It is best to decrease the tolerance until the result no longer changes.
+        """Runs the simulation, i.e. calculates the steady state of the defined fiber amplifier. ASE or raman
+        simulations might require higher tolerance than the default value.
+        It is best to decrease the tolerance until the result no longer changes.
+
+        :param tol: Target error tolerance of the solver.
+        :type tol: float
+
         """
         self._init_slices()
 
@@ -104,17 +104,19 @@ class FiberAmplifierSimulation:
         return self._finalize(sol, upper_level_func)
 
     def set_guess_parameters(self, guess_parameters):
-        """Override the default initial guess parameters.
-        Parameters
-        ----------
-        guess_parameters : Instance of GuessParameters class
+        """Overrides the default initial guess parameters.
 
-        Usage example:
+        :param guess_parameters: Parameters used to create the initial guess array
+        :type guess_parameters: Instance of GuessParameters class
+
+        :Example:
+
         from pyfiberamp import GuessParameters, GainShapes
         params = GuessParameters()
         params.signal.set_gain_shape(GainShapes.LINEAR)
         params.pump.set_gain_db(-20)
         simulation.set_guess_parameters(params)
+
         """
 
         self.initial_guess.params = guess_parameters
@@ -123,19 +125,23 @@ class FiberAmplifierSimulation:
         """Use an existing array as the initial guess. Typically this array is the result of a previous simulation
         with sligthly different parameters. Note that the number of simulated beams/channels must be the same.
 
-        Parameters
-        ----------
-        array : numpy array
-            The initial guess array
-        force_node_number : int (optional)
-            Used to resize the supplied array. This parameter gives the new number of columns in the resized array.
+        :param array: The initial guess array
+        :type array: numpy array
+        :param force_node_number: The new number of columns in the resized array.
+        :type force_node_number: int, optional
+
         """
 
         self.initial_guess = InitialGuessFromArray(array, force_node_number)
 
     def set_number_of_nodes(self, N):
         """Override the default number of nodes used by the solver. The solver will increase the number of nodes if
-         necessary."""
+         necessary.
+
+         :param N: New starting number of nodes used by the solver.
+         :type N: int
+
+         """
         self.initial_guess.npoints = N
 
     def _start_z(self):

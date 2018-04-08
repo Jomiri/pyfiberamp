@@ -7,21 +7,21 @@ class YbDopedDoubleCladFiber(DoubleCladFiber):
      data for Yb-ions."""
     def __init__(self, length, core_radius, ion_number_density,
                  background_loss, core_na, ratio_of_core_and_cladding_diameters):
-        """Parameters
-        -------------
+        """
 
-        length : float
-            Fiber length
-        core_radius : float
-            Core radius
-        ion_number_density : float
-            Yb doping concentration (1/m^3)
-        background_loss : float
-            Linear loss of the fiber (1/m, not dB/m)
-        core_na : float
-            Numerical aperture of the core
-        ratio_of_core_and_cladding_diameters : float
-            -
+        :param length: Fiber length
+        :type length: float
+        :param core_radius: Core radius
+        :type core_radius: float
+        :param ion_number_density: Number density of the dopant ions (1/m^3)
+        :type ion_number_density: float
+        :param background_loss: Linear loss of the core (1/m, NOT in dB/m)
+        :type background_loss: float
+        :param core_na: Numerical aperture of the core
+        :type core_na: float
+        :param ratio_of_core_and_cladding_diameters: Core diameter divided by cladding diameter
+        :type ratio_of_core_and_cladding_diameters: float
+
         """
         super().__init__(length=length,
                          absorption_cs_file=YB_ABSORPTION_CS_FILE,
