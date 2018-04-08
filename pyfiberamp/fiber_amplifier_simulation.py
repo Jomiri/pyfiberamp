@@ -1,11 +1,11 @@
 from scipy.integrate import solve_bvp
 
 from pyfiberamp.models.giles_model import GilesModel
-from .boundary_conditions import BasicBoundaryConditions
-from .helper_funcs import *
-from .initial_guess import InitialGuessFromParameters, InitialGuessFromArray
-from .channels import Channels
-from .simulation_result import SimulationResult
+from pyfiberamp.boundary_conditions import BasicBoundaryConditions
+from pyfiberamp.helper_funcs import *
+from pyfiberamp.initial_guess import InitialGuessFromParameters, InitialGuessFromArray
+from pyfiberamp.channels import Channels
+from pyfiberamp.simulation_result import SimulationResult
 
 
 class FiberAmplifierSimulation:

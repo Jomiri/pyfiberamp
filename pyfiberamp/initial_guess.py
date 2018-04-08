@@ -1,4 +1,3 @@
-
 from pyfiberamp.helper_funcs import *
 from enum import Enum
 
