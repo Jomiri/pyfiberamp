@@ -1,8 +1,8 @@
-================
- PyFiberAmp
-================
+===========================
+ Introduction to PyFiberAmp
+===========================
 
-Introduction
+In short
 ============
 PyFiberAmp is a rate equation simulation library for rare earth fiber amplifiers. It uses the Giles model [1]_
 originally developed for erbium-doped fiber amplifiers. The library also contains a basic rate equation model [2]_
@@ -55,12 +55,12 @@ co-propagating pump is absorbed in the first ~1.8 m while the signal experiences
 the signal starts to be reabsorbed by the fiber. This design is not perfect 1) because the fiber is too long and
 2) because the input signal is too weak to saturate the gain at the start of the fiber.
 
-.. image:: images/readme_power_evolution.png
+.. image:: docs/images/readme_power_evolution.png
     :align: center
     :width: 769px
     :height: 543px
 
-.. image:: images/readme_ase_spectra.png
+.. image:: docs/images/readme_ase_spectra.png
     :align: center
     :width: 769px
     :height: 543px
@@ -74,7 +74,8 @@ PyFiberAmp comes with spectroscopic data (absorption and emission cross sections
 
 Theory basics
 ==============
-For a quick view on the theory, see the *pyfiberamp theory.pdf* file. A more complete description can be found in the
+For a quick view on the theory, see the `pyfiberamp theory.pdf
+<https://github.com/Jomiri/pyfiberamp/blob/master/pyfiberamp%20theory.pdf>`_ file. A more complete description can be found in the
 references.
 
 License

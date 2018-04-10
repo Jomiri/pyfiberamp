@@ -7,16 +7,27 @@
 PyFiberAmp documentation
 #########################
 
+
+
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Getting started:
 
+   readme_link
 
 .. toctree::
    :maxdepth: 2
    :caption: Class and function reference:
 
-   /auto_source/class_reference
+
+   /auto_source/simulation
+   /auto_source/fibers
+   /auto_source/initial_guess
+   /auto_source/boundary_conditions
+   /auto_source/helper_funcs
+
+
+
 
 
 

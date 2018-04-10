@@ -2,9 +2,10 @@
 Class and function reference
 ----------------------------
 
-.. toctree::
+.. jk toctree::
    :maxdepth: 2
    :caption: Class and function reference:
+
 
    simulation
    fibers

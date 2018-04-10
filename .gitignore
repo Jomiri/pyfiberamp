@@ -12,3 +12,4 @@ pyfiberamp/obsolete/
 pyfiberamp/taper_code/
 validation/
 .pypirc
+docs/_*

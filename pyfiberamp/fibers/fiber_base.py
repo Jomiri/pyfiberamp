@@ -69,7 +69,7 @@ class FiberBase:
         """
         return self.core_radius ** 2 * np.pi
 
-    def mode_field_diameter(self, freq, preset_mfd):
+    def _mode_field_diameter_for_channel(self, freq, preset_mfd):
         """Returns the mode field diameter of the fiber. If mode field diameter was preset, returns the preset value
         instead.
 
@@ -85,7 +85,18 @@ class FiberBase:
         if preset_mfd > 0:
             return preset_mfd
         else:
-            return fundamental_mode_mfd_petermann_2(freq_to_wl(freq), self.core_radius, self.core_na)
+            return self.mode_field_diameter(freq)
+
+    def mode_field_diameter(self, freq):
+        """Returns the mode field diameter of the fiber using the Petermann II equation.
+
+        :param freq:  The frequency of the mode (Hz)
+        :type freq: float or numpy float array
+        :returns: Mode field diameter of the fiber mode
+        :rtype: float or numpy float array
+
+        """
+        return fundamental_mode_mfd_petermann_2(freq_to_wl(freq), self.core_radius, self.core_na)
 
     def _create_in_core_single_frequency_channel(self, wl, power, preset_mfd, direction):
         """Returns an optical channel which describes the properties of a single frequency beam propagating
@@ -105,7 +116,7 @@ class FiberBase:
 
         frequency = wl_to_freq(wl)
         frequency_bandwidth = 0
-        mfd = self.mode_field_diameter(frequency, preset_mfd)
+        mfd = self._mode_field_diameter_for_channel(frequency, preset_mfd)
         mode_field_radius = mfd / 2
         gain = self._get_channel_gain(frequency, mode_field_radius)
         absorption = self._get_channel_absorption(frequency, mode_field_radius)
@@ -133,7 +144,7 @@ class FiberBase:
 
         center_frequency = wl_to_freq(wl)
         frequency_bandwidth = wl_bw_to_freq_bw(wl_bandwidth, wl)
-        mfd = self.mode_field_diameter(center_frequency, preset_mfd)
+        mfd = self._mode_field_diameter_for_channel(center_frequency, preset_mfd)
         mode_field_radius = mfd / 2
         gain = self._finite_bandwidth_gain(center_frequency, frequency_bandwidth, mode_field_radius)
         absorption = self._finite_bandwidth_absorption(center_frequency, frequency_bandwidth, mode_field_radius)
