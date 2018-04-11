@@ -7,7 +7,8 @@ In short
 PyFiberAmp is a rate equation simulation library for rare earth fiber amplifiers. It uses the Giles model [1]_
 originally developed for erbium-doped fiber amplifiers. The library also contains a basic rate equation model [2]_
 for stimulated and spontaneous Raman scattering effects in both active and passive fibers. Both core-pumped and
-double-clad amplifiers can be modeled.
+double-clad amplifiers can be modeled. Documentation (still in progress) is available on
+`Read the Docs <https://pyfiberamp.readthedocs.io/en/latest/index.html>`_.
 
 Download
 =========
@@ -66,7 +67,7 @@ the signal starts to be reabsorbed by the fiber. This design is not perfect 1) b
     :height: 543px
 
 For more usage examples, please see `the Jupyter notebook
-<https://github.com/Jomiri/pyfiberamp/blob/master/Examples.ipynb>`_ .
+<https://github.com/Jomiri/pyfiberamp/blob/master/Examples.ipynb>`_.
 
 Fiber data
 ==========
