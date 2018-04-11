@@ -65,7 +65,8 @@ the signal starts to be reabsorbed by the fiber. This design is not perfect 1) b
     :width: 769px
     :height: 543px
 
-For more usage examples, please see the Examples Jupyter notebook.
+For more usage examples, please see `the Jupyter notebook
+<https://github.com/Jomiri/pyfiberamp/blob/master/Examples.ipynb>`_ .
 
 Fiber data
 ==========

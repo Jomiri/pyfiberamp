@@ -24,6 +24,7 @@ PyFiberAmp documentation
    /auto_source/fibers
    /auto_source/initial_guess
    /auto_source/boundary_conditions
+   /auto_source/simulation_result
    /auto_source/helper_funcs
 
 
