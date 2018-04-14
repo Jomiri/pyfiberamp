@@ -1,6 +1,8 @@
 from pyfiberamp.helper_funcs import *
 from enum import Enum
 
+from pyfiberamp.sliced_array import SlicedArray
+
 
 class GainShapes(Enum):
     """This Enum defines the possible functional forms used the construct the initial guess."""
@@ -101,11 +103,9 @@ class InitialGuessBase:
     def __init__(self):
         self.npoints = START_NODES
         self.input_powers = None
-        self.slices = None
 
-    def initialize(self, input_powers, slices):
+    def initialize(self, input_powers):
         self.input_powers = input_powers
-        self.slices = slices
 
 
 class InitialGuessFromArray(InitialGuessBase):
@@ -133,31 +133,15 @@ class InitialGuessFromParameters(InitialGuessBase):
         return len(self.input_powers), self.npoints
 
     def as_array(self):
-        guess = np.zeros(self.guess_shape())
-        forward_signal_powers = self.input_powers[self.slices['forward_signal_slice']]
-        backward_signal_powers = self.input_powers[self.slices['backward_signal_slice']]
-        forward_pump_powers = self.input_powers[self.slices['forward_pump_slice']]
-        backward_pump_powers = self.input_powers[self.slices['backward_pump_slice']]
-        forward_ase_powers = self.input_powers[self.slices['forward_ase_slice']]
-        backward_ase_powers = self.input_powers[self.slices['backward_ase_slice']]
-        forward_raman_powers = self.input_powers[self.slices['forward_raman_slice']]
-        backward_raman_powers = self.input_powers[self.slices['backward_raman_slice']]
-        guess[self.slices['forward_signal_slice']] = self.make_forward_guess(forward_signal_powers,
-                                                                                self.params.signal)
-        guess[self.slices['backward_signal_slice']] = self.make_backward_guess(backward_signal_powers,
-                                                                               self.params.signal)
-        guess[self.slices['forward_pump_slice']] = self.make_forward_guess(forward_pump_powers,
-                                                                           self.params.pump)
-        guess[self.slices['backward_pump_slice']] = self.make_backward_guess(backward_pump_powers,
-                                                                             self.params.pump)
-        guess[self.slices['forward_ase_slice']] = self.make_forward_guess(forward_ase_powers,
-                                                                          self.params.ase)
-        guess[self.slices['backward_ase_slice']] = self.make_backward_guess(backward_ase_powers,
-                                                                            self.params.ase)
-        guess[self.slices['forward_raman_slice']] = self.make_forward_guess(forward_raman_powers,
-                                                                            self.params.raman)
-        guess[self.slices['backward_raman_slice']] = self.make_backward_guess(backward_raman_powers,
-                                                                              self.params.raman)
+        guess = SlicedArray(np.zeros(self.guess_shape()), self.input_powers.slices)
+        guess.forward_signal = self.make_forward_guess(self.input_powers.forward_signal, self.params.signal)
+        guess.backward_signal = self.make_backward_guess(self.input_powers.backward_signal, self.params.signal)
+        guess.forward_pump = self.make_forward_guess(self.input_powers.forward_pump, self.params.pump)
+        guess.backward_pump = self.make_backward_guess(self.input_powers.backward_pump, self.params.pump)
+        guess.forward_ase = self.make_forward_guess(self.input_powers.forward_ase, self.params.ase)
+        guess.backward_ase = self.make_backward_guess(self.input_powers.backward_ase, self.params.ase)
+        guess.forward_raman = self.make_forward_guess(self.input_powers.forward_raman, self.params.raman)
+        guess.backward_raman = self.make_backward_guess(self.input_powers.backward_raman, self.params.raman)
         return guess
 
     def make_backward_guess(self, input_power, params):

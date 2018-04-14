@@ -9,13 +9,13 @@ class GilesModel:
     def __init__(self, channels, fiber):
         """The model is initialized with the optical channels and the simulated fiber. The parameters are named in the
         same way as in the paper by Giles and Desurvire."""
-        self.v = channels.get_frequencies()[:, np.newaxis]
-        self.dv = channels.get_frequency_bandwidths()[:, np.newaxis]
-        self.u = channels.get_propagation_directions()[:, np.newaxis]
-        self.m = channels.get_number_of_modes()[:, np.newaxis]
-        self.a = channels.get_absorption()[:, np.newaxis]
-        self.g = channels.get_gain()[:, np.newaxis]
-        self.loss = channels.get_background_loss()[:, np.newaxis]
+        self.v = np.array(channels.get_frequencies())[:, np.newaxis]
+        self.dv = np.array(channels.get_frequency_bandwidths())[:, np.newaxis]
+        self.u = np.array(channels.get_propagation_directions())[:, np.newaxis]
+        self.m = np.array(channels.get_number_of_modes())[:, np.newaxis]
+        self.a = np.array(channels.get_absorption())[:, np.newaxis]
+        self.g = np.array(channels.get_gain())[:, np.newaxis]
+        self.loss = np.array(channels.get_background_loss())[:, np.newaxis]
         self.fiber = fiber
 
     def make_rate_equation_rhs(self):

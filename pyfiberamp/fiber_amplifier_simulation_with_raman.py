@@ -37,7 +37,7 @@ class FiberAmplifierSimulationWithRaman(FiberAmplifierSimulation):
         """
         self.channels.add_pulsed_forward_signal(wl, power, f_rep, fwhm_duration, mode_field_diameter)
 
-    def add_raman(self, backward_raman_allowed=True, input_power=SIMULATION_MIN_POWER):
+    def add_raman(self, input_power=SIMULATION_MIN_POWER, backward_raman_allowed=True):
         """Adds Raman channels to the simulation.
 
          :param backward_raman_allowed: Determines if only the forward propagating Raman beam is simulated.
@@ -51,5 +51,5 @@ class FiberAmplifierSimulationWithRaman(FiberAmplifierSimulation):
 
     def _add_wls_and_slices_to_result(self, res):
         res = super()._add_wls_and_slices_to_result(res)
-        res.backward_raman_allowed = self.channels.backward_raman_allowed
+        res._backward_raman_allowed = self.channels.backward_raman_allowed
         return res

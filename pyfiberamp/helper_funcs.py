@@ -70,6 +70,11 @@ def to_db(x):
     return 10 * np.log10(x)
 
 
+def to_dbm(power):
+    """Transforms a power in Watts to dBm."""
+    return to_db(power / 1000)
+
+
 def overlap_from_freq(freq, r, na, doped_radius):
     """Calculates the overlap factor of a fundamental fiber mode with frequency freq and the doped core.
 

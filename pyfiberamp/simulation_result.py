@@ -5,94 +5,32 @@ from .helper_funcs import *
 
 class SimulationResult:
     def __init__(self, sol):
-        self.sol = sol
-        self.z = self.sol.x
-        self.P = self.sol.y
-        self.db_scale = False
-        self.slices = {}
+        self._sol = sol
+        self.z = self._sol.x
+        self.powers = None
+        self.use_db_scale = False
         self.wavelengths = None
-        self.backward_raman_allowed = True
         self.upper_level_fraction = None
-        self.is_passive_fiber = False
-
-    @property
-    def forward_signal_wls(self):
-        return self.wavelengths[self.slices['forward_signal_slice']]
-
-    @property
-    def backward_signal_wls(self):
-        return self.wavelengths[self.slices['backward_signal_slice']]
-
-    @property
-    def forward_pump_wls(self):
-        return self.wavelengths[self.slices['forward_pump_slice']]
-
-    @property
-    def backward_pump_wls(self):
-        return self.wavelengths[self.slices['backward_pump_slice']]
-
-    @property
-    def ase_wls(self):
-        return self.wavelengths[self.slices['forward_ase_slice']]
-
-    @property
-    def raman_wls(self):
-        return self.wavelengths[self.slices['forward_raman_slice']]
-
-    @property
-    def forward_signals(self):
-        return self.P[self.slices['forward_signal_slice']]
-
-    @property
-    def backward_signals(self):
-        return self.P[self.slices['backward_signal_slice']]
-
-    @property
-    def forward_pumps(self):
-        return self.P[self.slices['forward_pump_slice']]
-
-    @property
-    def backward_pumps(self):
-        return self.P[self.slices['backward_pump_slice']]
-
-    @property
-    def forward_ramans(self):
-        return self.P[self.slices['forward_raman_slice']]
-
-    @property
-    def backward_ramans(self):
-        return self.P[self.slices['backward_raman_slice']]
-
-    @property
-    def forward_ase(self):
-        return self.P[self.slices['forward_ase_slice']]
-
-    @property
-    def backward_ase(self):
-        return self.P[self.slices['backward_ase_slice']]
+        self._backward_raman_allowed = True
+        self._is_passive_fiber = False
 
     def success(self):
-        return self.sol.success
+        return self._sol.success
 
     @property
     def average_excitation(self):
         return np.mean(self.upper_level_fraction)
 
+    def start_and_end_idx_from_channel_type(self, channel_type):
+        return (0, -1) if 'forward' in channel_type else (-1, 0)
+
     def make_result_dict(self):
-        keys = ['forward_signal', 'backward_signal',
-                'forward_pump', 'backward_pump',
-                'forward_ase', 'backward_ase',
-                'forward_raman', 'backward_raman']
-        slice_names = [key + '_slice' for key in keys]
         result_dict = {}
-        for key, slice_name in zip(keys, slice_names):
-            slice = self.slices[slice_name]
-            power = self.P[slice]
+        for key in CHANNEL_TYPES:
+            power = getattr(self.powers, key)
             if len(power) == 0:
                 continue
-            start_idx, end_idx = 0, -1
-            if 'backward' in 'key':
-                start_idx, end_idx = end_idx, start_idx
+            start_idx, end_idx = self.start_and_end_idx_from_channel_type(key)
             output_powers = power[:, end_idx]
             input_powers = power[:, start_idx]
             gain = to_db(output_powers / input_powers)
@@ -101,30 +39,15 @@ class SimulationResult:
                                 'gain': gain}
         return result_dict
 
-    def forward_signal_gains(self):
-        signal = self.forward_signals
-        gain = signal[:, -1] / signal[:, 0]
-        return to_db(gain)
-
-    def forward_pump_absorptions(self):
-        co_pump = self.forward_pumps
-        absorption = co_pump[:, -1] / co_pump[:, 0]
-        return -to_db(absorption)
-
     def plot_amplifier_result(self):
         self.plot_power_evolution()
         self.plot_ase_spectrum()
-        # self.plot_total_power()
         plt.show()
 
     def plot_power_evolution(self):
         fig, ax = plt.subplots()
-        self.plot_forward_signal_evolution(ax)
-        self.plot_forward_pump_evolution(ax)
-        self.plot_backward_pump_evolution(ax)
-        self.plot_forward_raman_evolution(ax)
-        self.plot_backward_raman_evolution(ax)
-        self.plot_ase_evolution(ax)
+        for ch in CHANNEL_TYPES:
+            self.plot_single_channel_type_power_evolution(ax, ch)
         self.finalize_power_plot(ax)
 
         ax_right = ax.twinx()
@@ -132,77 +55,61 @@ class SimulationResult:
         self.make_power_evolution_legend(ax, ax_right)
         plt.show()
 
-    def plot_ase_spectrum(self):
-        if len(self.ase_wls) == 0:
+    def plot_single_channel_type_power_evolution(self, ax, channel_type):
+        if 'forward_ase' in channel_type:
+            self.plot_ase_evolution(ax)
+        elif 'backward_ase' in channel_type:
             return
-        fig, ax = plt.subplots()
-        forward_ase_spectrum = self.forward_ase[:, -1]
-        backward_ase_spectrum = self.backward_ase[:, 0]
-        ase_wls_nm = self.ase_wls * 1e9
-        ase_wl_step = ase_wls_nm[1] - ase_wls_nm[0]
-        ax.plot(ase_wls_nm, to_db(forward_ase_spectrum * 1000 / ase_wl_step), label='Forward ASE')
-        ax.plot(ase_wls_nm, to_db(backward_ase_spectrum * 1000 / ase_wl_step), label='Backward ASE')
-        ax.set_xlabel('Wavelength (nm)', fontsize=18)
-        ax.set_ylabel('Power spectral density (dBm/nm)', fontsize=18)
-        ax.set_xlim([ase_wls_nm[0], ase_wls_nm[-1]])
-        ax.tick_params(which='major', direction='in', left=True, right=True, top=True, bottom=True,
-                       width=3, length=10, labelsize=16)
-        ax.legend()
-        plt.show()
-
-    def plot_forward_signal_evolution(self, ax):
-        for i in range(len(self.forward_signal_wls)):
-            signal = self.forward_signals[i, :]
-            gain = signal[-1] / signal[0]
-            gain_db = to_db(gain)
-            ax.plot(self.z, self.plotting_transformation(signal),
-                    label='Signal {:.2f} nm, gain={:.1f} dB'.format(self.forward_signal_wls[i] * 1e9, gain_db))
-
-    def plot_forward_raman_evolution(self, ax):
-        for i in range(len(self.raman_wls)):
-            forward_raman = self.forward_ramans[i, :]
-            power = forward_raman[-1]
-            ax.plot(self.z, self.plotting_transformation(forward_raman),
-                    label='Forward Raman {:.2f} nm, power={:.3f} W'.format(self.raman_wls[i] * 1e9, power))
-
-    def plot_backward_raman_evolution(self, ax):
-        if self.backward_raman_allowed:
-            backward_ramans = self.backward_ramans
-            for i in range(len(self.raman_wls)):
-                backward_raman = backward_ramans[i, :]
-                power = backward_raman[0]
-                ax.plot(self.z, self.plotting_transformation(backward_raman),
-                        label='Backward Raman {:.2f} nm, power={:.3f} W'.format(self.raman_wls[i] * 1e9, power))
-
-    def plot_forward_pump_evolution(self, ax):
-        for i in range(len(self.forward_pump_wls)):
-            co_pump = self.forward_pumps[i, :]
-            absorption = co_pump[-1] / co_pump[0]
-            absorption_db = -to_db(absorption)
-            ax.plot(self.z, self.plotting_transformation(co_pump),
-                    label='Forward pump {:.2f} nm, absorption={:.1f} dB'.format(self.forward_pump_wls[i] * 1e9,
-                                                                           absorption_db))
-
-    def plot_backward_pump_evolution(self, ax):
-        for i in range(len(self.backward_pump_wls)):
-            counter_pump = self.backward_pumps[i, :]
-            absorption = counter_pump[0] / counter_pump[-1]
-            absorption_db = -to_db(absorption)
-            ax.plot(self.z, self.plotting_transformation(counter_pump),
-                    label='Backward pump {:.2f} nm, absorption={:.1f} dB'.format(self.backward_pump_wls[i] * 1e9,
-                                                                                absorption_db))
+        else:
+            self.plot_normal_channel_power_evolution(ax, channel_type)
 
     def plot_ase_evolution(self, ax):
-        if len(self.ase_wls) != 0:
-            forward_ase = np.sum(self.forward_ase, axis=0)
+        if len(self.wavelengths.forward_ase) != 0:
+            forward_ase = np.sum(self.powers.forward_ase, axis=0)
             forward_ase_power = forward_ase[-1]
             ax.plot(self.z, self.plotting_transformation(forward_ase),
                     label='Forward ASE, power={:.2f} mW'.format(forward_ase_power * 1000))
 
-            backward_ase = np.sum(self.backward_ase, axis=0)
+            backward_ase = np.sum(self.powers.backward_ase, axis=0)
             backward_ase_power = backward_ase[0]
             ax.plot(self.z, self.plotting_transformation(backward_ase),
                     label='Backward ASE, power={:.2f} mW'.format(backward_ase_power * 1000))
+
+    def plot_normal_channel_power_evolution(self, ax, channel_type):
+        wls = getattr(self.wavelengths, channel_type)
+        channel_powers = getattr(self.powers, channel_type)
+        start_idx, end_idx = self.start_and_end_idx_from_channel_type(channel_type)
+        for i in range(len(wls)):
+            single_channel_power = channel_powers[i, :]
+            input_power = single_channel_power[start_idx]
+            output_power = single_channel_power[end_idx]
+            gain_or_absorption = to_db(output_power / input_power)
+            ax.plot(self.z, self.plotting_transformation(single_channel_power),
+                    label=self.make_legend_entry(channel_type, wls[i], gain_or_absorption, output_power))
+
+    def make_legend_entry(self, channel_type, wl, gain_or_absorption, output_power):
+        label_start = '{ch_type}, {wl:.1f} nm, '.format(ch_type=self.channel_type_to_title(channel_type), wl=wl * 1e9)
+        power_label = self.make_power_label(output_power)
+        db_label = self.make_db_label(gain_or_absorption, channel_type)
+        return label_start + power_label + db_label
+
+    def make_power_label(self, output_power):
+        if self.use_db_scale:
+            power, unit = (to_dbm(output_power), 'dBm')
+        else:
+            use_watts = output_power > 1
+            power, unit = (output_power, 'W') if use_watts else (output_power*1000, 'mW')
+        return 'output={power:.1f} {unit}, '.format(power=power, unit=unit)
+
+    def make_db_label(self, gain_or_absorption, channel_type):
+        include_db = 'pump' in channel_type or 'signal' in channel_type
+        if not include_db:
+            return ''
+        gain_label = 'gain' if gain_or_absorption > 0 else 'absorption'
+        return '{g_or_a}={db_value:.1f} dB'.format(g_or_a=gain_label, db_value=abs(gain_or_absorption))
+
+    def channel_type_to_title(self, channel_type):
+        return channel_type.replace('_', ' ').title()
 
     @staticmethod
     def make_power_evolution_legend(ax, ax_right):
@@ -219,12 +126,12 @@ class SimulationResult:
         ax.set_xlabel('Z (m)', fontsize=18)
         ax.set_ylabel('Power ({unit})'.format(unit=self.power_evolution_unit()), fontsize=18)
         ax.set_xlim([self.z[0], self.z[-1]])
-        if not self.db_scale:
+        if not self.use_db_scale:
             ax.set_ylim([0, ax.get_ylim()[1]])
         ax.grid(True)
 
     def plot_excited_ion_fraction(self, ax):
-        if self.is_passive_fiber:
+        if self._is_passive_fiber:
             ax.set_axis_off()
             return
         ax.plot(self.z, self.upper_level_fraction * 100, '--', label='Excited ion fraction')
@@ -235,21 +142,40 @@ class SimulationResult:
         ax.set_xlim([self.z[0], self.z[-1]])
         ax.set_ylim([0, 100])
 
+    def plot_ase_spectrum(self):
+        if len(self.wavelengths.forward_ase) == 0:
+            return
+        fig, ax = plt.subplots()
+        forward_ase_spectrum = self.powers.forward_ase[:, -1]
+        backward_ase_spectrum = self.powers.backward_ase[:, 0]
+        ase_wls_nm = self.wavelengths.forward_ase * 1e9
+        ase_wl_step = ase_wls_nm[1] - ase_wls_nm[0]
+        ax.plot(ase_wls_nm, to_dbm(forward_ase_spectrum / ase_wl_step), label='Forward ASE')
+        ax.plot(ase_wls_nm, to_dbm(backward_ase_spectrum / ase_wl_step), label='Backward ASE')
+        ax.set_xlabel('Wavelength (nm)', fontsize=18)
+        ax.set_ylabel('Power spectral density (dBm/nm)', fontsize=18)
+        ax.set_xlim([ase_wls_nm[0], ase_wls_nm[-1]])
+        ax.tick_params(which='major', direction='in', left=True, right=True, top=True, bottom=True,
+                       width=3, length=10, labelsize=16)
+        ax.legend()
+        plt.show()
+
     def plot_signal_intensity(self, effective_area):
-        intensity = self.forward_signals[0, :] / effective_area
+        intensity = self.powers.forward_signal[0, :] / effective_area
         plt.plot(self.z, intensity)
         plt.show()
 
     def plot_total_power(self):
         fig, ax = plt.subplots()
-        total_power = np.sum(self.P, axis=0)
+        total_power = np.sum(self.powers, axis=0)
         ax.plot(self.z, total_power, label='Total power in fiber')
         ax.set_xlabel('Z (m)', fontsize=18)
         ax.set_ylabel('Total power in fiber (W)', fontsize=18)
         ax.set_ylim([0, ax.get_ylim()[1]])
 
     def power_evolution_unit(self):
-        return 'dBm' if self.db_scale else 'W'
+        return 'dBm' if self.use_db_scale else 'W'
 
     def plotting_transformation(self, power):
-        return to_db(power * 1000) if self.db_scale else power
+        return to_db(power * 1000) if self.use_db_scale else power
+

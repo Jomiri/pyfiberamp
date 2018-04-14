@@ -3,6 +3,7 @@ from itertools import chain
 from functools import partial
 
 from .helper_funcs import *
+from .sliced_array import SlicedArray
 
 
 class Channels:
@@ -79,32 +80,35 @@ class Channels:
         return freq_to_wl(self.get_frequencies())
 
     def get_frequencies(self):
-        return np.array([ch.v for ch in self._all_channels()])
+        return self._to_sliced_array([ch.v for ch in self._all_channels()])
 
     def get_frequency_bandwidths(self):
-        return np.array([ch.dv for ch in self._all_channels()])
+        return self._to_sliced_array([ch.dv for ch in self._all_channels()])
 
     def get_propagation_directions(self):
-        return np.array([ch.direction for ch in self._all_channels()])
+        return self._to_sliced_array([ch.direction for ch in self._all_channels()])
 
     def get_number_of_modes(self):
-        return np.array([ch.number_of_modes for ch in self._all_channels()])
+        return self._to_sliced_array([ch.number_of_modes for ch in self._all_channels()])
 
     def get_absorption(self):
-        return np.array([ch.absorption for ch in self._all_channels()])
+        return self._to_sliced_array([ch.absorption for ch in self._all_channels()])
 
     def get_gain(self):
-        return np.array([ch.gain for ch in self._all_channels()])
+        return self._to_sliced_array([ch.gain for ch in self._all_channels()])
 
     def get_background_loss(self):
-        return np.array([ch.loss for ch in self._all_channels()])
+        return self._to_sliced_array([ch.loss for ch in self._all_channels()])
 
     def get_input_powers(self):
-        return np.array([ch.input_power for ch in self._all_channels()])
+        return self._to_sliced_array([ch.input_power for ch in self._all_channels()])
 
     def _all_channels(self):
         return chain(self.forward_signals, self.backward_signals, self.forward_pumps, self.backward_pumps,
                      self.forward_ase, self.backward_ase, self.forward_ramans, self.backward_ramans)
+
+    def _to_sliced_array(self, iterable):
+        return SlicedArray(np.array(iterable), self.get_slices())
 
     def get_slices(self):
         n_forward_signal = len(self.forward_signals)
@@ -123,14 +127,14 @@ class Channels:
         backward_raman_start = forward_raman_start + n_raman
         backward_raman_end = backward_raman_start + n_raman
 
-        slices = {'forward_signal_slice': slice(0, backward_signal_start),
-                  'backward_signal_slice': slice(backward_signal_start, forward_pump_start),
-                  'forward_pump_slice': slice(forward_pump_start, backward_pump_start),
-                  'backward_pump_slice': slice(backward_pump_start, forward_ase_start),
-                  'forward_ase_slice': slice(forward_ase_start, backward_ase_start),
-                  'backward_ase_slice': slice(backward_ase_start, forward_raman_start),
-                  'forward_raman_slice': slice(forward_raman_start, backward_raman_start),
-                  'backward_raman_slice': slice(backward_raman_start, backward_raman_end)}
+        slices = {'forward_signal': slice(0, backward_signal_start),
+                  'backward_signal': slice(backward_signal_start, forward_pump_start),
+                  'forward_pump': slice(forward_pump_start, backward_pump_start),
+                  'backward_pump': slice(backward_pump_start, forward_ase_start),
+                  'forward_ase': slice(forward_ase_start, backward_ase_start),
+                  'backward_ase': slice(backward_ase_start, forward_raman_start),
+                  'forward_raman': slice(forward_raman_start, backward_raman_start),
+                  'backward_raman': slice(backward_raman_start, backward_raman_end)}
         return slices
 
     @property

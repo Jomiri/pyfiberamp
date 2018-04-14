@@ -6,7 +6,7 @@ from pyfiberamp.helper_funcs import *
 from pyfiberamp.initial_guess import InitialGuessFromParameters, InitialGuessFromArray
 from pyfiberamp.channels import Channels
 from pyfiberamp.simulation_result import SimulationResult
-
+from pyfiberamp.sliced_array import SlicedArray
 
 class FiberAmplifierSimulation:
     """FiberAmplifierSimulation is the main class used for running Giles model simulations without Raman scattering.
@@ -23,7 +23,6 @@ class FiberAmplifierSimulation:
         self.boundary_conditions = BasicBoundaryConditions
         self.initial_guess = InitialGuessFromParameters()
         self.channels = Channels(fiber)
-        self.slices = {}
         self.solver_verbosity = 2
 
     def add_cw_signal(self, wl, power, mode_field_diameter=0.0):
@@ -90,13 +89,11 @@ class FiberAmplifierSimulation:
         :type tol: float
 
         """
-        self._init_slices()
-
         boundary_condition_residual = self.boundary_conditions(self.channels)
         model = self.model(self.channels, self.fiber)
         rate_equation_rhs, upper_level_func = model.make_rate_equation_rhs()
 
-        self.initial_guess.initialize(self.channels.get_input_powers(), self.slices)
+        self.initial_guess.initialize(self.channels.get_input_powers())
         guess = self.initial_guess.as_array()
         sol = solve_bvp(rate_equation_rhs, boundary_condition_residual,
                         self._start_z(), guess, max_nodes=SOLVER_MAX_NODES, tol=tol, verbose=self.solver_verbosity)
@@ -155,13 +152,10 @@ class FiberAmplifierSimulation:
         res = self._add_wls_and_slices_to_result(res)
         return res
 
-    def _init_slices(self):
-        self.slices = self.channels.get_slices()
-
     def _add_wls_and_slices_to_result(self, res):
-        res.slices = self.slices
+        res.powers = SlicedArray(res._sol.y, self.channels.get_slices())
         res.wavelengths = self.channels.get_wavelengths()
-        res.is_passive_fiber = self.fiber.is_passive_fiber()
+        res._is_passive_fiber = self.fiber.is_passive_fiber()
         return res
 
 

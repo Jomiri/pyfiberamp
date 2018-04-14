@@ -12,9 +12,9 @@ class GilesModelWithRaman(GilesModel):
         same way as in the paper by Giles and Desurvire. A pulsed signal is taken into account in the peak power
         function."""
         super().__init__(channels, fiber)
-        self.slices = channels.get_slices()
         self.peak_power_func = channels.forward_signals[0].peak_power_func
         self.backward_raman_allowed = channels.backward_raman_allowed
+        self.slices = channels.get_slices()
 
     def make_rate_equation_rhs(self):
         # Precalculated constants related to the classical Giles model
@@ -28,12 +28,14 @@ class GilesModelWithRaman(GilesModel):
         u = self.u
 
         # Precalculated constants related to Raman scattering
-        signal_slice = self.slices['forward_signal_slice']
-        forward_raman_slice = self.slices['forward_raman_slice']
-        backward_raman_slice = self.slices['backward_raman_slice']
+        slices = self.slices
+        signal_slice = slices['forward_signal']
+        forward_raman_slice = slices['forward_raman']
+        backward_raman_slice = slices['backward_raman']
         signal_vs = self.v[signal_slice]
         raman_vs = self.v[forward_raman_slice]
-        h_v_dv_raman = h_v_dv[forward_raman_slice]
+        h_v_dv_forward_raman = h_v_dv[forward_raman_slice]
+        h_v_dv_backward_raman = h_v_dv[backward_raman_slice]
         g_r_forward = RAMAN_GAIN
         g_r_backward = RAMAN_GAIN if self.backward_raman_allowed else 0
         photon_energy_ratio = signal_vs / raman_vs
@@ -54,8 +56,8 @@ class GilesModelWithRaman(GilesModel):
             n2_per_nt = upper_level_excitation(P)
             I_signal = signal_intensity(P[signal_slice, :])
 
-            forward_raman_growth = g_r_forward * I_signal * (h_v_dv_raman + P[forward_raman_slice, :])
-            backward_raman_growth = g_r_backward * I_signal * (h_v_dv_raman + P[backward_raman_slice, :])
+            forward_raman_growth = g_r_forward * I_signal * (h_v_dv_forward_raman + P[forward_raman_slice, :])
+            backward_raman_growth = g_r_backward * I_signal * (h_v_dv_backward_raman + P[backward_raman_slice, :])
             signal_depletion = photon_energy_ratio * (forward_raman_growth + backward_raman_growth)
 
             dPdz = u * ((a_g * n2_per_nt - a_l) * P + n2_per_nt * spontaneous_emission_seeding)

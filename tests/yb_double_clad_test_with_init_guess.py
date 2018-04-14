@@ -33,7 +33,7 @@ class YbDoubleCladWithGuessTestCase(unittest.TestCase):
             if init_guess_array is not None:
                 simulation.set_guess_array(init_guess_array)
             result = simulation.run(tol=tolerance)
-            init_guess_array = result.P
+            init_guess_array = result.powers
             result_dict = result.make_result_dict()
             signal_gain = result_dict['forward_signal']['gain'][0]
             cls.gains.append(signal_gain)
