@@ -162,8 +162,5 @@ class InitialGuessFromParameters(InitialGuessBase):
         return linspace_2d(start, end, self.npoints)
 
     def _exponential_guess(self, start, end):
-        start = start[:, np.newaxis]
-        end = end[:, np.newaxis]
-        gain = np.log(end / start)
-        return start * np.exp(gain * np.linspace(0, 1, self.npoints))
+        return expspace_2d(start, end, self.npoints)
 

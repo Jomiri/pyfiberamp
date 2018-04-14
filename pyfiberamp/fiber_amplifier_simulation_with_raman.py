@@ -1,6 +1,7 @@
 from .fiber_amplifier_simulation import FiberAmplifierSimulation
 from .helper_funcs import *
 from .models import GilesModelWithRaman
+from .simulation_result import SimulationResult
 
 
 class FiberAmplifierSimulationWithRaman(FiberAmplifierSimulation):
@@ -49,7 +50,12 @@ class FiberAmplifierSimulationWithRaman(FiberAmplifierSimulation):
         self.channels.add_raman(input_power, backward_raman_allowed)
         self.raman_is_included = True
 
-    def _add_wls_and_slices_to_result(self, res):
-        res = super()._add_wls_and_slices_to_result(res)
-        res._backward_raman_allowed = self.channels.backward_raman_allowed
+    def _finalize(self, sol, upper_level_func):
+        """Creates the SimulationResult object from the solution object."""
+        res = SimulationResult(solution=sol,
+                               upper_level_func=upper_level_func,
+                               slices=self.channels.get_slices(),
+                               wavelengths=self.channels.get_wavelengths(),
+                               is_passive_fiber=self.fiber.is_passive_fiber(),
+                               backward_raman_allowed=self.channels.backward_raman_allowed)
         return res

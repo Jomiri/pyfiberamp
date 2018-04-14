@@ -266,6 +266,24 @@ def linspace_2d(start_vec, end_vec, length):
     return start_vec[:, np.newaxis] + np.arange(length) * diff[:, np.newaxis] / (length - 1)
 
 
+def expspace_2d(start_vec, end_vec, length):
+    """Creates a numpy array with given start and end vectors as first and last columns and a total number of columns
+    specified by "length". The middle columns are calculated by assuming exponential increase (or decrease).
+
+    :param start_vec: First column of the generated array
+    :type start_vec: 1D numpy array
+    :param end_vec: Last column of the generated array
+    :type end_vec: 1D numpy array
+    :param length: Total number of columns in the generated array
+    :returns: Array interpolated between the start and end vectors
+    :rtype: 2D numpy array
+    """
+    start = start_vec[:, np.newaxis]
+    end = end_vec[:, np.newaxis]
+    gain = np.log(end / start)
+    return start * np.exp(gain * np.linspace(0, 1, length))
+
+
 def check_signal_reprate(f_rep):
     """Emits a warning if the repetition rate of the signal is too low to be accurately modelled due to pulse-to-pulse
     gain variations.

@@ -1,28 +1,25 @@
 import matplotlib.pyplot as plt
 
 from .helper_funcs import *
+from pyfiberamp.sliced_array import SlicedArray
 
 
 class SimulationResult:
-    def __init__(self, sol):
-        self._sol = sol
-        self.z = self._sol.x
-        self.powers = None
-        self.use_db_scale = False
-        self.wavelengths = None
-        self.upper_level_fraction = None
-        self._backward_raman_allowed = True
-        self._is_passive_fiber = False
+    def __init__(self, solution, upper_level_func, slices, wavelengths,
+                 is_passive_fiber, backward_raman_allowed=True):
+        self.sol = solution
+        self.z = self.sol.x
+        self.powers = SlicedArray(self.sol.y, slices)
+        self.wavelengths = wavelengths
+        self.upper_level_fraction = upper_level_func(self.sol.y)
+        self._backward_raman_allowed = backward_raman_allowed
+        self._is_passive_fiber = is_passive_fiber
 
-    def success(self):
-        return self._sol.success
+        self.use_db_scale = False
 
     @property
     def average_excitation(self):
         return np.mean(self.upper_level_fraction)
-
-    def start_and_end_idx_from_channel_type(self, channel_type):
-        return (0, -1) if 'forward' in channel_type else (-1, 0)
 
     def make_result_dict(self):
         result_dict = {}
@@ -38,6 +35,9 @@ class SimulationResult:
                                 'output_powers': output_powers,
                                 'gain': gain}
         return result_dict
+
+    def start_and_end_idx_from_channel_type(self, channel_type):
+        return (0, -1) if 'forward' in channel_type else (-1, 0)
 
     def plot_amplifier_result(self):
         self.plot_power_evolution()
@@ -58,7 +58,7 @@ class SimulationResult:
     def plot_single_channel_type_power_evolution(self, ax, channel_type):
         if 'forward_ase' in channel_type:
             self.plot_ase_evolution(ax)
-        elif 'backward_ase' in channel_type:
+        elif 'backward_ase' in channel_type: # We don't want to plot ase twice
             return
         else:
             self.plot_normal_channel_power_evolution(ax, channel_type)
@@ -78,14 +78,16 @@ class SimulationResult:
     def plot_normal_channel_power_evolution(self, ax, channel_type):
         wls = getattr(self.wavelengths, channel_type)
         channel_powers = getattr(self.powers, channel_type)
-        start_idx, end_idx = self.start_and_end_idx_from_channel_type(channel_type)
         for i in range(len(wls)):
-            single_channel_power = channel_powers[i, :]
-            input_power = single_channel_power[start_idx]
-            output_power = single_channel_power[end_idx]
-            gain_or_absorption = to_db(output_power / input_power)
-            ax.plot(self.z, self.plotting_transformation(single_channel_power),
-                    label=self.make_legend_entry(channel_type, wls[i], gain_or_absorption, output_power))
+            self.plot_single_channel(ax, wls[i], channel_powers[i, :], channel_type)
+
+    def plot_single_channel(self, ax, wl, single_channel_power, channel_type):
+        start_idx, end_idx = self.start_and_end_idx_from_channel_type(channel_type)
+        input_power = single_channel_power[start_idx]
+        output_power = single_channel_power[end_idx]
+        gain_or_absorption = to_db(output_power / input_power)
+        ax.plot(self.z, self.plotting_transformation(single_channel_power),
+                label=self.make_legend_entry(channel_type, wl, gain_or_absorption, output_power))
 
     def make_legend_entry(self, channel_type, wl, gain_or_absorption, output_power):
         label_start = '{ch_type}, {wl:.1f} nm, '.format(ch_type=self.channel_type_to_title(channel_type), wl=wl * 1e9)

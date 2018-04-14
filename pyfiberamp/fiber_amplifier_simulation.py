@@ -147,15 +147,11 @@ class FiberAmplifierSimulation:
 
     def _finalize(self, sol, upper_level_func):
         """Creates the SimulationResult object from the solution object."""
-        res = SimulationResult(sol)
-        res.upper_level_fraction = upper_level_func(sol.y)
-        res = self._add_wls_and_slices_to_result(res)
-        return res
-
-    def _add_wls_and_slices_to_result(self, res):
-        res.powers = SlicedArray(res._sol.y, self.channels.get_slices())
-        res.wavelengths = self.channels.get_wavelengths()
-        res._is_passive_fiber = self.fiber.is_passive_fiber()
+        res = SimulationResult(solution=sol,
+                               upper_level_func=upper_level_func,
+                               slices=self.channels.get_slices(),
+                               wavelengths=self.channels.get_wavelengths(),
+                               is_passive_fiber=self.fiber.is_passive_fiber())
         return res
 
 
