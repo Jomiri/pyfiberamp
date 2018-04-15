@@ -89,6 +89,7 @@ class FiberAmplifierSimulation:
         :type tol: float
 
         """
+        self.channels.refresh()
         boundary_condition_residual = self.boundary_conditions(self.channels)
         model = self.model(self.channels, self.fiber)
         rate_equation_rhs, upper_level_func = model.make_rate_equation_rhs()

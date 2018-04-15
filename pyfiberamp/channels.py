@@ -6,10 +6,25 @@ from .helper_funcs import *
 from .sliced_array import SlicedArray
 
 
-class Channels:
+class DelayedExecutor:
+    def __init__(self):
+        self.funcs_and_args = []
 
+    def add_func(self, func, args):
+        self.funcs_and_args.append((func, args))
+
+    def execute(self):
+        for func, args in self.funcs_and_args:
+            func(*args)
+
+    def reset(self):
+        self.funcs_and_args = []
+
+
+class Channels:
     def __init__(self, fiber):
         self.fiber = fiber
+        self.delayed_executor = DelayedExecutor()
 
         self.forward_signals = []
         self.backward_signals = []
@@ -23,31 +38,60 @@ class Channels:
         self.forward_ramans = []
         self.backward_ramans = []
 
+    def refresh(self):
+        self.forward_signals = []
+        self.backward_signals = []
+        self.forward_pumps = []
+        self.backward_pumps = []
+        self.forward_ase = []
+        self.backward_ase = []
+        self.forward_ramans = []
+        self.backward_ramans = []
+        self.delayed_executor.execute()
+
     def add_forward_signal(self, wl, power, mfd):
+        self.delayed_executor.add_func(self._init_forward_signal, (wl, power, mfd))
+
+    def _init_forward_signal(self, wl, power, mfd):
         channel = self.fiber.create_in_core_forward_single_frequency_channel(wl, power, mfd)
         self.forward_signals.append(channel)
 
     def add_pulsed_forward_signal(self, wl, power, f_rep, fwhm_duration, mfd):
+        self.delayed_executor.add_func(self._init_pulsed_forward_signal, (wl, power, f_rep, fwhm_duration, mfd))
+
+    def _init_pulsed_forward_signal(self, wl, power, f_rep, fwhm_duration, mfd):
         channel = self.fiber.create_in_core_forward_single_frequency_channel(wl, power, mfd)
         channel.peak_power_func = partial(gaussian_peak_power, (f_rep, fwhm_duration))
         check_signal_reprate(f_rep)
         self.forward_signals.append(channel)
 
     def add_backward_signal(self, wl, power, mfd):
+        self.delayed_executor.add_func(self._init_backward_signal, (wl, power, mfd))
+
+    def _init_backward_signal(self, wl, power, mfd):
         channel = self.fiber.create_in_core_backward_single_frequency_channel(wl, power, mfd)
         self.backward_signals.append(channel)
 
     def add_forward_pump(self, wl, power, mfd):
+        self.delayed_executor.add_func(self._init_forward_pump, (wl, power, mfd))
+
+    def _init_forward_pump(self, wl, power, mfd):
         channel = self.fiber.create_forward_pump_channel(wl, power, mfd)
         self.forward_pumps.append(channel)
 
     def add_backward_pump(self, wl, power, mfd):
+        self.delayed_executor.add_func(self._init_backward_pump, (wl, power, mfd))
+
+    def _init_backward_pump(self, wl, power, mfd):
         channel = self.fiber.create_backward_pump_channel(wl, power, mfd)
         self.backward_pumps.append(channel)
 
     def add_ase(self, wl_start, wl_end, n_bins):
-        assert(wl_end > wl_start)
-        assert(isinstance(n_bins, int) and n_bins > 0)
+        self.delayed_executor.add_func(self._init_ase, (wl_start, wl_end, n_bins))
+
+    def _init_ase(self, wl_start, wl_end, n_bins):
+        assert (wl_end > wl_start)
+        assert (isinstance(n_bins, int) and n_bins > 0)
         ase_wl_bandwidth = (wl_end - wl_start) / n_bins
         ase_wls = np.linspace(wl_start, wl_end, n_bins)
         for wl in ase_wls:
@@ -60,12 +104,15 @@ class Channels:
             self.backward_ase.append(backward_channel)
 
     def add_raman(self, input_power, backward_raman_allowed):
-        assert len(self.forward_signals) == 1 and len(self.backward_signals) == 0, 'Raman modeling is supported only '\
+        self.delayed_executor.add_func(self._init_raman, (input_power, backward_raman_allowed))
+
+    def _init_raman(self, input_power, backward_raman_allowed):
+        assert len(self.forward_signals) == 1 and len(self.backward_signals) == 0, 'Raman modeling is supported only ' \
                                                                                    'with a single forward signal.'
         raman_freq = self.forward_signals[0].v - RAMAN_FREQ_SHIFT
         raman_wl = freq_to_wl(raman_freq)
         forward_channel = self.fiber.create_in_core_forward_finite_bandwidth_channel(raman_wl, RAMAN_GAIN_WL_BANDWIDTH,
-                                                                             input_power, 0)
+                                                                                     input_power, 0)
         backward_channel = self.fiber.create_in_core_backward_finite_bandwidth_channel(raman_wl,
                                                                                        RAMAN_GAIN_WL_BANDWIDTH,
                                                                                        input_power, 0)
@@ -140,4 +187,3 @@ class Channels:
     @property
     def backward_raman_allowed(self):
         return len(self.backward_ramans) != 0 and self.backward_ramans[0].dv != 0
-
