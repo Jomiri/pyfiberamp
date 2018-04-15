@@ -1,5 +1,4 @@
 import numpy as np
-from pyfiberamp.helper_funcs import *
 
 
 class SlicedArray(np.ndarray):
@@ -21,7 +20,7 @@ class SlicedArray(np.ndarray):
 
     def __getattr__(self, item):
         if self.item_in_slice_names(item):
-            return super().__getitem__([self.slices[item]])
+            return np.array(super().__getitem__([self.slices[item]]))
         else:
             raise AttributeError('SlicedArray does not have attribute {}.'.format(item))
 
