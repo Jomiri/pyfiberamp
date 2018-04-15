@@ -13,7 +13,8 @@ class PassiveRamanTest(unittest.TestCase):
         core_NA = 0.12
         fiber = PassiveFiber(length, core_r, background_loss, core_NA)
         fiber.effective_area_type = 'core_area'
-        simulation = FiberAmplifierSimulationWithRaman(fiber)
+        simulation = FiberAmplifierSimulationWithRaman()
+        simulation.fiber = fiber
         simulation.add_cw_signal(wl=1550e-9, power=0.600)
         simulation.add_raman(backward_raman_allowed=False)
         cls.result = simulation.run(tol=1e-11)

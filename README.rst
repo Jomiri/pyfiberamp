@@ -42,7 +42,8 @@ The simple example below demonstrates a core-pumped Yb-doped fiber amplifier. Al
                         ion_number_density=yb_number_density,
                         background_loss=background_loss,
                         core_na=core_na)
-    simulation = FiberAmplifierSimulation(fiber)
+    simulation = FiberAmplifierSimulation()
+    simulation.fiber = fiber
     simulation.add_cw_signal(wl=1035e-9, power=2e-3)
     simulation.add_forward_pump(wl=976e-9, power=300e-3)
     simulation.add_ase(wl_start=1000e-9, wl_end=1080e-9, n_bins=40)

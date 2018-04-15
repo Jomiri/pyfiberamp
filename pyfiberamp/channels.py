@@ -22,8 +22,8 @@ class DelayedExecutor:
 
 
 class Channels:
-    def __init__(self, fiber):
-        self.fiber = fiber
+    def __init__(self):
+        self.fiber = None
         self.delayed_executor = DelayedExecutor()
 
         self.forward_signals = []
@@ -37,6 +37,10 @@ class Channels:
 
         self.forward_ramans = []
         self.backward_ramans = []
+
+    def set_fiber(self, fiber):
+        self.fiber = fiber
+        self.refresh()
 
     def refresh(self):
         self.forward_signals = []

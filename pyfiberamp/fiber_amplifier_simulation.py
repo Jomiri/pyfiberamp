@@ -11,18 +11,18 @@ from pyfiberamp.sliced_array import SlicedArray
 class FiberAmplifierSimulation:
     """FiberAmplifierSimulation is the main class used for running Giles model simulations without Raman scattering.
     The class defines the fiber, boundary conditions and optical channels used in the simulation."""
-    def __init__(self, fiber):
+    def __init__(self):
         """
 
         :param fiber: The fiber used in the simulation.
         :type fiber: class instance derived from FiberBase
 
         """
-        self.fiber = fiber
+        self.fiber = None
         self.model = GilesModel
         self.boundary_conditions = BasicBoundaryConditions
         self.initial_guess = InitialGuessFromParameters()
-        self.channels = Channels(fiber)
+        self.channels = Channels()
         self.solver_verbosity = 2
 
     def add_cw_signal(self, wl, power, mode_field_diameter=0.0):
@@ -89,7 +89,7 @@ class FiberAmplifierSimulation:
         :type tol: float
 
         """
-        self.channels.refresh()
+        self.channels.set_fiber(self.fiber)
         boundary_condition_residual = self.boundary_conditions(self.channels)
         model = self.model(self.channels, self.fiber)
         rate_equation_rhs, upper_level_func = model.make_rate_equation_rhs()

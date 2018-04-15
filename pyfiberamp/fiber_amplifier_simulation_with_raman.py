@@ -7,14 +7,14 @@ from .simulation_result import SimulationResult
 class FiberAmplifierSimulationWithRaman(FiberAmplifierSimulation):
     """FiberAmplifierSimulationWithRaman is the main class used for running Giles model simulations with Raman scattering.
     The class defines the fiber, boundary conditions and optical channels used in the simulation."""
-    def __init__(self, fiber):
+    def __init__(self):
         """
 
         :param fiber: The fiber used in the simulation.
         :type fiber: class instance derived from FiberBase
 
         """
-        super().__init__(fiber)
+        super().__init__()
         self.raman_is_included = False
         self.model = GilesModelWithRaman
 
