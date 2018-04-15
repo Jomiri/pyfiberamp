@@ -48,7 +48,6 @@ The simple example below demonstrates a core-pumped Yb-doped fiber amplifier. Al
     simulation.add_ase(wl_start=1000e-9, wl_end=1080e-9, n_bins=40)
 
     result = simulation.run(tol=tolerance)
-    assert(result.success())
     result.plot_amplifier_result()
 
 The script plots the power evolution in the amplifier and the amplified spontaneous emission (ASE) spectra. The

@@ -41,7 +41,7 @@ class SimulationResult:
 
     def plot_amplifier_result(self):
         self.plot_power_evolution()
-        self.plot_ase_spectrum()
+        self.plot_ase_spectra()
         plt.show()
 
     def plot_power_evolution(self):
@@ -144,7 +144,7 @@ class SimulationResult:
         ax.set_xlim([self.z[0], self.z[-1]])
         ax.set_ylim([0, 100])
 
-    def plot_ase_spectrum(self):
+    def plot_ase_spectra(self):
         if len(self.wavelengths.forward_ase) == 0:
             return
         fig, ax = plt.subplots()
