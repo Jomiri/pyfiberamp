@@ -30,8 +30,6 @@ this_folder = os.path.dirname(os.path.realpath(__file__))
 spectrum_folder = os.path.join(this_folder, '..', 'fiber_spectra')
 YB_ABSORPTION_CS_FILE = os.path.join(spectrum_folder, 'ytterbium absorption cross sections.dat')
 YB_EMISSION_CS_FILE = os.path.join(spectrum_folder, 'ytterbium emission cross sections.dat')
-THORLABS_YB_ABSORPTION_CS_FILE = os.path.join(spectrum_folder, 'thorlabs_yb_absorption.csv')
-THORLABS_YB_EMISSION_CS_FILE = os.path.join(spectrum_folder, 'thorlabs_yb_emission.csv')
 
 CHANNEL_TYPES = ['forward_signal', 'backward_signal',
                 'forward_pump', 'backward_pump',
