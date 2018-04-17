@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
+from pyfiberamp.util.sliced_array import SlicedArray
 from .helper_funcs import *
-from pyfiberamp.sliced_array import SlicedArray
 
 
 class SimulationResult:

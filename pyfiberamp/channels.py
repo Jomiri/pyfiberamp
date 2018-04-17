@@ -1,24 +1,11 @@
-import numpy as np
-from itertools import chain
 from functools import partial
+from itertools import chain
 
+from pyfiberamp.util.sliced_array import SlicedArray
 from .helper_funcs import *
-from .sliced_array import SlicedArray
+from pyfiberamp.util import DelayedExecutor
 
 
-class DelayedExecutor:
-    def __init__(self):
-        self.funcs_and_args = []
-
-    def add_func(self, func, args):
-        self.funcs_and_args.append((func, args))
-
-    def execute(self):
-        for func, args in self.funcs_and_args:
-            func(*args)
-
-    def reset(self):
-        self.funcs_and_args = []
 
 
 class Channels:

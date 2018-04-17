@@ -1,12 +1,12 @@
 from scipy.integrate import solve_bvp
 
-from pyfiberamp.models.giles_model import GilesModel
 from pyfiberamp.boundary_conditions import BasicBoundaryConditions
+from pyfiberamp.channels import Channels
 from pyfiberamp.helper_funcs import *
 from pyfiberamp.initial_guess import InitialGuessFromParameters, InitialGuessFromArray
-from pyfiberamp.channels import Channels
+from pyfiberamp.models.giles_model import GilesModel
 from pyfiberamp.simulation_result import SimulationResult
-from pyfiberamp.sliced_array import SlicedArray
+
 
 class FiberAmplifierSimulation:
     """FiberAmplifierSimulation is the main class used for running Giles model simulations without Raman scattering.

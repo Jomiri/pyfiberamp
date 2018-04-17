@@ -1,7 +1,7 @@
-from pyfiberamp.helper_funcs import *
 from enum import Enum
 
-from pyfiberamp.sliced_array import SlicedArray
+from pyfiberamp.helper_funcs import *
+from pyfiberamp.util.sliced_array import SlicedArray
 
 
 class GainShapes(Enum):

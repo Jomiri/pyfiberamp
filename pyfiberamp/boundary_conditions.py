@@ -1,5 +1,7 @@
 import numpy as np
-from pyfiberamp.sliced_array import SlicedArray
+
+from pyfiberamp.util.sliced_array import SlicedArray
+
 
 class BasicBoundaryConditions:
     """This class implements the most basic possible boundary conditions in the Giles model:
