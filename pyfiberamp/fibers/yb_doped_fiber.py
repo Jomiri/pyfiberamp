@@ -1,5 +1,5 @@
 from . import ActiveFiber
-from ..helper_funcs import YB_ABSORPTION_CS_FILE, YB_EMISSION_CS_FILE, YB_UPPER_STATE_LIFETIME
+from pyfiberamp.spectroscopies import YbGermanoSilicate
 
 
 class YbDopedFiber(ActiveFiber):
@@ -21,10 +21,8 @@ class YbDopedFiber(ActiveFiber):
 
         """
         super().__init__(length=length,
-                         absorption_cs_file=YB_ABSORPTION_CS_FILE,
-                         emission_cs_file=YB_EMISSION_CS_FILE,
                          core_radius=core_radius,
-                         upper_state_lifetime=YB_UPPER_STATE_LIFETIME,
-                         ion_number_density=ion_number_density,
                          background_loss=background_loss,
-                         core_na=core_na)
+                         core_na=core_na,
+                         ion_number_density=ion_number_density,
+                         spectroscopy=YbGermanoSilicate)

@@ -12,7 +12,6 @@ class Spectroscopy:
         return cls(absorption_spectrum, gain_spectrum, upper_state_lifetime)
 
     def __init__(self, absorption_cross_sections, emission_cross_sections, upper_state_lifetime):
-
         self.absorption_cs_spectrum = absorption_cross_sections
         self.emission_cs_spectrum = emission_cross_sections
         self.absorption_cs_interp = self._make_cross_section_interpolate(absorption_cross_sections)
@@ -34,7 +33,6 @@ class Spectroscopy:
 
         return interp
 
-
     def plot_gain_and_absorption_spectrum(self):
         """Convenience plotting function to draw the imported cross section data and the calculated interpolates to
         check that they match."""
@@ -55,3 +53,4 @@ class Spectroscopy:
         plt.show()
 
 
+YbGermanoSilicate= Spectroscopy.from_files(YB_ABSORPTION_CS_FILE, YB_EMISSION_CS_FILE, YB_UPPER_STATE_LIFETIME)

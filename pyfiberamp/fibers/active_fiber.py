@@ -1,6 +1,3 @@
-from scipy.interpolate import UnivariateSpline
-import matplotlib.pyplot as plt
-
 from pyfiberamp.helper_funcs import *
 from .fiber_base import FiberBase
 from pyfiberamp.spectroscopies import Spectroscopy
@@ -10,11 +7,11 @@ class ActiveFiber(FiberBase):
     """ActiveFiber describes a step-index single-mode fiber with active dopant ions. Currently, only uniform doping
     in the whole core area is supported. This class extends the FiberBase class by adding spectroscopic data: gain and
     emission spectra, upper state lifetime and doping concentration."""
-    def __init__(self, length=0, absorption_cs_file=None, emission_cs_file=None,
-                 core_radius=0, upper_state_lifetime=0, ion_number_density=0,
-                 background_loss=0, core_na=0):
+    @classmethod
+    def from_cross_section_files(cls, length, absorption_cs_file=None, emission_cs_file=None,
+                     core_radius=0, upper_state_lifetime=0, ion_number_density=0,
+                     background_loss=0, core_na=0):
         """
-
         :param length: Fiber length
         :type length: float
         :param absorption_cs_file: Name of the file containing absorption cross-section data
@@ -31,6 +28,25 @@ class ActiveFiber(FiberBase):
         :type background_loss: float
         :param core_na: Numerical aperture of the core
         :type core_na: float
+        """
+        spectroscopy = Spectroscopy.from_files(absorption_cs_file, emission_cs_file, upper_state_lifetime)
+        return cls(length, core_radius, background_loss, core_na, spectroscopy, ion_number_density)
+
+    def __init__(self, length=0, core_radius=0, background_loss=0, core_na=0,
+                 spectroscopy=None, ion_number_density=0):
+        """
+        :param length: Fiber length
+        :type length: float
+        :param core_radius: Core radius
+        :type core_radius: float
+        :param background_loss: Linear loss of the core (1/m, NOT in dB/m)
+        :type background_loss: float
+        :param core_na: Numerical aperture of the core
+        :type core_na: float
+        :param spectroscopy: The spectroscopic properties of the fiber.
+        :type spectroscopy: :class:`~pyfiberamp.spectroscopies.Spectroscopy`
+        :param ion_number_density: Number density of the dopant ions (1/m^3)
+        :type ion_number_density: float
 
         """
         super().__init__(length=length,
@@ -38,7 +54,7 @@ class ActiveFiber(FiberBase):
                          background_loss=background_loss,
                          core_na=core_na)
 
-        self.spectroscopy = Spectroscopy.from_files(absorption_cs_file, emission_cs_file, upper_state_lifetime)
+        self.spectroscopy = spectroscopy
         self.ion_number_density = ion_number_density
         self.overlap = None
 

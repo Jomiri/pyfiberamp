@@ -1,1 +1,2 @@
-from .spectroscopy import Spectroscopy
+from .spectroscopy import Spectroscopy, YbGermanoSilicate
+
