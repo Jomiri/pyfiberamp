@@ -5,7 +5,7 @@ from pyfiberamp.helper_funcs import *
 from pyfiberamp.optical_channel import OpticalChannel
 
 
-class FiberBase:
+class FiberBase(ABC):
     """ FiberBase is the base class for the other fiber classes. It contains methods for calculating
     nonlinear effective area, mode field diameter and setting up optical channels. In principle, PassiveFiber class
     could act as a base class but subclassing ActiveFiber from PassiveFiber feels conceptually wrong."""

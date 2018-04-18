@@ -6,7 +6,7 @@ class DoubleCladFiber(ActiveFiber):
     """DoubleCladFiber extends ActiveFiber and describes a double-clad active fiber with single-mode step-index core.
     Flat-top pump distribution in the pump cladding is assumed as well as constant overlap between the pump modes and
     the core. All pump beams propagate in the pump cladding."""
-    def __init__(self, length=0, absorption_cs_file=None, gain_cs_file=None,
+    def __init__(self, length=0, absorption_cs_file=None, emission_cs_file=None,
                  core_radius=0, upper_state_lifetime=0, ion_number_density=0,
                  background_loss=0, core_na=0, ratio_of_core_and_cladding_diameters=0):
         """
@@ -15,8 +15,8 @@ class DoubleCladFiber(ActiveFiber):
         :type length: float
         :param absorption_cs_file: Name of the file containing absorption cross-section data
         :type absorption_cs_file: str
-        :param gain_cs_file: Name of the file containing emission cross-section data
-        :type gain_cs_file: str
+        :param emission_cs_file: Name of the file containing emission cross-section data
+        :type emission_cs_file: str
         :param core_radius: Core radius
         :type core_radius: float
         :param upper_state_lifetime: Lifetime of the excited state
@@ -33,7 +33,7 @@ class DoubleCladFiber(ActiveFiber):
         """
         super().__init__(length=length,
                          absorption_cs_file=absorption_cs_file,
-                         gain_cs_file=gain_cs_file,
+                         emission_cs_file=emission_cs_file,
                          core_radius=core_radius,
                          upper_state_lifetime=upper_state_lifetime,
                          ion_number_density=ion_number_density,
@@ -72,10 +72,10 @@ class DoubleCladFiber(ActiveFiber):
         """This is the maximum gain g* defined in the Giles model. The gain for a mode with a given frequency depends
         on the the emission cross section, overlap between mode and core/ions (here ratio of core and cladding areas)
         and the doping concentration."""
-        return self.gain_cs_interp(freq) * self.pump_to_core_overlap() * self.ion_number_density
+        return self.spectroscopy.gain_cs_interp(freq) * self.pump_to_core_overlap() * self.ion_number_density
 
     def _get_pump_channel_absorption(self, freq):
         """This is the maximum absorption alpha defined in the Giles model. The absorption for a mode with a given
          frequency depends on the the absorption cross section, overlap between mode and core/ions (here ratio of core
          and cladding areas) and the doping concentration."""
-        return self.absorption_cs_interp(freq) * self.pump_to_core_overlap() * self.ion_number_density
+        return self.spectroscopy.absorption_cs_interp(freq) * self.pump_to_core_overlap() * self.ion_number_density

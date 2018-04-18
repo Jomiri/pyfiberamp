@@ -25,7 +25,7 @@ class YbDopedDoubleCladFiber(DoubleCladFiber):
         """
         super().__init__(length=length,
                          absorption_cs_file=YB_ABSORPTION_CS_FILE,
-                         gain_cs_file=YB_EMISSION_CS_FILE,
+                         emission_cs_file=YB_EMISSION_CS_FILE,
                          core_radius=core_radius,
                          upper_state_lifetime=YB_UPPER_STATE_LIFETIME,
                          ion_number_density=ion_number_density,
