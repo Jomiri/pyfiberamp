@@ -6,7 +6,7 @@ class FiniteDifferenceSolver:
     def __init__(self):
         self.total_time = None
         self.z_nodes = START_NODES
-        self.propagation_speed = c / 100000
+        self.propagation_speed = c
 
     def simulate(self, channels, fiber, F, dN2dt):
         total_time = 10 * fiber.spectroscopy.upper_state_lifetime

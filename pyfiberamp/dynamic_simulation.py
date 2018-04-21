@@ -78,7 +78,7 @@ class DynamicSimulation:
         """
         self.channels.add_ase(wl_start, wl_end, n_bins)
 
-    def run(self):
+    def run(self, propagation_speed=c/1e5):
         """Runs the simulation, i.e. calculates the steady state of the defined fiber amplifier. ASE or raman
         simulations might require higher tolerance than the default value.
         It is best to decrease the tolerance until the result no longer changes.
@@ -92,6 +92,7 @@ class DynamicSimulation:
         F, dN2dt = model.fiber_response_functions()
         solver = FiniteDifferenceSolver()
         solver.z_nodes = self.npoints
+        solver.propagation_speed = propagation_speed
         P, N2 = solver.simulate(channels=self.channels, fiber=self.fiber, F=F, dN2dt=dN2dt)
         solution = namedtuple('Solution', ('x', 'y'))
         sol = solution(x=self._start_z(), y=P)
