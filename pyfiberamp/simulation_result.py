@@ -5,13 +5,13 @@ from .helper_funcs import *
 
 
 class SimulationResult:
-    def __init__(self, solution, upper_level_func, slices, wavelengths,
+    def __init__(self, solution, upper_level_fraction, slices, wavelengths,
                  is_passive_fiber, backward_raman_allowed=True):
         self.sol = solution
         self.z = self.sol.x
         self.powers = SlicedArray(self.sol.y, slices)
         self.wavelengths = wavelengths
-        self.upper_level_fraction = upper_level_func(self.sol.y)
+        self.upper_level_fraction = upper_level_fraction
         self._backward_raman_allowed = backward_raman_allowed
         self._is_passive_fiber = is_passive_fiber
 

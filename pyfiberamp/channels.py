@@ -142,8 +142,8 @@ class Channels:
         return self._to_sliced_array([ch.input_power for ch in self._all_channels()])
 
     def _all_channels(self):
-        return chain(self.forward_signals, self.backward_signals, self.forward_pumps, self.backward_pumps,
-                     self.forward_ase, self.backward_ase, self.forward_ramans, self.backward_ramans)
+        return chain(self.forward_signals, self.forward_pumps, self.forward_ase, self.forward_ramans,
+                     self.backward_signals, self.backward_pumps, self.backward_ase, self.backward_ramans)
 
     def _to_sliced_array(self, iterable):
         return SlicedArray(np.array(iterable), self.get_slices())
@@ -156,23 +156,30 @@ class Channels:
         n_ase = len(self.forward_ase)
         n_raman = len(self.forward_ramans)
 
-        backward_signal_start = n_forward_signal
-        forward_pump_start = backward_signal_start + n_backward_signal
-        backward_pump_start = forward_pump_start + n_forward_pump
-        forward_ase_start = backward_pump_start + n_backward_pump
-        backward_ase_start = forward_ase_start + n_ase
-        forward_raman_start = backward_ase_start + n_ase
-        backward_raman_start = forward_raman_start + n_raman
+        forward_pump_start = n_forward_signal
+        forward_ase_start = forward_pump_start + n_forward_pump
+        forward_raman_start = forward_ase_start + n_ase
+        backward_signal_start = forward_raman_start + n_raman
+        backward_pump_start = backward_signal_start + n_backward_signal
+        backward_ase_start = backward_pump_start + n_backward_pump
+        backward_raman_start = backward_ase_start + n_ase
         backward_raman_end = backward_raman_start + n_raman
 
-        slices = {'forward_signal': slice(0, backward_signal_start),
-                  'backward_signal': slice(backward_signal_start, forward_pump_start),
-                  'forward_pump': slice(forward_pump_start, backward_pump_start),
-                  'backward_pump': slice(backward_pump_start, forward_ase_start),
-                  'forward_ase': slice(forward_ase_start, backward_ase_start),
-                  'backward_ase': slice(backward_ase_start, forward_raman_start),
-                  'forward_raman': slice(forward_raman_start, backward_raman_start),
+        slices = {'forward_signal': slice(0, forward_pump_start),
+                  'forward_pump': slice(forward_pump_start, forward_ase_start),
+                  'forward_ase': slice(forward_ase_start, forward_raman_start),
+                  'forward_raman': slice(forward_raman_start, backward_signal_start),
+                  'backward_signal': slice(backward_signal_start, backward_pump_start),
+                  'backward_pump': slice(backward_pump_start, backward_ase_start),
+                  'backward_ase': slice(backward_ase_start, backward_raman_start),
                   'backward_raman': slice(backward_raman_start, backward_raman_end)}
+        return slices
+
+    def get_forward_and_backward_slices(self):
+        n_forward = len(self.forward_signals) + len(self.forward_pumps) + len(self.forward_ase) + len(self.forward_ramans)
+        n_backward = len(self.backward_signals) + len(self.backward_pumps) + len(self.backward_ase) + len(self.backward_ramans)
+        slices = {'forward': slice(0, n_forward),
+                  'backward': slice(n_forward, n_forward + n_backward)}
         return slices
 
     @property

@@ -1,6 +1,8 @@
 
 import numpy as np
 from pyfiberamp.helper_funcs import *
+from pyfiberamp.util import SlicedArray
+
 
 class DynamicModel:
 
@@ -15,30 +17,99 @@ class DynamicModel:
         self.g = np.array(channels.get_gain())[:, np.newaxis]
         self.loss = np.array(channels.get_background_loss())[:, np.newaxis]
         self.fiber = fiber
+        self.channels = channels
 
-    def make_rate_equation_rhs(self):
+    def simulate_steady_state(self):
         # First, we precalculate all the constants
-        zeta = self.fiber.saturation_parameter()
-        h_v_zeta = h * self.v * zeta
+        tau = self.fiber.spectroscopy.upper_state_lifetime
         h_v_dv = h * self.v * self.dv
         g_m_h_v_dv = self.g * self.m * h_v_dv
         a_g = self.a + self.g
-        a_per_h_v_zeta = self.a / h_v_zeta
-        a_g_per_h_v_zeta = a_g / h_v_zeta
         a_l = self.a + self.loss
+        a = self.a
         u = self.u
+        Nt = self.fiber.ion_number_density
+        A = 1 / tau
+        h_v_pi_r2_inv = 1 / (h * self.v * np.pi * self.fiber.core_radius**2)
 
 
-        def rhs(_, P):
-            """The rate equation for the optical powers (dP/dz in the Giles model)"""
-            return u * ((a_g * n2_per_nt - a_l) * P + n2_per_nt * g_m_h_v_dv)
+        total_time = 10 * tau
+        dx = 0.05
+        speed = c / 10000 #1.5
+        dt = dx / speed
+        N_time = int(round(total_time / dt))
+        N_spatial = int(round(self.fiber.length / dx)) - 1
 
-        def amplifier_rate_equation(z, P):
-            """The rate equation function that is passed to the solver. The "hack" limits all powers to small positive
-            values to prevent the solver from moving to negative values and diverging."""
+
+        def F(P, n2):
+            return u * ((a_g * n2/Nt - a_l) * P + g_m_h_v_dv * n2 / Nt)
+
+
+        def dN2dt(P, n2):
+            return np.sum(P * h_v_pi_r2_inv * (a - a_g * n2 / Nt), axis=0) - n2 * A
+
+        grid_shape = (len(self.g), N_spatial + 2)
+        fb_slices = self.channels.get_forward_and_backward_slices()
+        P = SlicedArray(np.zeros(grid_shape), fb_slices)
+        forward_slice = fb_slices['forward']
+        backward_slice = fb_slices['backward']
+        # set boundary condition forward
+        input_powers = SlicedArray(self.channels.get_input_powers(), fb_slices)
+        P[forward_slice, 0] = input_powers.forward
+        P[backward_slice, -1] = input_powers.backward
+
+        # first step array
+
+        Pp = np.copy(P)
+        N2 = np.zeros(N_spatial + 2)
+        N2p = np.copy(N2)
+        prev_averageN2nt = 1e-30
+        dux_forward = SlicedArray(np.zeros(grid_shape), fb_slices)
+        dupx_backward = SlicedArray(np.zeros_like(dux_forward), fb_slices)
+        speed_dt_dx = speed * dt / dx * u
+        speed_dt = speed * dt * u
+        speed_dt_2 = speed * dt / 2 * u
+        speed_dt_dx_2 = speed * dt / (2 * dx) * u
+
+        # iterate MacCormack
+        for n in range(N_time):
+
+            # Step 1
+            dux_forward[:, :-1] = np.diff(P)
+            dux_forward[:, -1] = dux_forward[:,-2]
+            Pp[...] = P - speed_dt_dx * dux_forward + speed_dt * F(P, N2)
+            N2p[...] = N2 + dt * dN2dt(P, N2)
+
+            # refresh boundaries
+            Pp[forward_slice, 0] = input_powers.forward
+            Pp[backward_slice, -1] = input_powers.backward
+
+            # clamp to min power
+            Pp[Pp < SIMULATION_MIN_POWER] = SIMULATION_MIN_POWER
+            N2p[N2p < SIMULATION_MIN_POWER] = SIMULATION_MIN_POWER
+
+            # Step 2
+            dupx_backward[:, 1:] = np.diff(Pp)
+            dupx_backward[:, 0] = dupx_backward[:, 1]
+            P[...] = (P + Pp) / 2 - speed_dt_dx_2 * dupx_backward + speed_dt_2 * F(Pp, N2p)
+            N2[...] = (N2 + N2p) / 2 + dt / 2 * dN2dt(Pp, N2p)
+
+            # refresh boundaries
+            P[forward_slice, 0] = input_powers.forward
+            P[backward_slice, -1] = input_powers.backward
+
+            # clamp to min power
             P[P < SIMULATION_MIN_POWER] = SIMULATION_MIN_POWER
-            return rhs(z, P)
+            N2[N2 < SIMULATION_MIN_POWER] = SIMULATION_MIN_POWER
 
-        return amplifier_rate_equation, upper_level_excitation
-
-
+            """
+            if n%1000 == 0:
+                average_N2nt = np.mean(N2) / Nt
+                if abs(average_N2nt - prev_averageN2nt) / prev_averageN2nt < 1e-6:
+                    break
+                prev_averageN2nt = average_N2nt + 1e-30
+                print('Iteration N: {:d}, average N2: {:.4f}'.format(n, average_N2nt))
+                print(N2)
+            """
+        z = np.linspace(0, self.fiber.length, N_spatial+2)
+        return z, P, N2
