@@ -35,7 +35,7 @@ class DynamicModel:
 
         total_time = 10 * tau
         dx = 0.05
-        speed = c / 10000 #1.5
+        speed = c / 100000 #1.5
         dt = dx / speed
         N_time = int(round(total_time / dt))
         N_spatial = int(round(self.fiber.length / dx)) - 1

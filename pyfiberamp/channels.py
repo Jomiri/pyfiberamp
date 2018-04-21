@@ -176,8 +176,10 @@ class Channels:
         return slices
 
     def get_forward_and_backward_slices(self):
-        n_forward = len(self.forward_signals) + len(self.forward_pumps) + len(self.forward_ase) + len(self.forward_ramans)
-        n_backward = len(self.backward_signals) + len(self.backward_pumps) + len(self.backward_ase) + len(self.backward_ramans)
+        n_forward = len(self.forward_signals) + len(self.forward_pumps)\
+                    + len(self.forward_ase) + len(self.forward_ramans)
+        n_backward = len(self.backward_signals) + len(self.backward_pumps)\
+                     + len(self.backward_ase) + len(self.backward_ramans)
         slices = {'forward': slice(0, n_forward),
                   'backward': slice(n_forward, n_forward + n_backward)}
         return slices
