@@ -78,7 +78,7 @@ class DynamicSimulation:
         """
         self.channels.add_ase(wl_start, wl_end, n_bins)
 
-    def run(self, propagation_speed=c/1e5):
+    def run(self, z_nodes, max_times, propagation_speeds, tol):
         """Runs the simulation, i.e. calculates the steady state of the defined fiber amplifier. ASE or raman
         simulations might require higher tolerance than the default value.
         It is best to decrease the tolerance until the result no longer changes.
@@ -88,28 +88,11 @@ class DynamicSimulation:
 
         """
         self.channels.set_fiber(self.fiber)
-        model = self.model(self.channels, self.fiber)
-        F, dN2dt = model.fiber_response_functions()
-        solver = FiniteDifferenceSolver()
-        solver.z_nodes = self.npoints
-        solver.propagation_speed = propagation_speed
-        P, N2 = solver.simulate(channels=self.channels, fiber=self.fiber, F=F, dN2dt=dN2dt)
+        solver = FiniteDifferenceSolver(channels=self.channels, fiber=self.fiber)
+        P, N2, z = solver.multi_step_steady_state_simulation(z_nodes, max_times, propagation_speeds, tol)
         solution = namedtuple('Solution', ('x', 'y'))
-        sol = solution(x=self._start_z(), y=P)
+        sol = solution(x=z, y=P)
         return self._finalize(sol, N2 / self.fiber.ion_number_density)
-
-    def set_number_of_nodes(self, N):
-        """Override the default number of nodes used by the solver.
-
-         :param N: New number of nodes used by the solver.
-         :type N: int
-
-         """
-        self.npoints = N
-
-    def _start_z(self):
-        """Creates the linear grid."""
-        return np.linspace(0, self.fiber.length, self.npoints + 2)  # 2 includes the boundary points
 
     def _finalize(self, sol, upper_level_fraction):
         """Creates the SimulationResult object from the solution object."""

@@ -33,7 +33,8 @@ class DynamicModel:
         h_v_pi_r2_inv = 1 / (h * self.v * np.pi * self.fiber.core_radius**2)
 
         def F(P, n2):
-            return u * ((a_g * n2/Nt - a_l) * P + g_m_h_v_dv * n2 / Nt)
+            gain = a_g * n2/Nt - a_l
+            return u * (gain * P + g_m_h_v_dv * n2 / Nt)
 
         def dN2dt(P, n2):
             return np.sum(P * h_v_pi_r2_inv * (a - a_g * n2 / Nt), axis=0) - n2 * A
