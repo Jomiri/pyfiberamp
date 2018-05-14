@@ -25,6 +25,6 @@ setup(
         'pyfiberamp.models',
         'pyfiberamp.spectroscopies',
         'pyfiberamp.util',
-        'pyfiberamp.fiber_spectra'
-    ]
+    ],
+    include_package_data=True
 )
