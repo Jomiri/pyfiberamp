@@ -27,7 +27,7 @@ SPECTRUM_PLOT_NPOINTS = 1000
 
 # Default absorption and emission cross section files
 this_folder = os.path.dirname(os.path.realpath(__file__))
-spectrum_folder = os.path.join(this_folder, '..', 'fiber_spectra')
+spectrum_folder = os.path.join(this_folder, 'fiber_spectra')
 YB_ABSORPTION_CS_FILE = os.path.join(spectrum_folder, 'ytterbium absorption cross sections.dat')
 YB_EMISSION_CS_FILE = os.path.join(spectrum_folder, 'ytterbium emission cross sections.dat')
 

@@ -72,7 +72,7 @@ def to_db(x):
 
 def to_dbm(power):
     """Transforms a power in Watts to dBm."""
-    return to_db(power / 1000)
+    return to_db(power * 1000)
 
 
 def overlap_from_freq(freq, r, na, doped_radius):
