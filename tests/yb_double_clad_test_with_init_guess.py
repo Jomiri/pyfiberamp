@@ -47,5 +47,6 @@ class YbDoubleCladWithGuessTestCase(unittest.TestCase):
                           13.851001599290376, 13.318109861113086,
                           12.73022119550334]
         simulated_gains = self.gains
-        self.assertListEqual(simulated_gains, expected_gains)
+        for expected, simulated in zip(expected_gains, simulated_gains):
+            self.assertAlmostEqual(simulated, expected)
 
