@@ -25,7 +25,7 @@ class FiberAmplifierSimulation:
         self.channels = Channels()
         self.solver_verbosity = 2
 
-    def add_cw_signal(self, wl, power, mode_field_diameter=0.0):
+    def add_cw_signal(self, wl, power, wl_bandwidth=0, mode_field_diameter=0.0, label=''):
         """Adds a new forward propagating single-frequency CW signal to the simulation.
 
         :param wl: Wavelength of the signal
@@ -37,9 +37,9 @@ class FiberAmplifierSimulation:
         :type mode_field_diameter: float, optional
 
         """
-        self.channels.add_forward_signal(wl, power, mode_field_diameter)
+        self.channels.add_forward_signal(wl, wl_bandwidth, power, mode_field_diameter, label)
 
-    def add_forward_pump(self, wl, power, mode_field_diameter=0.0):
+    def add_forward_pump(self, wl, power, wl_bandwidth=0, mode_field_diameter=0.0, label=''):
         """Adds a new forward propagating single-frequency pump to the simulation.
 
         :param wl: Wavelength of the signal
@@ -50,9 +50,9 @@ class FiberAmplifierSimulation:
          If left undefined, will be calculated using the Petermann II equation.
         :type mode_field_diameter: float, optional
         """
-        self.channels.add_forward_pump(wl, power, mode_field_diameter)
+        self.channels.add_forward_pump(wl, wl_bandwidth, power, mode_field_diameter, label)
 
-    def add_backward_pump(self, wl, power, mode_field_diameter=0.0):
+    def add_backward_pump(self, wl, power, wl_bandwidth=0, mode_field_diameter=0.0, label=''):
         """Adds a new backward propagating single-frequency pump to the simulation.
 
         :param wl: Wavelength of the signal
@@ -64,7 +64,7 @@ class FiberAmplifierSimulation:
         :type mode_field_diameter: float, optional
 
         """
-        self.channels.add_backward_pump(wl, power, mode_field_diameter)
+        self.channels.add_backward_pump(wl, wl_bandwidth, power, mode_field_diameter, label)
 
     def add_ase(self, wl_start, wl_end, n_bins):
         """Adds amplified spontaneous emission (ASE) channels.

@@ -1,12 +1,11 @@
 
-from pyfiberamp.channels import Channels
-from pyfiberamp.helper_funcs import *
-from pyfiberamp.initial_guess import InitialGuessFromParameters, InitialGuessFromArray
-from pyfiberamp.simulation_result import SimulationResult
-from pyfiberamp.models import DynamicModel
-from pyfiberamp.finite_difference_solver import FiniteDifferenceSolver
 from collections import namedtuple
 
+from pyfiberamp.channels import Channels
+from pyfiberamp.dynamic_simulation.finite_difference_solver import FiniteDifferenceSolver
+from pyfiberamp.helper_funcs import *
+from pyfiberamp.simulation_result import SimulationResult
+import warnings
 
 class DynamicSimulation:
     """FiberAmplifierSimulation is the main class used for running Giles model simulations without Raman scattering.
@@ -19,11 +18,30 @@ class DynamicSimulation:
 
         """
         self.fiber = None
-        self.model = DynamicModel
         self.channels = Channels()
-        self.npoints = START_NODES
+        self.reflections = []
+        self.npoints = None
+        self.solver =
 
-    def add_cw_signal(self, wl, power, mode_field_diameter=0.0):
+    def use_backend(self, backend='cpp'):
+        self.backend = None
+        if backend == 'cpp':
+            self._set_cpp_backend()
+        elif backend == 'python':
+            self.backend = DynamicPythonBackend()
+        else:
+            raise RuntimeError('Unknown backend: {}'.format(backend))
+
+    def _set_cpp_backend(self):
+        try:
+            self.backend = DynamicCppBackend()
+        except FileNotFoundError:
+            warnings.warn('C++ backend could not be loaded! Defaulting to Python backend.', RuntimeWarning)
+            self.backend = DynamicPythonBackend()
+
+
+    def add_forward_signal(self, wl, power, label, wl_bandwidth=0, mode_field_diameter=0.0,
+                                    reflection_target=None, reflection_coeff=0):
         """Adds a new forward propagating single-frequency CW signal to the simulation.
 
         :param wl: Wavelength of the signal
@@ -37,21 +55,13 @@ class DynamicSimulation:
         """
         self.channels.add_forward_signal(wl, power, mode_field_diameter)
 
-    def add_forward_pump(self, wl, power, mode_field_diameter=0.0):
-        """Adds a new forward propagating single-frequency pump to the simulation.
+    def add_backward_signal(self, wl, input, label, wl_bandwidth=0, mode_field_diameter=0,
+                                  reflection_target=None, reflection_coeff=0):
+        pass
 
-        :param wl: Wavelength of the signal
-        :type wl: float
-        :param power: Input power of the signal at the beginning of the fiber
-        :type power: float
-        :param mode_field_diameter: Mode field diameter of the signal.
-         If left undefined, will be calculated using the Petermann II equation.
-        :type mode_field_diameter: float, optional
-        """
-        self.channels.add_forward_pump(wl, power, mode_field_diameter)
-
-    def add_backward_pump(self, wl, power, mode_field_diameter=0.0):
-        """Adds a new backward propagating single-frequency pump to the simulation.
+    def add_forward_pump(self, wl, power, label, wl_bandwidth=0, mode_field_diameter=0.0,
+                                  reflection_target=None, reflection_coeff=0):
+        """Adds a new backward propagating single-frequency CW signal to the simulation.
 
         :param wl: Wavelength of the signal
         :type wl: float
@@ -62,9 +72,13 @@ class DynamicSimulation:
         :type mode_field_diameter: float, optional
 
         """
-        self.channels.add_backward_pump(wl, power, mode_field_diameter)
+        self.channels.add_backward_signal(wl, power, mode_field_diameter)
 
-    def add_ase(self, wl_start, wl_end, n_bins):
+    def add_backward_pump(self, wl, input, label, wl_bandwidth=0, mode_field_diameter=0,
+                                  reflection_target=None, reflection_coeff=0):
+        pass
+
+    def add_ase(self, wl_start, wl_end, n_bins, reflection_coeff=0):
         """Adds amplified spontaneous emission (ASE) channels.
         Using more channels improves accuracy, but incurs a heavier computational cost to the simulation.
 

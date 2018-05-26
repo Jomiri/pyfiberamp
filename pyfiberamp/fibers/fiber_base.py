@@ -98,74 +98,28 @@ class FiberBase(ABC):
         """
         return fundamental_mode_mfd_petermann_2(freq_to_wl(freq), self.core_radius, self.core_na)
 
-    def _create_in_core_single_frequency_channel(self, wl, power, preset_mfd, direction):
-        """Returns an optical channel which describes the properties of a single frequency beam propagating
-        in the fiber. Gain and absorption are calculated at this single frequency and the bandwidth is zero.
-
-        :param wl: The wavelength of the beam
-        :type wl: float
-        :param power: The input power of the beam
-        :type power: float
-        :param preset_mfd: User-defined mode field diameter of the beam. Equals to zero when automatic value is to be used.
-        :type preset_mfd: float
-        :param direction: Beam propagation direction (+1 forward, -1 backward)
-        :type direction: int
-        :returns: An OpticalChannel object
-
-        """
-
-        frequency = wl_to_freq(wl)
-        frequency_bandwidth = 0
-        mfd = self._mode_field_diameter_for_channel(frequency, preset_mfd)
-        mode_field_radius = mfd / 2
-        gain = self._get_channel_gain(frequency, mode_field_radius)
-        absorption = self._get_channel_absorption(frequency, mode_field_radius)
-        loss = self.background_loss
-        return OpticalChannel(frequency, frequency_bandwidth, power, direction, mfd, gain, absorption, loss)
-
-    def _create_in_core_finite_bandwidth_channel(self, wl, wl_bandwidth, power, preset_mfd, direction):
-        """Returns an optical channel which describes the properties of a finite bandwidth beam propagating
-        in the fiber. Gain and absorption are calculated at and average over the starting, middle and end points
-        the bandwidth and the bandwidth has a non-zero value.
-
-        :param wl: The wavelength of the beam
-        :type wl: float
-        :param wl_bandwidth: The wavelength bandwidth of the channel
-        :type wl_bandwidth: float
-        :param power: The input power of the beam
-        :type power: float
-        :param preset_mfd: User-defined mode field diameter of the beam. Equals to zero when automatic value is to be used.
-        :type preset_mfd: float
-        :param direction: Beam propagation direction (+1 forward, -1 backward)
-        :type direction: int
-        :returns: An OpticalChannel object
-
-        """
-
+    def _create_in_core_channel(self, wl, wl_bandwidth, power, preset_mfd, direction, label):
         center_frequency = wl_to_freq(wl)
-        frequency_bandwidth = wl_bw_to_freq_bw(wl_bandwidth, wl)
         mfd = self._mode_field_diameter_for_channel(center_frequency, preset_mfd)
         mode_field_radius = mfd / 2
-        gain = self._finite_bandwidth_gain(center_frequency, frequency_bandwidth, mode_field_radius)
-        absorption = self._finite_bandwidth_absorption(center_frequency, frequency_bandwidth, mode_field_radius)
+        if wl_bandwidth == 0:
+            frequency_bandwidth = 0
+            gain = self._get_channel_gain(center_frequency, mode_field_radius)
+            absorption = self._get_channel_absorption(center_frequency, mode_field_radius)
+        else:
+            frequency_bandwidth = wl_bw_to_freq_bw(wl_bandwidth, wl)
+            gain = self._finite_bandwidth_gain(center_frequency, frequency_bandwidth, mode_field_radius)
+            absorption = self._finite_bandwidth_absorption(center_frequency, frequency_bandwidth, mode_field_radius)
         loss = self.background_loss
-        return OpticalChannel(center_frequency, frequency_bandwidth, power, direction, mfd, gain, absorption, loss)
+        return OpticalChannel(center_frequency, frequency_bandwidth, power, direction, mfd, gain, absorption, loss, label)
 
-    def create_in_core_forward_single_frequency_channel(self, wl, power, preset_mfd):
+    def create_in_core_forward_channel(self, wl, wl_bandwidth, power, preset_mfd, label):
         """Wrapper function to hide the direction parameter from outer classes."""
-        return self._create_in_core_single_frequency_channel(wl, power, preset_mfd, direction=+1)
+        return self._create_in_core_channel(wl, wl_bandwidth, power, preset_mfd, direction=+1, label=label)
 
-    def create_in_core_backward_single_frequency_channel(self, wl, power, preset_mfd):
+    def create_in_core_backward_channel(self, wl, wl_bandwidth, power, preset_mfd, label):
         """Wrapper function to hide the direction parameter from outer classes."""
-        return self._create_in_core_single_frequency_channel(wl, power, preset_mfd, direction=-1)
-
-    def create_in_core_forward_finite_bandwidth_channel(self, wl, wl_bandwidth, power, preset_mfd):
-        """Wrapper function to hide the direction parameter from outer classes."""
-        return self._create_in_core_finite_bandwidth_channel(wl, wl_bandwidth, power, preset_mfd, direction=+1)
-
-    def create_in_core_backward_finite_bandwidth_channel(self, wl, wl_bandwidth, power, preset_mfd):
-        """Wrapper function to hide the direction parameter from outer classes."""
-        return self._create_in_core_finite_bandwidth_channel(wl, wl_bandwidth, power, preset_mfd, direction=-1)
+        return self._create_in_core_channel(wl, wl_bandwidth, power, preset_mfd, direction=-1, label=label)
 
 
     @abstractmethod

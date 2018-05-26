@@ -2,7 +2,8 @@ import numpy as np
 np.seterr(all='raise')
 from pyfiberamp.helper_funcs import *
 from pyfiberamp.util import SlicedArray
-from pyfiberamp.models import DynamicModel
+from pyfiberamp.dynamic_simulation.dynamic_model import DynamicModel
+
 
 CONVERGENCE_CHECKING_INTERVAL = 10
 N2NT_EPSILON = 1e-30

@@ -18,7 +18,7 @@ class FiberAmplifierSimulationWithRaman(FiberAmplifierSimulation):
         self.raman_is_included = False
         self.model = GilesModelWithRaman
 
-    def add_pulsed_signal(self, wl, power, f_rep, fwhm_duration, mode_field_diameter=0.0):
+    def add_pulsed_signal(self, wl, power, f_rep, fwhm_duration, mode_field_diameter=0.0, label=''):
         """Adds a new forward propagating single-frequency pulsed signal to the simulation. A pulsed signal has a higher
         peak power resulting in stronger nonlinear effects, in particular spontaneous and stimulated Raman scattering.
         The pulse shape is assumed to be Gaussian.
@@ -36,7 +36,7 @@ class FiberAmplifierSimulationWithRaman(FiberAmplifierSimulation):
         :type mode_field_diameter: float, optional
 
         """
-        self.channels.add_pulsed_forward_signal(wl, power, f_rep, fwhm_duration, mode_field_diameter)
+        self.channels.add_pulsed_forward_signal(wl, power, f_rep, fwhm_duration, mode_field_diameter, label)
 
     def add_raman(self, input_power=SIMULATION_MIN_POWER, backward_raman_allowed=True):
         """Adds Raman channels to the simulation.

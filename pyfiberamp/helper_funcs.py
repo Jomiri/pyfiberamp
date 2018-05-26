@@ -293,3 +293,10 @@ def check_signal_reprate(f_rep):
     """
     if f_rep < REP_RATE_LOWER_LIMIT:
         warnings.warn('Signal with repetition rate of {:.1f} Hz cannot be treated as quasi-continuous.'.format(f_rep))
+
+
+def apply_linear_ramp(arr, n_points):
+    start = np.ones_like(arr[:,0])*SIMULATION_MIN_POWER
+    end = arr[:, n_points-1]
+    arr[:,:n_points] = linspace_2d(start, end, n_points)
+

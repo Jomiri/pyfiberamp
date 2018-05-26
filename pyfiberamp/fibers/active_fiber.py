@@ -83,13 +83,13 @@ class ActiveFiber(FiberBase):
             return self.overlap
         return overlap_integral(self.core_radius, mode_field_radius)
 
-    def create_forward_pump_channel(self, wl, power, preset_mfd):
+    def create_forward_pump_channel(self, wl, dwl, power, preset_mfd, label):
         """Wrapper method for "create_in_core_single_frequency_channel" to hide the direction parameter."""
-        return self._create_in_core_single_frequency_channel(wl, power, preset_mfd, direction=+1)
+        return self._create_in_core_channel(wl, dwl, power, preset_mfd, direction=+1, label=label)
 
-    def create_backward_pump_channel(self, wl, power, preset_mfd):
+    def create_backward_pump_channel(self, wl, dwl, power, preset_mfd, label):
         """Wrapper method for "create_in_core_single_frequency_channel" to hide the direction parameter."""
-        return self._create_in_core_single_frequency_channel(wl, power, preset_mfd, direction=-1)
+        return self._create_in_core_channel(wl, dwl, power, preset_mfd, direction=-1, label=label)
 
     def _get_channel_gain(self, freq, mode_field_radius):
         """This is the maximum gain g* defined in the Giles model. The gain for a mode with a given frequency depends
