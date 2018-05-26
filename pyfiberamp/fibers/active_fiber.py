@@ -83,40 +83,50 @@ class ActiveFiber(FiberBase):
             return self.overlap
         return overlap_integral(self.core_radius, mode_field_radius)
 
-    def create_forward_pump_channel(self, wl, dwl, power, preset_mfd, label):
-        """Wrapper method for "create_in_core_single_frequency_channel" to hide the direction parameter."""
-        return self._create_in_core_channel(wl, dwl, power, preset_mfd, direction=+1, label=label)
-
-    def create_backward_pump_channel(self, wl, dwl, power, preset_mfd, label):
-        """Wrapper method for "create_in_core_single_frequency_channel" to hide the direction parameter."""
-        return self._create_in_core_channel(wl, dwl, power, preset_mfd, direction=-1, label=label)
-
-    def _get_channel_gain(self, freq, mode_field_radius):
-        """This is the maximum gain g* defined in the Giles model. The gain for a mode with a given frequency depends
-        on the the emission cross section, overlap between mode and core/ions and the doping concentration."""
-        return self.spectroscopy.gain_cs_interp(freq) * self._make_single_overlap(mode_field_radius) * self.ion_number_density
-
-    def _get_channel_absorption(self, freq, mode_field_radius):
-        """This is the maximum absorption alpha defined in the Giles model. The absorption for a mode with a given
-         frequency depends on the the absorption cross section, overlap between mode and core/ions and the
-         doping concentration."""
-        return self.spectroscopy.absorption_cs_interp(freq) * self._make_single_overlap(mode_field_radius) * self.ion_number_density
-
     def saturation_parameter(self):
         """Returns the constant saturation parameter zeta defined in the Giles model."""
         return zeta_from_fiber_parameters(self.core_radius, self.spectroscopy.upper_state_lifetime, self.ion_number_density)
+
+    def get_signal_channel_gain(self, freq, frequency_bandwidth, mode_field_radius):
+        """This is the maximum gain g* defined in the Giles model. The gain for a mode with a given frequency depends
+        on the the emission cross section, overlap between mode and core/ions and the doping concentration."""
+        if frequency_bandwidth == 0:
+            return self._single_frequency_gain(freq, mode_field_radius)
+        else:
+            return self._finite_bandwidth_gain(freq, frequency_bandwidth, mode_field_radius)
+
+    def get_signal_channel_absorption(self, freq, frequency_bandwidth, mode_field_radius):
+        """This is the maximum absorption alpha defined in the Giles model. The absorption for a mode with a given
+         frequency depends on the the absorption cross section, overlap between mode and core/ions and the
+         doping concentration."""
+        if frequency_bandwidth == 0:
+            return self._single_frequency_absorption(freq, mode_field_radius)
+        else:
+            return self._finite_bandwidth_absorption(freq, frequency_bandwidth, mode_field_radius)
+
+    def get_pump_channel_gain(self, freq, frequency_bandwidth, mode_field_radius):
+        return self.get_signal_channel_gain(freq, frequency_bandwidth, mode_field_radius)
+
+    def get_pump_channel_absorption(self, freq, frequency_bandwidth, mode_field_radius):
+        return self.get_signal_channel_absorption(freq, frequency_bandwidth, mode_field_radius)
+
+    def _single_frequency_gain(self, freq, mode_field_radius):
+        return self.spectroscopy.gain_cs_interp(freq) * self._make_single_overlap(mode_field_radius) * self.ion_number_density
+
+    def _single_frequency_absorption(self, freq, mode_field_radius):
+        return self.spectroscopy.absorption_cs_interp(freq) * self._make_single_overlap(mode_field_radius) * self.ion_number_density
 
     def _finite_bandwidth_gain(self, center_frequency, frequency_bandwidth, mode_field_radius):
         """Calculates the maximum gain g* for a finite bandwidth signal by averaging over the start, end and middle
         points."""
         return self._averaged_value_of_finite_bandwidth_spectrum(center_frequency, frequency_bandwidth,
-                                                                 mode_field_radius, self._get_channel_gain)
+                                                                 mode_field_radius, self._single_frequency_gain)
 
     def _finite_bandwidth_absorption(self, center_frequency, frequency_bandwidth, mode_field_radius):
         """Calculates the maximum absorption alpha for a finite bandwidth signal by averaging over the start, end
         and middle points."""
         return self._averaged_value_of_finite_bandwidth_spectrum(center_frequency, frequency_bandwidth,
-                                                                 mode_field_radius, self._get_channel_absorption)
+                                                                 mode_field_radius, self._single_frequency_absorption)
 
     def _averaged_value_of_finite_bandwidth_spectrum(self, center_frequency, frequency_bandwidth, mode_field_radius,
                                                      spectrum_func):
@@ -127,3 +137,4 @@ class ActiveFiber(FiberBase):
         middle_value = spectrum_func(center_frequency, mode_field_radius)
         end_value = spectrum_func(end_frequency, mode_field_radius)
         return np.mean([start_value, middle_value, end_value])
+

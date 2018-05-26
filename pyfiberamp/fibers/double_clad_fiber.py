@@ -73,48 +73,41 @@ class DoubleCladFiber(ActiveFiber):
         """Returns the radius of the fiber's pump cladding."""
         return self.core_radius / self.core_to_cladding_ratio
 
-    def create_forward_pump_channel(self, wl, dwl, power, preset_mfd, label):
-        """Wrapper method for "create_cladding_pump_channel" to hide the direction parameter."""
-        return self._create_cladding_pump_channel(wl, dwl, power, direction=+1, label=label)
-
-    def create_backward_pump_channel(self, wl, dwl, power, preset_mfd, label):
-        """Wrapper method for "create_cladding_pump_channel" to hide the direction parameter."""
-        return self._create_cladding_pump_channel(wl, dwl, power, direction=-1, label=label)
-
-    def _create_cladding_pump_channel(self, wl, dwl, power, direction, label):
-        """Creates an OpticalChannel object describing a cladding pump beam."""
-        ch = self._create_in_core_channel(wl, dwl, power, direction=direction, preset_mfd=self.pump_cladding_radius(), label=label)
-        if dwl == 0:
-            ch.gain = self._get_single_frequency_pump_channel_gain(ch.v)
-            ch.absorption = self._get_single_frequency_pump_channel_absorption(ch.v)
+    def get_pump_channel_gain(self, freq, frequency_bandwidth, mode_field_radius):
+        if frequency_bandwidth == 0:
+            return self._single_frequency_pump_channel_gain(freq)
         else:
-            ch.gain = self._get_finite_bandwidth_pump_gain(ch.v, ch.dv)
-            ch.gain = self._get_finite_bandwidth_pump_absorption(ch.v, ch.dv)
-        return ch
+            return self._finite_bandwidth_pump_channel_gain(freq, frequency_bandwidth)
 
-    def _get_single_frequency_pump_channel_gain(self, freq):
+    def get_pump_channel_absorption(self, freq, frequency_bandwidth, mode_field_radius):
+        if frequency_bandwidth == 0:
+            return self._single_frequency_pump_channel_absorption(freq)
+        else:
+            return self._finite_bandwidth_pump_channel_absorption(freq, frequency_bandwidth)
+
+    def _single_frequency_pump_channel_gain(self, freq):
         """This is the maximum gain g* defined in the Giles model. The gain for a mode with a given frequency depends
         on the the emission cross section, overlap between mode and core/ions (here ratio of core and cladding areas)
         and the doping concentration."""
         return self.spectroscopy.gain_cs_interp(freq) * self.pump_to_core_overlap() * self.ion_number_density
 
-    def _get_single_frequency_pump_channel_absorption(self, freq):
+    def _single_frequency_pump_channel_absorption(self, freq):
         """This is the maximum absorption alpha defined in the Giles model. The absorption for a mode with a given
          frequency depends on the the absorption cross section, overlap between mode and core/ions (here ratio of core
          and cladding areas) and the doping concentration."""
         return self.spectroscopy.absorption_cs_interp(freq) * self.pump_to_core_overlap() * self.ion_number_density
 
-    def _get_finite_bandwidth_pump_gain(self, center_frequency, frequency_bandwidth):
+    def _finite_bandwidth_pump_channel_gain(self, center_frequency, frequency_bandwidth):
         """Calculates the maximum gain g* for a finite bandwidth signal by averaging over the start, end and middle
         points."""
         return self._averaged_value_of_finite_bandwidth_pump_spectrum(center_frequency, frequency_bandwidth,
-                                                                      self._get_single_frequency_pump_channel_gain)
+                                                                      self._single_frequency_pump_channel_gain)
 
-    def _get_finite_bandwidth_pump_absorption(self, center_frequency, frequency_bandwidth):
+    def _finite_bandwidth_pump_channel_absorption(self, center_frequency, frequency_bandwidth):
         """Calculates the maximum absorption alpha for a finite bandwidth signal by averaging over the start, end
         and middle points."""
         return self._averaged_value_of_finite_bandwidth_pump_spectrum(center_frequency, frequency_bandwidth,
-                                                                      self._get_single_frequency_pump_channel_absorption)
+                                                                      self._single_frequency_pump_channel_absorption)
 
     def _averaged_value_of_finite_bandwidth_pump_spectrum(self, center_frequency, frequency_bandwidth, spectrum_func):
         """Actual function used to calculate the average gain or absorption of a finite bandwidth beam."""

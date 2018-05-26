@@ -4,7 +4,7 @@ from itertools import chain
 from pyfiberamp.util.sliced_array import SlicedArray
 from .helper_funcs import *
 from pyfiberamp.util import DelayedExecutor
-
+from pyfiberamp.optical_channel import OpticalChannel
 
 class Channels:
     def __init__(self):
@@ -59,27 +59,47 @@ class Channels:
     def add_raman(self, input_power, backward_raman_allowed):
         self.delayed_executor.add_func(self._init_raman, (input_power, backward_raman_allowed))
 
-    def _init_forward_signal(self, *args):
-        channel = self.fiber.create_in_core_forward_channel(*args)
+    def _init_forward_signal(self, wl, wl_bandwidth, power, mode_field_diameter, label,
+                             reflection_target_label="", reflection_coeff=0):
+        channel = OpticalChannel.create_signal_channel(self.fiber, wl, wl_bandwidth, power, mode_field_diameter,
+                                                       direction=1, label=label,
+                                                       reflection_target_label=reflection_target_label,
+                                                       reflection_coeff=reflection_coeff)
         self.forward_signals.append(channel)
 
-    def _init_pulsed_forward_signal(self, wl, dwl, power, f_rep, fwhm_duration, mfd, label):
-        channel = self.fiber.create_in_core_forward_channel(wl, dwl, power, mfd, label)
+    def _init_pulsed_forward_signal(self, wl, wl_bandwidth, power, f_rep, fwhm_duration, mode_field_diameter, label,
+                             reflection_target_label="", reflection_coeff=0):
+        channel = OpticalChannel.create_signal_channel(self.fiber, wl, wl_bandwidth, power, mode_field_diameter,
+                                                       direction=1, label=label,
+                                                       reflection_target_label=reflection_target_label,
+                                                       reflection_coeff=reflection_coeff)
         channel.peak_power_func = partial(gaussian_peak_power, (f_rep, fwhm_duration))
         check_signal_reprate(f_rep)
         self.forward_signals.append(channel)
 
-    def _init_backward_signal(self, *args):
-        channel = self.fiber.create_in_core_backward_channel(*args)
+    def _init_backward_signal(self, wl, wl_bandwidth, power, mode_field_diameter, label,
+                             reflection_target_label="", reflection_coeff=0):
+        channel = OpticalChannel.create_signal_channel(self.fiber, wl, wl_bandwidth, power, mode_field_diameter,
+                                                       direction=-1, label=label,
+                                                       reflection_target_label=reflection_target_label,
+                                                       reflection_coeff=reflection_coeff)
         self.backward_signals.append(channel)
 
-    def _init_forward_pump(self, *args):
-        channel = self.fiber.create_forward_pump_channel(*args)
-        self.forward_pumps.append(channel)
-
-    def _init_backward_pump(self, *args):
-        channel = self.fiber.create_backward_pump_channel(*args)
+    def _init_backward_pump(self, wl, wl_bandwidth, power, mode_field_diameter, label,
+                                  reflection_target_label="", reflection_coeff=0):
+        channel = OpticalChannel.create_pump_channel(self.fiber, wl, wl_bandwidth, power, mode_field_diameter,
+                                                           direction=-1, label=label,
+                                                           reflection_target_label=reflection_target_label,
+                                                           reflection_coeff=reflection_coeff)
         self.backward_pumps.append(channel)
+
+    def _init_forward_pump(self, wl, wl_bandwidth, power, mode_field_diameter, label,
+                            reflection_target_label="", reflection_coeff=0):
+        channel = OpticalChannel.create_pump_channel(self.fiber, wl, wl_bandwidth, power, mode_field_diameter,
+                                                     direction=1, label=label,
+                                                     reflection_target_label=reflection_target_label,
+                                                     reflection_coeff=reflection_coeff)
+        self.forward_pumps.append(channel)
 
     def _init_ase(self, wl_start, wl_end, n_bins):
         assert (wl_end > wl_start)
@@ -87,14 +107,14 @@ class Channels:
         ase_wl_bandwidth = (wl_end - wl_start) / n_bins
         ase_wls = np.linspace(wl_start, wl_end, n_bins)
         for wl in ase_wls:
-            forward_channel = self.fiber.create_in_core_forward_channel(wl, ase_wl_bandwidth,
-                                                                        SIMULATION_MIN_POWER,
-                                                                        preset_mfd=0, label='')
+            forward_channel = OpticalChannel.create_signal_channel(self.fiber, wl, ase_wl_bandwidth,
+                                                                   SIMULATION_MIN_POWER, 0, direction=1, label="",
+                                                                   reflection_target_label='', reflection_coeff=0)
             self.forward_ase.append(forward_channel)
 
-            backward_channel = self.fiber.create_in_core_backward_channel(wl, ase_wl_bandwidth,
-                                                                          SIMULATION_MIN_POWER,
-                                                                          preset_mfd=0, label='')
+            backward_channel = OpticalChannel.create_signal_channel(self.fiber, wl, ase_wl_bandwidth,
+                                                                   SIMULATION_MIN_POWER, 0, direction=-1, label="",
+                                                                   reflection_target_label='', reflection_coeff=0)
             self.backward_ase.append(backward_channel)
 
     def _init_raman(self, input_power, backward_raman_allowed):
@@ -102,11 +122,12 @@ class Channels:
                                                                                    'with a single forward signal.'
         raman_freq = self.forward_signals[0].v - RAMAN_FREQ_SHIFT
         raman_wl = freq_to_wl(raman_freq)
-        forward_channel = self.fiber.create_in_core_forward_channel(raman_wl, RAMAN_GAIN_WL_BANDWIDTH,
-                                                                    input_power, 0, label='')
-        backward_channel = self.fiber.create_in_core_backward_channel(raman_wl,
-                                                                      RAMAN_GAIN_WL_BANDWIDTH,
-                                                                      input_power, 0, label='')
+        forward_channel = OpticalChannel.create_signal_channel(self.fiber, raman_wl, RAMAN_GAIN_WL_BANDWIDTH,
+                                                               input_power, 0, direction=1, label="",
+                                                               reflection_target_label='', reflection_coeff=0)
+        backward_channel = OpticalChannel.create_signal_channel(self.fiber, raman_wl, RAMAN_GAIN_WL_BANDWIDTH,
+                                                               input_power, 0, direction=-1, label="",
+                                                               reflection_target_label='', reflection_coeff=0)
         forward_channel.number_of_modes = RAMAN_MODES_IN_PM_FIBER
         backward_channel.number_of_modes = RAMAN_MODES_IN_PM_FIBER
         if not backward_raman_allowed:

@@ -98,44 +98,20 @@ class FiberBase(ABC):
         """
         return fundamental_mode_mfd_petermann_2(freq_to_wl(freq), self.core_radius, self.core_na)
 
-    def _create_in_core_channel(self, wl, wl_bandwidth, power, preset_mfd, direction, label):
-        center_frequency = wl_to_freq(wl)
-        mfd = self._mode_field_diameter_for_channel(center_frequency, preset_mfd)
-        mode_field_radius = mfd / 2
-        if wl_bandwidth == 0:
-            frequency_bandwidth = 0
-            gain = self._get_channel_gain(center_frequency, mode_field_radius)
-            absorption = self._get_channel_absorption(center_frequency, mode_field_radius)
-        else:
-            frequency_bandwidth = wl_bw_to_freq_bw(wl_bandwidth, wl)
-            gain = self._finite_bandwidth_gain(center_frequency, frequency_bandwidth, mode_field_radius)
-            absorption = self._finite_bandwidth_absorption(center_frequency, frequency_bandwidth, mode_field_radius)
-        loss = self.background_loss
-        return OpticalChannel(center_frequency, frequency_bandwidth, power, direction, mfd, gain, absorption, loss, label)
-
-    def create_in_core_forward_channel(self, wl, wl_bandwidth, power, preset_mfd, label):
-        """Wrapper function to hide the direction parameter from outer classes."""
-        return self._create_in_core_channel(wl, wl_bandwidth, power, preset_mfd, direction=+1, label=label)
-
-    def create_in_core_backward_channel(self, wl, wl_bandwidth, power, preset_mfd, label):
-        """Wrapper function to hide the direction parameter from outer classes."""
-        return self._create_in_core_channel(wl, wl_bandwidth, power, preset_mfd, direction=-1, label=label)
-
-
     @abstractmethod
-    def _get_channel_gain(self, freq, mode_field_radius):
+    def get_signal_channel_gain(self, freq, frequency_bandwidth, mode_field_radius):
         pass
 
     @abstractmethod
-    def _get_channel_absorption(self, freq, mode_field_radius):
+    def get_signal_channel_absorption(self, freq, frequency_bandwidth, mode_field_radius):
         pass
 
     @abstractmethod
-    def _finite_bandwidth_gain(self, center_frequency, frequency_bandwidth, mode_field_radius):
+    def get_pump_channel_gain(self, freq, frequency_bandwidth, mode_field_radius):
         pass
 
     @abstractmethod
-    def _finite_bandwidth_absorption(self, center_frequency, frequency_bandwidth, mode_field_radius):
+    def get_pump_channel_absorption(self, freq, frequency_bandwidth, mode_field_radius):
         pass
 
     @abstractmethod
