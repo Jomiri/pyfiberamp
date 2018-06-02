@@ -1,6 +1,6 @@
 import unittest
 from pyfiberamp.fibers import YbDopedDoubleCladFiber
-from pyfiberamp import FiberAmplifierSimulation
+from pyfiberamp.steady_state import SteadyStateSimulation
 
 
 class YbDoubleCladTestCase(unittest.TestCase):
@@ -22,7 +22,7 @@ class YbDoubleCladTestCase(unittest.TestCase):
         fiber = YbDopedDoubleCladFiber(length,
                                        core_r, Yb_number_density,
                                        background_loss, core_NA, core_to_cladding_ratio)
-        simulation = FiberAmplifierSimulation()
+        simulation = SteadyStateSimulation()
         simulation.fiber = fiber
         simulation.add_cw_signal(wl=1030e-9, power=cls.input_signal_power, mode_field_diameter=2 * 4.8e-6)
         simulation.add_backward_pump(wl=914e-9, power=cls.input_pump_power)

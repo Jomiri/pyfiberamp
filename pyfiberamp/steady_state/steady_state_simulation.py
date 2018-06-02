@@ -1,23 +1,17 @@
+from pyfiberamp.simulation_result import SimulationResult
 from scipy.integrate import solve_bvp
 
-from pyfiberamp.boundary_conditions import BasicBoundaryConditions
 from pyfiberamp.channels import Channels
 from pyfiberamp.helper_funcs import *
-from pyfiberamp.initial_guess import InitialGuessFromParameters, InitialGuessFromArray
-from pyfiberamp.models.giles_model import GilesModel
-from pyfiberamp.simulation_result import SimulationResult
+from pyfiberamp.steady_state.initial_guess import InitialGuessFromParameters, InitialGuessFromArray
+from pyfiberamp.steady_state.models.giles_model import GilesModel
+from pyfiberamp.steady_state.steady_state_boundary_conditions import BasicBoundaryConditions
 
 
-class FiberAmplifierSimulation:
+class SteadyStateSimulation:
     """FiberAmplifierSimulation is the main class used for running Giles model simulations without Raman scattering.
     The class defines the fiber, boundary conditions and optical channels used in the simulation."""
     def __init__(self):
-        """
-
-        :param fiber: The fiber used in the simulation.
-        :type fiber: class instance derived from FiberBase
-
-        """
         self.fiber = None
         self.model = GilesModel
         self.boundary_conditions = BasicBoundaryConditions
@@ -148,10 +142,10 @@ class FiberAmplifierSimulation:
 
     def _finalize(self, sol, upper_level_func):
         """Creates the SimulationResult object from the solution object."""
-        res = SimulationResult(solution=sol,
+        res = SimulationResult(z=sol.x,
+                               powers=sol.y,
                                upper_level_fraction=upper_level_func(sol.y),
-                               slices=self.channels.get_slices(),
-                               wavelengths=self.channels.get_wavelengths(),
+                               channels=self.channels,
                                is_passive_fiber=self.fiber.is_passive_fiber())
         return res
 

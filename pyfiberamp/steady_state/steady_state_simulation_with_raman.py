@@ -1,19 +1,13 @@
-from .fiber_amplifier_simulation import FiberAmplifierSimulation
-from .helper_funcs import *
-from .models import GilesModelWithRaman
-from .simulation_result import SimulationResult
+from pyfiberamp.helper_funcs import *
+from pyfiberamp.simulation_result import SimulationResult
+from pyfiberamp.steady_state import SteadyStateSimulation
+from pyfiberamp.steady_state.models import GilesModelWithRaman
 
 
-class FiberAmplifierSimulationWithRaman(FiberAmplifierSimulation):
+class SteadyStateSimulationWithRaman(SteadyStateSimulation):
     """FiberAmplifierSimulationWithRaman is the main class used for running Giles model simulations with Raman scattering.
     The class defines the fiber, boundary conditions and optical channels used in the simulation."""
     def __init__(self):
-        """
-
-        :param fiber: The fiber used in the simulation.
-        :type fiber: class instance derived from FiberBase
-
-        """
         super().__init__()
         self.raman_is_included = False
         self.model = GilesModelWithRaman
@@ -52,10 +46,10 @@ class FiberAmplifierSimulationWithRaman(FiberAmplifierSimulation):
 
     def _finalize(self, sol, upper_level_func):
         """Creates the SimulationResult object from the solution object."""
-        res = SimulationResult(solution=sol,
+        res = SimulationResult(z=sol.x,
+                               powers=sol.y,
                                upper_level_fraction=upper_level_func(sol.y),
-                               slices=self.channels.get_slices(),
-                               wavelengths=self.channels.get_wavelengths(),
+                               channels=self.channels,
                                is_passive_fiber=self.fiber.is_passive_fiber(),
                                backward_raman_allowed=self.channels.backward_raman_allowed)
         return res

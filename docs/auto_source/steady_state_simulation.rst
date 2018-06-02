@@ -2,7 +2,7 @@
 Basic simulation
 ------------------------------------
 
-.. automodule:: pyfiberamp.fiber_amplifier_simulation
-   :members: FiberAmplifierSimulation
+.. automodule:: pyfiberamp.steady_state.steady_state_simulation
+   :members: SteadyStateSimulation
    :special-members: __init__
    :member-order: bysource

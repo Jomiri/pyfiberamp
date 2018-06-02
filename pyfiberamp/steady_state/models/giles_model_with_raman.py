@@ -1,5 +1,5 @@
 from .giles_model import GilesModel
-from ..helper_funcs import *
+from pyfiberamp.helper_funcs import *
 
 
 class GilesModelWithRaman(GilesModel):

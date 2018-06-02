@@ -300,3 +300,7 @@ def apply_linear_ramp(arr, n_points):
     end = arr[:, n_points-1]
     arr[:,:n_points] = linspace_2d(start, end, n_points)
 
+def min_clamp(arr, min_value):
+    arr[arr < min_value] = min_value
+
+

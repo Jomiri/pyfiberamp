@@ -1,16 +1,18 @@
 import matplotlib.pyplot as plt
 
 from pyfiberamp.util.sliced_array import SlicedArray
-from .helper_funcs import *
+from pyfiberamp.helper_funcs import *
 
 
 class SimulationResult:
-    def __init__(self, solution, upper_level_fraction, slices, wavelengths,
+    def __init__(self, z, powers, upper_level_fraction, channels,
                  is_passive_fiber, backward_raman_allowed=True):
-        self.sol = solution
-        self.z = self.sol.x
-        self.powers = SlicedArray(self.sol.y, slices)
-        self.wavelengths = wavelengths
+        self.z = z
+        slices = channels.get_slices()
+        self.channels = channels
+        self.labels = channels.get_labels()
+        self.powers = SlicedArray(powers, slices)
+        self.wavelengths = channels.get_wavelengths()
         self.upper_level_fraction = upper_level_fraction
         self._backward_raman_allowed = backward_raman_allowed
         self._is_passive_fiber = is_passive_fiber
@@ -36,6 +38,10 @@ class SimulationResult:
                                 'gain': gain}
         return result_dict
 
+    def powers_at_fiber_end(self):
+        forward_slice, backward_slice = self.channels.get_forward_and_backward_slices()
+        return np.hstack((self.powers[forward_slice,-1], self.powers[backward_slice,0]))
+
     def start_and_end_idx_from_channel_type(self, channel_type):
         return (0, -1) if 'forward' in channel_type else (-1, 0)
 
@@ -48,7 +54,7 @@ class SimulationResult:
         fig, ax = plt.subplots()
         for ch in CHANNEL_TYPES:
             self.plot_single_channel_type_power_evolution(ax, ch)
-        self.finalize_power_plot(ax)
+        self.finalize_fiber_power_plot(ax)
 
         ax_right = ax.twinx()
         self.plot_excited_ion_fraction(ax_right)
@@ -119,15 +125,20 @@ class SimulationResult:
         power_lines, power_labels = ax.get_legend_handles_labels()
         ax.legend(power_lines + ion_line, power_labels + ion_label)
 
-    def finalize_power_plot(self, ax):
+    def finalize_fiber_power_plot(self, ax):
+        x_label = 'Z (m)'
+        y_label = 'Power ({unit})'.format(unit=self.power_evolution_unit())
+        xlim = [self.z[0], self.z[-1]]
+        self.finalize_power_plot(ax, x_label, y_label, xlim)
+
+    def finalize_power_plot(self, ax, x_label, y_label, xlim):
         ax.tick_params(which='minor', direction='in', left=True, right=False, top=True, bottom=False,
                        width=2, length=6)
         ax.tick_params(which='major', direction='in', left=True, right=False, top=True, bottom=True,
                        width=3, length=10, labelsize=16)
-
-        ax.set_xlabel('Z (m)', fontsize=18)
-        ax.set_ylabel('Power ({unit})'.format(unit=self.power_evolution_unit()), fontsize=18)
-        ax.set_xlim([self.z[0], self.z[-1]])
+        ax.set_xlabel(x_label, fontsize=18)
+        ax.set_ylabel(y_label, fontsize=18)
+        ax.set_xlim(xlim)
         if not self.use_db_scale:
             ax.set_ylim([0, ax.get_ylim()[1]])
         ax.grid(True)

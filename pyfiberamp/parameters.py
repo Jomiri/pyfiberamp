@@ -12,7 +12,7 @@ RAMAN_MODES_IN_PM_FIBER = 1
 YB_UPPER_STATE_LIFETIME = 1e-3  # s
 c = 299792458
 h = 6.62607e-34
-
+DEFAULT_GROUP_INDEX = 1.45
 
 # Constants for the numerical algorithm
 SIMULATION_MIN_POWER = 1e-14

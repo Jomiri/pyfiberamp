@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 from copy import deepcopy
 
-from pyfiberamp import SlicedArray
+from pyfiberamp.util.sliced_array import SlicedArray
 
 
 class SimulationArrayTestCase(unittest.TestCase):
