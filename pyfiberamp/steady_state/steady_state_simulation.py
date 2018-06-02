@@ -9,9 +9,12 @@ from pyfiberamp.steady_state.steady_state_boundary_conditions import BasicBounda
 
 
 class SteadyStateSimulation:
-    """SteadyStateSimulation is the main class used for running steady state Giles model simulations
-     without Raman scattering.
-    The class defines the fiber, boundary conditions and optical channels used in the simulation."""
+    """
+    SteadyStateSimulation is the main class used for running steady state Giles model simulations
+    without Raman scattering. The class defines the fiber, boundary conditions and optical channels
+    used in the simulation.
+    """
+
     def __init__(self):
         self.fiber = None
         self.model = GilesModel
@@ -52,6 +55,7 @@ class SteadyStateSimulation:
         :type mode_field_diameter: float, optional
         :param label: Optional label for the channel
         :type label: str
+
         """
         self.channels.add_forward_pump(wl, wl_bandwidth, power, mode_field_diameter, label)
 

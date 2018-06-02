@@ -175,11 +175,17 @@ class DynamicSimulation:
         :param dt: Time step size. The 'auto' option uses realistic time step calculated from the Courant condition
         based on the speed of light in glass and the spatial step size. Larger (and physically unrealistic) time steps
         can be used to drastically speed up the convergence of steady state simulations.
-        :type dt: float
-        :returns: Time coordinate array
-        :rtype: numpy float array
+        :type dt: float or str
+        :param P: Pre-existing powers in the fiber, useful when chaining multiple simulations.
+        :type P: numpy float array
+        :param N2: Pre-existing upper state excitation in the fiber, useful when chaining multiple simulations.
+        :type N2: numpy float array
+        :param stop_at_steady_state: If this flag parameter is set to True, the simulation stops when the excitation
+        reaches a steady state (does not work if the excitation fluctuates at a specific frequency).
+        :type stop_at_steady_state: bool
+        :param steady_state_tolerance: Sets the relative change in excitation that is used to detect the steady state.
+        :type steady_state_tolerance: float
         """
-
 
         self.channels.set_fiber(self.fiber)
         solver = self.backend(self.channels, self.fiber, z_nodes, self.max_time_steps, dt, P, N2,

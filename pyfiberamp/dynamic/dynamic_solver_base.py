@@ -62,11 +62,11 @@ class DynamicSolverBase(ABC):
                                     self.steady_state_tolerance, self.dt, self.stop_at_steady_state)
 
         P_out = self.P_in_out[:, :n_iter]
-        N2 = self.extrapolate_first_point(self.N2)
+        self.N2 = self.extrapolate_first_point(self.N2)
         res = DynamicSimulationResult(z=self.z,
                                       t=self.t[:n_iter],
                                       powers=self.P,
-                                      upper_level_fraction=N2/self.fiber.ion_number_density,
+                                      upper_level_fraction=self.N2/self.fiber.ion_number_density,
                                       output_powers=P_out,
                                       channels=self.channels,
                                       is_passive_fiber=self.fiber.is_passive_fiber())

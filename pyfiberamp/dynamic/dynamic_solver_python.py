@@ -35,7 +35,7 @@ class DynamicSolverPython(DynamicSolverBase):
         P_hat_forward = np.empty_like(P)
         P_hat_backward = np.empty_like(P)
         P[:, :-1] = P_fiber_in
-        P[:, -1] = 0#SIMULATION_MIN_POWER#P_fiber_in[:, -1]
+        P[:, -1] = P_fiber_in[:, -1]
 
         N2 = np.zeros(len(N2_in) + 1)
         N2[:-1] = N2_in

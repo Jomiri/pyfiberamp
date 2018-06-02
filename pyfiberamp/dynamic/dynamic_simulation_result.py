@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 
 from pyfiberamp.simulation_result import SimulationResult
 
+
 class DynamicSimulationResult(SimulationResult):
     def __init__(self, z, t, powers, upper_level_fraction, output_powers, channels, is_passive_fiber):
         super().__init__(z, powers, upper_level_fraction, channels, is_passive_fiber, backward_raman_allowed=False)
