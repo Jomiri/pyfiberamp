@@ -1,5 +1,5 @@
 
-Basic simulation
+Steady state simulation
 ------------------------------------
 
 .. automodule:: pyfiberamp.steady_state.steady_state_simulation

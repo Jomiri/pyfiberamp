@@ -52,7 +52,7 @@ class DynamicSimulationTest(unittest.TestCase):
         dynamic_simulation = DynamicSimulation(self.time_steps)
         dynamic_simulation.fiber = self.fiber
         dynamic_simulation.add_forward_signal(wl=self.signal_wl, input_power=self.signal_power, label='forward_signal',
-                                              reflection_target='reflected_signal', reflection_coeff=0.04)
+                                              reflection_target='reflected_signal', reflectance=0.04)
         dynamic_simulation.add_backward_signal(wl=self.signal_wl, input_power=1e-15, label='reflected_signal')
         dynamic_simulation.add_backward_pump(wl=self.pump_wl, input_power=self.pump_power)
 

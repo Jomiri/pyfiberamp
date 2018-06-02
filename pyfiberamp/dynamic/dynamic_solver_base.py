@@ -36,7 +36,7 @@ class DynamicSolverBase(ABC):
         if N2 is None:
             N2 = np.zeros(simulation_array_shape[1])
         else:
-            assert(N2.shape == (1, simulation_array_shape[1]))
+            assert(N2.shape == (simulation_array_shape[1],))
         return N2
 
     def _check_dt(self, dt):

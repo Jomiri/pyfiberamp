@@ -9,7 +9,8 @@ from pyfiberamp.steady_state.steady_state_boundary_conditions import BasicBounda
 
 
 class SteadyStateSimulation:
-    """FiberAmplifierSimulation is the main class used for running Giles model simulations without Raman scattering.
+    """SteadyStateSimulation is the main class used for running steady state Giles model simulations
+     without Raman scattering.
     The class defines the fiber, boundary conditions and optical channels used in the simulation."""
     def __init__(self):
         self.fiber = None
@@ -26,9 +27,13 @@ class SteadyStateSimulation:
         :type wl: float
         :param power: Input power of the signal at the beginning of the fiber
         :type power: float
+        :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means including ASE.
+        :type wl_bandwidth: float
         :param mode_field_diameter: Mode field diameter of the signal.
          If left undefined, will be calculated using the Petermann II equation.
         :type mode_field_diameter: float, optional
+        :param label: Optional label for the channel
+        :type label: str
 
         """
         self.channels.add_forward_signal(wl, wl_bandwidth, power, mode_field_diameter, label)
@@ -40,9 +45,13 @@ class SteadyStateSimulation:
         :type wl: float
         :param power: Input power of the signal at the beginning of the fiber
         :type power: float
+        :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means including ASE.
+        :type wl_bandwidth: float
         :param mode_field_diameter: Mode field diameter of the signal.
          If left undefined, will be calculated using the Petermann II equation.
         :type mode_field_diameter: float, optional
+        :param label: Optional label for the channel
+        :type label: str
         """
         self.channels.add_forward_pump(wl, wl_bandwidth, power, mode_field_diameter, label)
 
@@ -53,9 +62,13 @@ class SteadyStateSimulation:
         :type wl: float
         :param power: Input power of the signal at the beginning of the fiber
         :type power: float
+        :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means including ASE.
+        :type wl_bandwidth: float
         :param mode_field_diameter: Mode field diameter of the signal.
          If left undefined, will be calculated using the Petermann II equation.
         :type mode_field_diameter: float, optional
+        :param label: Optional label for the channel
+        :type label: str
 
         """
         self.channels.add_backward_pump(wl, wl_bandwidth, power, mode_field_diameter, label)

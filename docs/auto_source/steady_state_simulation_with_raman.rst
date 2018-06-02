@@ -1,6 +1,6 @@
 
-Simulation with Raman scattering
----------------------------------
+Steady state simulation with Raman scattering
+----------------------------------------------
 
 .. automodule:: pyfiberamp.steady_state.steady_state_simulation_with_raman
    :members: SteadyStateSimulationWithRaman
