@@ -8,8 +8,6 @@ __pycache__/
 dist/
 build/
 taper_profiles/
-pyfiberamp/obsolete/
-pyfiberamp/taper_code/
 test_scripts/
 validation/
 .pypirc
