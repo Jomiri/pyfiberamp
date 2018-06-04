@@ -304,3 +304,25 @@ def min_clamp(arr, min_value):
     arr[arr < min_value] = min_value
 
 
+def dynamic_time_coordinates(max_time_steps, z_nodes, fiber_length, dt='auto'):
+    """
+    Returns the time coordinates used in the simulation. Useful for setting time-varying input powers.
+
+    :param max_time_steps: Number of time steps in the simulation
+    :param fiber: The fiber used in the simulation
+    :type fiber: Subclass of FiberBase
+    :param z_nodes: Number of spatial nodes used in the simulation.
+    :type z_nodes: int
+    :param dt: Time step size. The 'auto' option uses realistic time step calculated from the Courant condition \
+    based on the speed of light in glass and the spatial step size. Larger (and physically unrealistic) time steps \
+    can be used to drastically speed up the convergence of steady state simulations.
+    :type dt: float
+    :returns: Time coordinate array
+    :rtype: numpy float array
+
+    """
+    dz = fiber_length / (z_nodes - 1)
+    if dt == 'auto':
+        cn = c / DEFAULT_GROUP_INDEX
+        dt = dz / cn
+    return np.linspace(0, max_time_steps, max_time_steps, endpoint=False) * dt

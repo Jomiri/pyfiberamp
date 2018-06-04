@@ -37,9 +37,9 @@ class DynamicSimulationResult(SimulationResult):
 
     def make_output_legend_entry(self, channel):
         channel_type = self.channel_type_to_title(channel.channel_type)
-        optional_label = '(' + channel.label + ')' if channel.label != '' else ''
+        optional_label = ' (' + channel.label + ')' if channel.label != '' else ''
         wavelength = channel.wavelength * 1e9
-        return '{channel_type} {label}, {wl:.1f} nm'.format(channel_type=channel_type,
+        return '{channel_type}{label}, {wl:.1f} nm'.format(channel_type=channel_type,
                                                         label=optional_label,
                                                         wl=wavelength)
 

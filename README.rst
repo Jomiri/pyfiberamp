@@ -4,11 +4,19 @@
 
 In short
 ============
-PyFiberAmp is a rate equation simulation library for rare earth fiber amplifiers. It uses the Giles model [1]_
-originally developed for erbium-doped fiber amplifiers. The library also contains a basic rate equation model [2]_
-for stimulated and spontaneous Raman scattering effects in both active and passive fibers. Both core-pumped and
-double-clad amplifiers can be modeled. Documentation (still in progress) is available on
-`Read the Docs <https://pyfiberamp.readthedocs.io/en/latest/index.html>`_.
+PyFiberAmp is a rate equation simulation tool for rare-earth-doped fiber amplifiers and fiber lasers partly based on the Giles
+model [1]_. PyFiberAmp allows an arbitrary number of user-defined time-varying signals from continuous-wave steady-state operation to nanosecond pulses in both
+core-pumped and double-clad fiber amplifiers. It also includes reflective boundary conditions for modeling simple CW, gain-switched and
+Q-switched fiber lasers. The time-dynamic simulations are accelerated by a dedicated partial differential equation solver written in C++.
+In addition to signal and pump beams, PyFiberAmp also supports amplified spontaneous emission (ASE) and stimulated and spontaneous Raman scattering effects (SRS) [2]_ (SRS only in steady-state simulations).
+Documentation (still in progress) is available on `Read the Docs <https://pyfiberamp.readthedocs.io/en/latest/index.html>`_.
+Do you have a question, a comment or a feature request? Please open a new issue on GitHub.
+
+.. image:: docs/images/pulses.gif
+    :align: center
+
+
+.. Listaus: 1) esimerkkinotebookit, 2) päivitetyt kuvat readmehen 3) asennustesti tällä ja toisella koneella 4) merge
 
 Download
 =========

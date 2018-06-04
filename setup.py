@@ -1,8 +1,8 @@
 from setuptools import setup
 
-VERSION = '0.1.1'
+VERSION = '0.2.0dev'
 
-long_description = '''PyFiberAmp is a set of tools for modeling rare earth fiber amplifiers 
+long_description = '''PyFiberAmp is a set of tools for modeling rare-earth-doped fiber laser and amplifiers 
 using the Giles rate equation model.'''
 
 setup(
@@ -22,7 +22,8 @@ setup(
     packages=[
         'pyfiberamp',
         'pyfiberamp.fibers',
-        'pyfiberamp.models',
+        'pyfiberamp.dynamic',
+        'pyfiberamp.steady_state',
         'pyfiberamp.spectroscopies',
         'pyfiberamp.util',
     ],

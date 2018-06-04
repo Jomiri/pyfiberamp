@@ -365,11 +365,14 @@ ul.auto-toc {
 
 <div class="section" id="in-short">
 <h1>In short</h1>
-<p>PyFiberAmp is a rate equation simulation library for rare earth fiber amplifiers. It uses the Giles model <a class="footnote-reference" href="#id4" id="id1">[1]</a>
-originally developed for erbium-doped fiber amplifiers. The library also contains a basic rate equation model <a class="footnote-reference" href="#id5" id="id2">[2]</a>
-for stimulated and spontaneous Raman scattering effects in both active and passive fibers. Both core-pumped and
-double-clad amplifiers can be modeled. Documentation (still in progress) is available on
-<a class="reference external" href="https://pyfiberamp.readthedocs.io/en/latest/index.html">Read the Docs</a>.</p>
+<p>PyFiberAmp is a rate equation simulation tool for rare-earth-doped fiber amplifiers and fiber lasers partly based on the Giles
+model <a class="footnote-reference" href="#id4" id="id1">[1]</a>. PyFiberAmp allows an arbitrary number of user-defined time-varying signals from continuous-wave steady-state operation to nanosecond pulses in both
+core-pumped and double-clad fiber amplifiers. It also includes reflective boundary conditions for modeling simple CW, gain-switched and
+Q-switched fiber lasers. The time-dynamic simulations are accelerated by a dedicated partial differential equation solver written in C++.
+In addition to signal and pump beams, PyFiberAmp also supports amplified spontaneous emission (ASE) and stimulated and spontaneous Raman scattering effects (SRS) <a class="footnote-reference" href="#id5" id="id2">[2]</a> (SRS only in steady-state simulations).
+Documentation (still in progress) is available on <a class="reference external" href="https://pyfiberamp.readthedocs.io/en/latest/index.html">Read the Docs</a>.
+Do you have a question, a comment or a feature request? Please open a new issue on GitHub.</p>
+<img alt="docs/images/pulses.gif" class="align-center" src="docs/images/pulses.gif" />
 </div>
 <div class="section" id="download">
 <h1>Download</h1>
@@ -401,13 +404,13 @@ fiber = YbDopedFiber(length=length,
                     ion_number_density=yb_number_density,
                     background_loss=background_loss,
                     core_na=core_na)
-simulation = FiberAmplifierSimulation(fiber)
+simulation = FiberAmplifierSimulation()
+simulation.fiber = fiber
 simulation.add_cw_signal(wl=1035e-9, power=2e-3)
 simulation.add_forward_pump(wl=976e-9, power=300e-3)
 simulation.add_ase(wl_start=1000e-9, wl_end=1080e-9, n_bins=40)
 
 result = simulation.run(tol=tolerance)
-assert(result.success())
 result.plot_amplifier_result()
 </pre>
 <p>The script plots the power evolution in the amplifier and the amplified spontaneous emission (ASE) spectra. The

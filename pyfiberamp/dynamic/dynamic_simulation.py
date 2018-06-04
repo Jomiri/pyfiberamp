@@ -27,8 +27,8 @@ class DynamicSimulation:
 
     def use_cpp_backend(self):
         """
-        Sets the simulation to use the fast C++ solver. If the Python version is not compatible with the compiled
-        C++ -extension, falls back to the slow Python solver.
+        Sets the simulation to use the fast C++ solver. If the compiled C++ -extension is not compatible with the Python
+        version, falls back to the slow Python solver.
         """
         try:
             from pyfiberamp.dynamic.dynamic_solver_cpp import DynamicSolverCpp
@@ -40,16 +40,18 @@ class DynamicSimulation:
     def get_time_coordinates(self, fiber, z_nodes, dt='auto'):
         """
         Returns the time coordinates used in the simulation. Useful for setting time-varying input powers.
+
         :param fiber: The fiber used in the simulation
         :type fiber: Subclass of FiberBase
         :param z_nodes: Number of spatial nodes used in the simulation.
         :type z_nodes: int
-        :param dt: Time step size. The 'auto' option uses realistic time step calculated from the Courant condition
-        based on the speed of light in glass and the spatial step size. Larger (and physically unrealistic) time steps
+        :param dt: Time step size. The 'auto' option uses realistic time step calculated from the Courant condition \
+        based on the speed of light in glass and the spatial step size. Larger (and physically unrealistic) time steps \
         can be used to drastically speed up the convergence of steady state simulations.
         :type dt: float
         :returns: Time coordinate array
         :rtype: numpy float array
+
         """
         dz = fiber.length / (z_nodes - 1)
         if dt == 'auto':
@@ -58,7 +60,7 @@ class DynamicSimulation:
         else:
             assert dt < self.fiber.spectroscopy.upper_state_lifetime, 'Even for steady state simulation, the time step'\
                                                                       'should be below the upper state life time.'
-        return np.linspace(0, self.max_time_steps, self.max_time_steps) * dt
+        return np.linspace(0, self.max_time_steps, self.max_time_steps, endpoint=False) * dt
 
     def add_forward_signal(self, wl, input_power, wl_bandwidth=0.0, mode_field_diameter=0.0, label="",
                            reflection_target='', reflectance=0):
@@ -169,22 +171,24 @@ class DynamicSimulation:
     def run(self, z_nodes, dt='auto', P=None, N2=None, stop_at_steady_state=False,
             steady_state_tolerance=1e-4):
         """
-        Returns the time coordinates used in the simulation. Useful for setting time-varying input powers.
+        Runs the simulation.
+
         :param z_nodes: Number of spatial nodes used in the simulation.
         :type z_nodes: int
-        :param dt: Time step size. The 'auto' option uses realistic time step calculated from the Courant condition
-        based on the speed of light in glass and the spatial step size. Larger (and physically unrealistic) time steps
+        :param dt: Time step size. The 'auto' option uses realistic time step calculated from the Courant condition \
+        based on the speed of light in glass and the spatial step size. Larger (and physically unrealistic) time steps \
         can be used to drastically speed up the convergence of steady state simulations.
         :type dt: float or str
         :param P: Pre-existing powers in the fiber, useful when chaining multiple simulations.
         :type P: numpy float array
         :param N2: Pre-existing upper state excitation in the fiber, useful when chaining multiple simulations.
         :type N2: numpy float array
-        :param stop_at_steady_state: If this flag parameter is set to True, the simulation stops when the excitation
+        :param stop_at_steady_state: If this flag parameter is set to True, the simulation stops when the excitation \
         reaches a steady state (does not work if the excitation fluctuates at a specific frequency).
         :type stop_at_steady_state: bool
         :param steady_state_tolerance: Sets the relative change in excitation that is used to detect the steady state.
         :type steady_state_tolerance: float
+
         """
 
         self.channels.set_fiber(self.fiber)
