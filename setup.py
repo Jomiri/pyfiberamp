@@ -1,8 +1,8 @@
 from setuptools import setup
 
-VERSION = '0.2.0dev'
+VERSION = '0.2.0'
 
-long_description = '''PyFiberAmp is a set of tools for modeling rare-earth-doped fiber laser and amplifiers 
+long_description = '''PyFiberAmp is a set of tools for modeling rare-earth-doped fiber lasers and amplifiers 
 using the Giles rate equation model.'''
 
 setup(
@@ -28,5 +28,6 @@ setup(
         'pyfiberamp.util',
     ],
     include_package_data=True,
-    package_data={'pyfiberamp': ['spectroscopies/fiber_spectra/*.dat']}
+    package_data={'pyfiberamp': ['spectroscopies/fiber_spectra/*.dat',
+                                 'dynamic/fiber_simulation_pybindings.cp36-win_amd64.pyd']}
 )

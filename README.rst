@@ -5,12 +5,19 @@
 In short
 ============
 PyFiberAmp is a rate equation simulation tool for rare-earth-doped fiber amplifiers and fiber lasers partly based on the Giles
-model [1]_. PyFiberAmp allows an arbitrary number of user-defined time-varying signals from continuous-wave steady-state operation to nanosecond pulses in both
+model [1]_. PyFiberAmp allows an arbitrary number of user-defined time-varying signals from continuous-wave to nanosecond pulses in both
 core-pumped and double-clad fiber amplifiers. It also includes reflective boundary conditions for modeling simple CW, gain-switched and
 Q-switched fiber lasers. The time-dynamic simulations are accelerated by a dedicated partial differential equation solver written in C++.
 In addition to signal and pump beams, PyFiberAmp also supports amplified spontaneous emission (ASE) and stimulated and spontaneous Raman scattering effects (SRS) [2]_ (SRS only in steady-state simulations).
 Documentation (still in progress) is available on `Read the Docs <https://pyfiberamp.readthedocs.io/en/latest/index.html>`_.
-Do you have a question, a comment or a feature request? Please open a new issue on GitHub.
+Do you have a question, comment or a feature request? Please open a new issue on GitHub
+or contact me at pyfiberamp@gmail.com.
+
+A visual example
+=================
+Few-nanosecond pulses propagating in an Yb-doped fiber amplifier are distorted because of gain saturation.
+The Gaussian pulse with its exponential leading edge retains its shape better than the square or saw-tooth
+pulses.
 
 .. image:: docs/images/pulses.gif
     :align: center
@@ -20,7 +27,7 @@ Do you have a question, a comment or a feature request? Please open a new issue 
 
 Download
 =========
-PyFiberAmp is not yet on PyPI. You can clone the repository with
+PyFiberAmp is not yet on PyPI. You can either download the code as zip-file or clone the repository with
 ::
 
     $ git clone git://github.com/Jomiri/pyfiberamp.git
@@ -30,33 +37,44 @@ and then install the library with
 
     python setup.py install
 
+System requirements
+===================
+PyFiberAmp depends on the standard scientific Python packages: Numpy, SciPy and Matplotlib and has been
+tested on Windows 7 and Windows 10. It but should work on other operating systems as well
+provided that Python and the required packages are installed. The `Anaconda distribution
+<https://www.anaconda.com/download/>`_ contains everything out of the box.
+
+Even though all of PyFiberAmp's functionality is available in interpreted Python code, the use of the separate
+C++ extension is recommended for computationally intensive time-dynamic simulations.
+The system requirements of the C++ extension are stricter: Windows 7 or 10, Python 3.6 and a fairly modern
+CPU with AVX2 instruction support. If you cannot satisfy the requirements, open a new issue or send me a message,
+and I'll try to provide you with a compatible (but slower) version.
+
 Example
 ========
 The simple example below demonstrates a core-pumped Yb-doped fiber amplifier. All units are in SI.
 ::
 
-    from pyfiberamp import FiberAmplifierSimulation
+    from pyfiberamp.steady_state import SteadyStateSimulation
     from pyfiberamp.fibers import YbDopedFiber
 
-    yb_number_density = 2e25 # m^-3
-    core_r = 3e-6
-    background_loss = 0
-    length = 2.5 # m
+    yb_number_density = 2e25  # m^-3
+    core_radius = 3e-6  # m
+    length = 2.5  # m
     core_na = 0.12
-    tolerance = 1e-5
 
     fiber = YbDopedFiber(length=length,
-                        core_radius=core_r,
+                        core_radius=core_radius,
                         ion_number_density=yb_number_density,
-                        background_loss=background_loss,
+                        background_loss=0,
                         core_na=core_na)
-    simulation = FiberAmplifierSimulation()
+    simulation = SteadyStateSimulation()
     simulation.fiber = fiber
     simulation.add_cw_signal(wl=1035e-9, power=2e-3)
     simulation.add_forward_pump(wl=976e-9, power=300e-3)
-    simulation.add_ase(wl_start=1000e-9, wl_end=1080e-9, n_bins=40)
+    simulation.add_ase(wl_start=1000e-9, wl_end=1080e-9, n_bins=80)
 
-    result = simulation.run(tol=tolerance)
+    result = simulation.run(tol=1e-5)
     result.plot_amplifier_result()
 
 The script plots the power evolution in the amplifier and the amplified spontaneous emission (ASE) spectra. The
@@ -74,8 +92,7 @@ the signal starts to be reabsorbed by the fiber. This design is not perfect 1) b
     :width: 769px
     :height: 543px
 
-For more usage examples, please see `the Jupyter notebook
-<https://github.com/Jomiri/pyfiberamp/blob/master/Examples.ipynb>`_.
+For more usage examples, please see the Jupyter notebooks in the examples folder.
 
 Fiber data
 ==========
@@ -90,7 +107,9 @@ references.
 
 License
 ========
-PyFiberAmp is licensed under the MIT license.
+PyFiberAmp is licensed under the MIT license. The C++ extension depends on the `pybind11
+<https://github.com/pybind/pybind11>`_  and `Armadillo <http://arma.sourceforge.net/>`_ projects. See the license file
+for their respective licenses.
 
 References
 ===========
