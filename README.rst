@@ -40,15 +40,15 @@ and then install the library with
 System requirements
 ===================
 PyFiberAmp depends on the standard scientific Python packages: Numpy, SciPy and Matplotlib and has been
-tested on Windows 7 and Windows 10. It but should work on other operating systems as well
+tested on Windows 7 and Windows 10. It should work on other operating systems as well
 provided that Python and the required packages are installed. The `Anaconda distribution
 <https://www.anaconda.com/download/>`_ contains everything out of the box.
 
 Even though all of PyFiberAmp's functionality is available in interpreted Python code, the use of the separate
 C++ extension is recommended for computationally intensive time-dynamic simulations.
 The system requirements of the C++ extension are stricter: Windows 7 or 10, Python 3.6 and a fairly modern
-CPU with AVX2 instruction support. If you cannot satisfy the requirements, open a new issue or send me a message,
-and I'll try to provide you with a compatible (but slower) version.
+CPU with AVX2 instruction support. If you cannot satisfy the requirements but the Python based solver is
+too slow for you, open a new issue or send me a message, and I'll try to provide you with a compatible C++ version.
 
 Example
 ========
@@ -92,7 +92,8 @@ the signal starts to be reabsorbed by the fiber. This design is not perfect 1) b
     :width: 769px
     :height: 543px
 
-For more usage examples, please see the Jupyter notebooks in the examples folder.
+For more usage examples, please see the Jupyter notebooks in the examples folder. Many more examples will be added in the
+future.
 
 Fiber data
 ==========
