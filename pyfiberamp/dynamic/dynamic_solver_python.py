@@ -11,22 +11,22 @@ class DynamicSolverPython(DynamicSolverBase):
         super().__init__(*args, **kwargs)
 
     def solve(self, P, N2, g, a, l, v, dv, P_in_out, reflections,
-              fiber_core_radius, upper_state_lifetime,
-              fiber_length, ion_number_density, n_forward,
-              steady_state_tolerance, dt, stop_at_steady_state):
+              ion_cross_section_areas, upper_state_lifetime,
+              fiber_length, ion_number_densities, n_forward,
+              steady_state_tolerance, dt, stop_at_steady_state, n_channels):
         nodes = P.shape[1]
         max_iterations = P_in_out.shape[1] - 1
         dz = fiber_length / (nodes - 1)
-        channel_params = ChannelParameters(a, g, l, v, dv, nodes)
+        channel_params = ChannelParameters(a, g, l, v, dv, nodes, ion_cross_section_areas, ion_number_densities, n_channels)
         boundary_conditions = DynamicBoundaryConditions(P_in_out, reflections, n_forward)
-        dn2dt = dNdT(channel_params, fiber_core_radius, ion_number_density, upper_state_lifetime)
-        dpdz = dPdZ(channel_params, ion_number_density)
+        dn2dt = dNdT(channel_params, upper_state_lifetime)
+        dpdz = dPdZ(channel_params)
         convergence_checker = ConvergenceChecker(max_iterations, steady_state_tolerance, stop_at_steady_state)
         P_out, N2_out, n_iter = self._bfecc_simulation(P, N2, dpdz, dn2dt, boundary_conditions, convergence_checker, dz,
                                                        dt, n_forward)
         P[:n_forward, :] = P_out[:n_forward, :-1]
         P[n_forward:, :] = P_out[n_forward:, 1:]
-        N2[:] = N2_out[:-1]
+        N2[...] = N2_out[:, :-1]
         return n_iter
 
     def _bfecc_simulation(self, P_fiber_in, N2_in, dPdz, dN2dt,
@@ -37,9 +37,9 @@ class DynamicSolverPython(DynamicSolverBase):
         P[:, :-1] = P_fiber_in
         P[:, -1] = P_fiber_in[:, -1]
 
-        N2 = np.zeros(len(N2_in) + 1)
-        N2[:-1] = N2_in
-        N2[-1] = N2[-1]
+        N2 = np.zeros((N2_in.shape[0], N2_in.shape[1] + 1))
+        N2[:, :-1] = N2_in
+        N2[:, -1] = N2_in[:, -1]
 
         idx_iteration = 0
         while convergence_checker.has_not_converged(N2, idx_iteration):

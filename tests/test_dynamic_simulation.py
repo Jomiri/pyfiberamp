@@ -11,6 +11,8 @@ class DynamicSimulationTest(unittest.TestCase):
         nt = 1e25
         r = 3e-6
         cls.fiber = YbDopedFiber(length=0.1, core_radius=r, core_na=0.12, ion_number_density=nt)
+        cls.fiber.default_signal_mode_shape_parameters['functional_form'] = 'gaussian'
+        cls.fiber.default_pump_mode_shape_parameters['functional_form'] = 'gaussian'
         cls.pump_power = 0.5
         cls.signal_power = 0.1
         cls.signal_wl = 1040e-9
@@ -36,7 +38,8 @@ class DynamicSimulationTest(unittest.TestCase):
         dynamic_simulation.add_forward_pump(wl=self.pump_wl, input_power=self.pump_power/2)
         dynamic_simulation.add_ase(wl_start=1020e-9, wl_end=1040e-9, n_bins=3)
 
-        dynamic_simulation.use_cpp_backend()
+        #dynamic_simulation.use_cpp_backend()
+        dynamic_simulation.use_python_backend()
         cpp_result = dynamic_simulation.run(z_nodes=self.z_nodes, dt=self.steady_state_dt, stop_at_steady_state=True)
 
         dynamic_simulation.use_python_backend()
@@ -56,7 +59,8 @@ class DynamicSimulationTest(unittest.TestCase):
         dynamic_simulation.add_backward_signal(wl=self.signal_wl, input_power=1e-15, label='reflected_signal')
         dynamic_simulation.add_backward_pump(wl=self.pump_wl, input_power=self.pump_power)
 
-        dynamic_simulation.use_cpp_backend()
+        #dynamic_simulation.use_cpp_backend()
+        dynamic_simulation.use_python_backend()
         cpp_res = dynamic_simulation.run(z_nodes=self.z_nodes, dt=self.steady_state_dt, stop_at_steady_state=True)
 
         dynamic_simulation.use_python_backend()

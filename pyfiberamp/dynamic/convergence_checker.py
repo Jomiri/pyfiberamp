@@ -34,7 +34,7 @@ class ConvergenceChecker:
 
     def update_mean_N2(self, N2):
         self.prev_mean_N2 = self.current_mean_N2
-        self.current_mean_N2 = np.mean(N2[1:-1])  # Boundary points with N2=0 excluded
+        self.current_mean_N2 = np.mean(N2[:,1:-1])  # Boundary points with N2=0 excluded
 
     def print_status(self, n_iteration):
         print("Iteration {:d}, average excitation: {:.5E}".format(n_iteration, self.current_mean_N2))

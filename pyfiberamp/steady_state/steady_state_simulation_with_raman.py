@@ -12,7 +12,7 @@ class SteadyStateSimulationWithRaman(SteadyStateSimulation):
         self.raman_is_included = False
         self.model = GilesModelWithRaman
 
-    def add_pulsed_signal(self, wl, power, f_rep, fwhm_duration, wl_bandwidth=0, mode_field_diameter=0.0, label=''):
+    def add_pulsed_signal(self, wl, power, f_rep, fwhm_duration, wl_bandwidth=0, mode_shape_parameters=None, label=''):
         """Adds a new forward propagating single-frequency pulsed signal to the simulation. A pulsed signal has a higher
         peak power resulting in stronger nonlinear effects, in particular spontaneous and stimulated Raman scattering.
         The pulse shape is assumed to be Gaussian.
@@ -35,7 +35,7 @@ class SteadyStateSimulationWithRaman(SteadyStateSimulation):
 
         """
         self.channels.add_pulsed_forward_signal(wl, wl_bandwidth, power, f_rep, fwhm_duration,
-                                                mode_field_diameter, label)
+                                                mode_shape_parameters, label)
 
     def add_raman(self, input_power=SIMULATION_MIN_POWER, backward_raman_allowed=True):
         """Adds Raman channels to the simulation.

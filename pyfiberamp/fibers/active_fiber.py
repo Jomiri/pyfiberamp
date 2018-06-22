@@ -1,6 +1,7 @@
 from pyfiberamp.helper_funcs import *
 from .fiber_base import FiberBase
 from pyfiberamp.spectroscopies import Spectroscopy
+from pyfiberamp.util.doping_profile import DopingProfile
 
 
 class ActiveFiber(FiberBase):
@@ -55,86 +56,28 @@ class ActiveFiber(FiberBase):
                          core_na=core_na)
 
         self.spectroscopy = spectroscopy
-        self.ion_number_density = ion_number_density
-        self.overlap = None
+        self.doping_profile = DopingProfile(ion_number_densities=[ion_number_density], radii=[core_radius])
+
+    def set_doping_profile(self, ion_number_densities, radii=None, areas=None):
+        self.doping_profile = DopingProfile(ion_number_densities, radii, areas)
 
     @property
-    def overlap_is_constant(self):
-        """Returns True if the user has set a default overlap value. Overlap is the Giles model overlap between the mode
-        and the dopant ions (= core in this case)."""
-        return self.overlap is not None
-
-    def use_constant_overlap(self, overlap):
-        """Setter for a user-provided overlap value.
-
-        :param overlap: Single overlap value that will be used for all optical channels.
-        :type overlap: float
-
-        """
-        self.overlap = overlap
-
-    def use_automatic_overlap(self):
-        """Disables the overlap value given by the user."""
-        self.overlap = None
-
-    def _make_single_overlap(self, mode_field_radius):
-        """Returns the overlap value for a given mode field radius."""
-        if self.overlap_is_constant:
-            return self.overlap
-        return overlap_integral(self.core_radius, mode_field_radius)
+    def ion_number_density(self):
+        assert len(self.doping_profile.ion_number_densities) == 1
+        return self.doping_profile.ion_number_densities[0]
 
     def saturation_parameter(self):
         """Returns the constant saturation parameter zeta defined in the Giles model."""
         return zeta_from_fiber_parameters(self.core_radius, self.spectroscopy.upper_state_lifetime, self.ion_number_density)
 
-    def get_signal_channel_gain(self, freq, frequency_bandwidth, mode_field_radius):
-        """This is the maximum gain g* defined in the Giles model. The gain for a mode with a given frequency depends
-        on the the emission cross section, overlap between mode and core/ions and the doping concentration."""
+    def get_channel_emission_cross_section(self, freq, frequency_bandwidth):
         if frequency_bandwidth == 0:
-            return self._single_frequency_gain(freq, mode_field_radius)
+            return self.spectroscopy.gain_cs_interp(freq)
         else:
-            return self._finite_bandwidth_gain(freq, frequency_bandwidth, mode_field_radius)
+            return averaged_value_of_finite_bandwidth_spectrum(freq, frequency_bandwidth, self.spectroscopy.gain_cs_interp)
 
-    def get_signal_channel_absorption(self, freq, frequency_bandwidth, mode_field_radius):
-        """This is the maximum absorption alpha defined in the Giles model. The absorption for a mode with a given
-         frequency depends on the the absorption cross section, overlap between mode and core/ions and the
-         doping concentration."""
+    def get_channel_absorption_cross_section(self, freq, frequency_bandwidth):
         if frequency_bandwidth == 0:
-            return self._single_frequency_absorption(freq, mode_field_radius)
+            return self.spectroscopy.absorption_cs_interp(freq)
         else:
-            return self._finite_bandwidth_absorption(freq, frequency_bandwidth, mode_field_radius)
-
-    def get_pump_channel_gain(self, freq, frequency_bandwidth, mode_field_radius):
-        return self.get_signal_channel_gain(freq, frequency_bandwidth, mode_field_radius)
-
-    def get_pump_channel_absorption(self, freq, frequency_bandwidth, mode_field_radius):
-        return self.get_signal_channel_absorption(freq, frequency_bandwidth, mode_field_radius)
-
-    def _single_frequency_gain(self, freq, mode_field_radius):
-        return self.spectroscopy.gain_cs_interp(freq) * self._make_single_overlap(mode_field_radius) * self.ion_number_density
-
-    def _single_frequency_absorption(self, freq, mode_field_radius):
-        return self.spectroscopy.absorption_cs_interp(freq) * self._make_single_overlap(mode_field_radius) * self.ion_number_density
-
-    def _finite_bandwidth_gain(self, center_frequency, frequency_bandwidth, mode_field_radius):
-        """Calculates the maximum gain g* for a finite bandwidth signal by averaging over the start, end and middle
-        points."""
-        return self._averaged_value_of_finite_bandwidth_spectrum(center_frequency, frequency_bandwidth,
-                                                                 mode_field_radius, self._single_frequency_gain)
-
-    def _finite_bandwidth_absorption(self, center_frequency, frequency_bandwidth, mode_field_radius):
-        """Calculates the maximum absorption alpha for a finite bandwidth signal by averaging over the start, end
-        and middle points."""
-        return self._averaged_value_of_finite_bandwidth_spectrum(center_frequency, frequency_bandwidth,
-                                                                 mode_field_radius, self._single_frequency_absorption)
-
-    def _averaged_value_of_finite_bandwidth_spectrum(self, center_frequency, frequency_bandwidth, mode_field_radius,
-                                                     spectrum_func):
-        """Actual function used to calculate the average gain or absorption of a finite bandwidth beam."""
-        start_frequency = center_frequency - frequency_bandwidth / 2
-        end_frequency = center_frequency + frequency_bandwidth / 2
-        start_value = spectrum_func(start_frequency, mode_field_radius)
-        middle_value = spectrum_func(center_frequency, mode_field_radius)
-        end_value = spectrum_func(end_frequency, mode_field_radius)
-        return np.mean([start_value, middle_value, end_value])
-
+            return averaged_value_of_finite_bandwidth_spectrum(freq, frequency_bandwidth, self.spectroscopy.absorption_cs_interp)

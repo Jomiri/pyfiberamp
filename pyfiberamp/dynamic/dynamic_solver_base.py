@@ -15,7 +15,7 @@ class DynamicSolverBase(ABC):
         self.simulation_array_shape = (channels.number_of_channels, n_nodes)
         self.max_iterations = max_iterations
         self.P = self._check_P(P, self.simulation_array_shape)
-        self.N2 = self._check_N2(N2, self.simulation_array_shape)
+        self.N2 = self._check_N2(N2, self.simulation_array_shape, self.fiber.num_ion_populations)
         self.P_in_out = self.channels.get_dynamic_input_powers(max_iterations)
         self.dz = fiber.length / (n_nodes - 1)
         self.dt = self._check_dt(dt)
@@ -32,16 +32,17 @@ class DynamicSolverBase(ABC):
             assert(P.shape == simulation_array_shape)
         return P
 
-    def _check_N2(self, N2, simulation_array_shape):
+    def _check_N2(self, N2, simulation_array_shape, num_ion_populations):
+        n2_shape = (num_ion_populations, simulation_array_shape[1])
         if N2 is None:
-            N2 = np.zeros(simulation_array_shape[1])
+            N2 = np.zeros(n2_shape)
         else:
-            assert(N2.shape == (simulation_array_shape[1],))
+            assert(N2.shape == n2_shape)
         return N2
 
     def _check_dt(self, dt):
         if dt == 'auto':
-            cn = c / DEFAULT_GROUP_INDEX
+            cn = c / self.fiber.core_refractive_index
             dt = self.dz / cn
         else:
             assert(dt < self.fiber.spectroscopy.upper_state_lifetime)
@@ -56,24 +57,28 @@ class DynamicSolverBase(ABC):
         directions = self.channels.get_propagation_directions()
         n_forward = int(np.sum(directions[directions == 1]))
 
+        n_channels = self.channels.number_of_channels
+        ion_number_densities = np.tile(self.fiber.doping_profile.ion_number_densities, n_channels)
+        ion_cross_section_areas = np.tile(self.fiber.doping_profile.areas, n_channels)
+
         n_iter = self.solve(self.P, self.N2, g, a, l, v, dv, self.P_in_out, self.reflections,
-                                    self.fiber.core_radius, self.fiber.spectroscopy.upper_state_lifetime,
-                                    self.fiber.length, self.fiber.ion_number_density, n_forward,
-                                    self.steady_state_tolerance, self.dt, self.stop_at_steady_state)
+                                    ion_cross_section_areas, self.fiber.spectroscopy.upper_state_lifetime,
+                                    self.fiber.length, ion_number_densities, n_forward,
+                                    self.steady_state_tolerance, self.dt, self.stop_at_steady_state, n_channels)
 
         P_out = self.P_in_out[:, :n_iter]
         self.N2 = self.extrapolate_first_point(self.N2)
         res = DynamicSimulationResult(z=self.z,
                                       t=self.t[:n_iter],
                                       powers=self.P,
-                                      upper_level_fraction=self.N2/self.fiber.ion_number_density,
+                                      upper_level_fraction=self.N2/self.fiber.doping_profile.ion_number_densities[:, np.newaxis],
                                       output_powers=P_out,
                                       channels=self.channels,
                                       is_passive_fiber=self.fiber.is_passive_fiber())
         return res
 
     def extrapolate_first_point(self, N2):
-        N2[0] = 2 * N2[1] - N2[2]
+        N2[:, 0] = 2 * N2[:, 1] - N2[:, 2]
         return N2
 
     @abstractmethod
