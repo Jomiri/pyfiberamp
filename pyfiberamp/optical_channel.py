@@ -35,8 +35,6 @@ class OpticalChannel:
                                    direction, label, reflection_target_label, reflectance,
                                    channel_type)
 
-
-
     @classmethod
     def create_pump_channel(cls, fiber, wl, wl_bandwidth, power, mode_shape_parameters, direction, label,
                             reflection_target_label, reflectance, channel_type=''):
@@ -76,8 +74,8 @@ class OpticalChannel:
     @staticmethod
     def get_overlaps(fiber, wl, mode_shape_parameters):
         # Case 1: overlaps predefined
-        n_preset_overlaps = mode_shape_parameters['overlaps']
-        if len(n_preset_overlaps) > 0:
+        n_preset_overlaps = len(mode_shape_parameters['overlaps'])
+        if n_preset_overlaps > 0:
             assert n_preset_overlaps == len(fiber.doping_profile.areas)
             return np.array(mode_shape_parameters['overlaps'])
 
