@@ -18,7 +18,7 @@ class dNdT:
         self.a_g_per_h_v_pi_r2_Nt = a_g_per_Nt / h_v_pi_r2
 
         self.n_channels = channel_params.n_channels
-        self.num_ion_populations = len(channel_params.ion_number_densities) // self.n_channels
+        self.num_ion_populations = channel_params.ion_number_densities.shape[0] // self.n_channels
 
         self.a_g_per_h_v_pi_r2_Nt = reorganize_by_ion_population(self.a_g_per_h_v_pi_r2_Nt,
                                                                  self.num_ion_populations, self.n_channels)
@@ -41,7 +41,7 @@ class dPdZ:
         m = NUMBER_OF_MODES_IN_SINGLE_MODE_FIBER
         self.g_m_h_v_dv_per_Nt = m * h * channel_params.g * channel_params.v * channel_params.dv / channel_params.ion_number_densities
         self.n_channels = channel_params.n_channels
-        self.num_ion_populations = len(channel_params.ion_number_densities) // self.n_channels
+        self.num_ion_populations = channel_params.ion_number_densities.shape[0] // self.n_channels
         self.a_g_per_Nt = reorganize_by_ion_population(self.a_g_per_Nt, self.num_ion_populations, self.n_channels)
         self.a_l = reorganize_by_ion_population(self.a_l, self.num_ion_populations, self.n_channels)
         self.g_m_h_v_dv_per_Nt = reorganize_by_ion_population(self.g_m_h_v_dv_per_Nt, self.num_ion_populations, self.n_channels)
