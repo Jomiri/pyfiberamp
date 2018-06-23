@@ -13,6 +13,7 @@ class ModeShape:
     def __init__(self, fiber, wavelength, mode_shape_parameters):
         functional_form = mode_shape_parameters['functional_form']
         radius = mode_shape_parameters['mode_diameter'] / 2
+        assert radius > 0
 
         self.mode_func = None
         if functional_form == 'bessel':

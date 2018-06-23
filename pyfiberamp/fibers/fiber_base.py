@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
-import numpy as np
 
-from pyfiberamp.util.doping_profile import DopingProfile
+from pyfiberamp.doping_profile import DopingProfile
 from pyfiberamp.helper_funcs import *
 
 

@@ -1,5 +1,5 @@
 from .helper_funcs import *
-from pyfiberamp.util.mode_shape import ModeShape
+from pyfiberamp.mode_shape import ModeShape
 
 
 class OpticalChannel:
