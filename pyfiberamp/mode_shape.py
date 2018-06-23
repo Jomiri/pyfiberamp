@@ -13,7 +13,7 @@ class ModeShape:
     def __init__(self, fiber, wavelength, mode_shape_parameters):
         functional_form = mode_shape_parameters['functional_form']
         radius = mode_shape_parameters['mode_diameter'] / 2
-        assert radius > 0
+        assert radius >= 0
 
         self.mode_func = None
         if functional_form == 'bessel':
@@ -80,20 +80,20 @@ class ModeShape:
     @staticmethod
     def make_normalized_gaussian_mode(mode_radius):
         def f(r):
-            return 1 / (np.pi * mode_radius**2) * np.exp(-r**2 / mode_radius**2)
+            return 2 / (np.pi * mode_radius**2) * np.exp(-2 * r**2 / mode_radius**2)
         return f
 
     @staticmethod
     def make_normalized_bessel_mode_func(beta, k_core, k_clad, a):
-        u = a * np.sqrt(k_core ** 2 - beta ** 2)
-        v = a * np.sqrt(beta ** 2 - k_clad ** 2)
-        V = np.sqrt(u ** 2 + v ** 2)
+        u = a * np.sqrt(k_core**2 - beta**2)
+        v = a * np.sqrt(beta**2 - k_clad**2)
+        V = np.sqrt(u**2 + v**2)
 
         def f(r):
             if r < a:
-                return 1 / np.pi * (v / (a * V) * J0(u / a * r) / J1(u)) ** 2
+                return 1 / np.pi * (v/(a*V) * J0(u/a*r) / J1(u))**2
             else:
-                return 1 / np.pi * (u / (a * V) * K0(v / a * r) / K1(v)) ** 2
+                return 1 / np.pi * (u/(a*V) * K0(v/a*r) / K1(v))**2
         return f
 
     @staticmethod
@@ -105,7 +105,7 @@ class ModeShape:
         res = minimize_scalar(lambda r: abs(mode_matching_func(r)), bounds=[beta_lower_bound, beta_upper_bound],
                                method='bounded')
         beta = res.x
-        assert res.success
+        assert res.success, 'Bessel mode calculation failed.'
         #beta, res_data = brenth(mode_matching_func, beta_lower_bound, beta_upper_bound, full_output=True)
         #assert res_data.converged
         return beta
@@ -118,3 +118,11 @@ class ModeShape:
             return v * J0(u) / J1(u) - u * K0(v) / K1(v)
             #return u * J1(u) / J0(u) - v * K1(v) / K0(v)
         return f
+
+    def nonlinear_effective_area(self, core_radius):
+        r_end = 10 * core_radius
+        upper_func = lambda r: 2 * np.pi * r * self.mode_func(r)
+        lower_func = lambda r: 2 * np.pi * r * self.mode_func(r)**2
+        upper, _ = quad(upper_func, 0, r_end)
+        lower, _ = quad(lower_func, 0, r_end)
+        return upper**2 / lower

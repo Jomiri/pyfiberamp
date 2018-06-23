@@ -37,7 +37,7 @@ class SteadyStateSimulationWithRaman(SteadyStateSimulation):
         self.channels.add_pulsed_forward_signal(wl, wl_bandwidth, power, f_rep, fwhm_duration,
                                                 mode_shape_parameters, label)
 
-    def add_raman(self, input_power=SIMULATION_MIN_POWER, backward_raman_allowed=True):
+    def add_raman(self, input_power=SIMULATION_MIN_POWER, backward_raman_allowed=True, raman_gain=DEFAULT_RAMAN_GAIN):
         """Adds Raman channels to the simulation.
 
          :param backward_raman_allowed: Determines if only the forward propagating Raman beam is simulated.
@@ -48,6 +48,7 @@ class SteadyStateSimulationWithRaman(SteadyStateSimulation):
          """
         self.channels.add_raman(input_power, backward_raman_allowed)
         self.raman_is_included = True
+        self.model.raman_gain = raman_gain
 
     def _finalize(self, sol, upper_level_func):
         """Creates the SimulationResult object from the solution object."""

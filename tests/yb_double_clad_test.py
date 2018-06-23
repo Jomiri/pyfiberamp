@@ -40,16 +40,16 @@ class YbDoubleCladTestCase(unittest.TestCase):
         self.assertAlmostEqual(simulated_input_power, self.input_pump_power)
 
     def test_output_signal_power(self):
-        expected_output_power = 19.2485663335
+        expected_output_power = 19.685242869832777
         simulated_output_power = self.result.powers.forward_signal[0, -1]
         self.assertAlmostEqual(simulated_output_power, expected_output_power)
 
     def test_residual_pump_power(self):
-        expected_residual_pump_power = 25.7039292218
+        expected_residual_pump_power = 25.24792774963823
         simulated_residual_pump_power = self.result.powers.backward_pump[0, 0]
         self.assertAlmostEqual(simulated_residual_pump_power, expected_residual_pump_power)
 
     def test_average_excitation(self):
-        expected_average_excitation = 0.219035968828
+        expected_average_excitation = 0.19820814932170538
         simulated_average_excitation = self.result.overall_average_excitation
         self.assertAlmostEqual(simulated_average_excitation, expected_average_excitation)

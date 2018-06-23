@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from pyfiberamp.doping_profile import DopingProfile
 from pyfiberamp.helper_funcs import *
+from pyfiberamp.mode_shape import ModeShape
 
 
 class FiberBase(ABC):
@@ -56,20 +57,22 @@ class FiberBase(ABC):
         """
         if self.effective_area_type == 'core_area':
             return self._effective_area_from_core_area(freq)
-        elif self.effective_area_type == 'gaussian':
-            return self._effective_area_from_gaussian_approximation(freq)
-        elif self.effective_area_type == 'bessel':
-            return self._effective_area_from_bessel_distribution(freq)
+        elif self.effective_area_type in ['gaussian', 'bessel']:
+            return self._effective_area_from_mode_shape(freq)
 
     def _effective_area_from_core_area(self, freq):
         """Returns a numpy array with len(freq) items. All items are equal to the fiber's core area."""
         return self.core_area() * np.ones_like(freq)
 
-    def _effective_area_from_gaussian_approximation(self, freq):
+    def _effective_area_from_mode_shape(self, freq):
         """Returns a numpy array with len(freq) items. The effective core area is calculated for each frequency as
         pi*(mfd/2)**2, where mfd is the mode field diameter. This is not exactly physically correct but computationally
         easy."""
-        return effective_area_from_mfd(freq_to_wl(freq), self.core_radius, self.core_na)
+        mode_shape = ModeShape(self, freq_to_wl(freq), {'functional_form': self.effective_area_type,
+                                                        'mode_diameter': 0})
+        a_eff = mode_shape.nonlinear_effective_area(self.core_radius)
+        print(a_eff)
+        return a_eff
 
     def _effective_area_from_bessel_distribution(self, freq):
         raise NotImplementedError()
@@ -81,7 +84,7 @@ class FiberBase(ABC):
         :rtype: float
 
         """
-        return self.core_radius ** 2 * np.pi
+        return self.core_radius**2 * np.pi
 
     @abstractmethod
     def get_channel_emission_cross_section(self, freq, frequency_bandwidth):

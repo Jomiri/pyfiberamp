@@ -13,8 +13,6 @@ class DynamicSimulationTest(unittest.TestCase):
         cls.nt = 1e25
         r = 3e-6
         cls.fiber = YbDopedFiber(length=0.1, core_radius=r, core_na=0.12, ion_number_density=cls.nt)
-        cls.fiber.default_signal_mode_shape_parameters['functional_form'] = 'gaussian'
-        cls.fiber.default_pump_mode_shape_parameters['functional_form'] = 'gaussian'
         cls.pump_power = 0.5
         cls.signal_power = 0.1
         cls.signal_wl = 1040e-9
@@ -70,9 +68,10 @@ class DynamicSimulationTest(unittest.TestCase):
 
         cpp_output_powers = cpp_result.powers_at_fiber_end()
         python_output_powers = python_result.powers_at_fiber_end()
-        expected_output_regression = np.array([1.12232229e-01, 2.42212332e-01, 1.13232893e-07,
-                                               1.17682271e-07, 9.16464383e-08, 2.42210013e-01,
-                                               1.13234548e-07, 1.17682690e-07, 9.16458631e-08])
+
+        expected_output_regression = np.array([1.24777656e-01, 3.00423131e-01, 2.20330515e-07,
+                                               2.32158298e-07, 1.80295869e-07, 3.01233048e-01,
+                                               2.42165526e-07, 2.52453304e-07, 1.91762386e-07])
         self.assertTrue(np.allclose(cpp_output_powers, python_output_powers, rtol=1e-6))
         self.assertTrue(np.allclose(cpp_output_powers, expected_output_regression, rtol=1e-6))
 
@@ -136,6 +135,6 @@ class DynamicSimulationTest(unittest.TestCase):
 
         cpp_output = cpp_res.powers_at_fiber_end()
         python_output = python_res.powers_at_fiber_end()
-        expected_output = np.array([0.1122059, 0.00503606, 0.48387128])
+        expected_output = np.array([0.11878692, 0.00564412, 0.47651562])
         self.assertTrue(np.allclose(cpp_output, expected_output, rtol=1e-6))
         self.assertTrue(np.allclose(cpp_output, python_output, rtol=1e-6))

@@ -7,6 +7,7 @@ class GilesModelWithRaman(GilesModel):
     R.G. Smith, "Optical Power Handling Capacity of Low Loss Optical Fibers as Determined by Stimulated Raman and
     Brillouin Scattering," Appl. Opt. 11, 2489-2494 (1972)
     """
+    raman_gain = DEFAULT_RAMAN_GAIN
     def __init__(self, channels, fiber):
         """The model is initialized with the optical channels and the simulated fiber. The parameters are named in the
         same way as in the paper by Giles and Desurvire. A pulsed signal is taken into account in the peak power
@@ -36,8 +37,8 @@ class GilesModelWithRaman(GilesModel):
         raman_vs = self.v[forward_raman_slice]
         h_v_dv_forward_raman = h_v_dv[forward_raman_slice]
         h_v_dv_backward_raman = h_v_dv[backward_raman_slice]
-        g_r_forward = RAMAN_GAIN
-        g_r_backward = RAMAN_GAIN if self.backward_raman_allowed else 0
+        g_r_forward = self.raman_gain
+        g_r_backward = self.raman_gain if self.backward_raman_allowed else 0
         photon_energy_ratio = signal_vs / raman_vs
         effective_area = self.fiber.nonlinear_effective_area(signal_vs)
 

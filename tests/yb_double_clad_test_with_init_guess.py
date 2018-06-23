@@ -42,12 +42,10 @@ class YbDoubleCladWithGuessTestCase(unittest.TestCase):
             cls.gains.append(signal_gain)
 
     def test_gains(self):
-        expected_gains = [16.82364861112401, 16.823384060673266,
-                          16.79542179686689, 16.627587463781644,
-                          16.289876367498408, 15.827250111959684,
-                          15.219694408665054, 14.47529065120971,
-                          13.851001599290376, 13.318109861113086,
-                          12.73022119550334]
+        expected_gains = [16.920274464870143, 16.920807985811383, 16.89380779110342,
+                          16.72773065938639, 16.39251181039223, 15.932553278021926,
+                          15.327637260825988, 14.58562152909674, 13.963103951187797,
+                          13.431642299893685, 12.84524276399409]
         simulated_gains = self.gains
         for expected, simulated in zip(expected_gains, simulated_gains):
             self.assertAlmostEqual(simulated, expected)

@@ -2,7 +2,7 @@ import os
 
 
 # Physical quantities or constants
-RAMAN_GAIN = 1e-13
+DEFAULT_RAMAN_GAIN = 1e-13
 RAMAN_FREQ_SHIFT = 13.2e12
 ASE_OUTPUT_POWER_GUESS = 1e-3
 RAMAN_GAIN_WL_BANDWIDTH = 5e-9

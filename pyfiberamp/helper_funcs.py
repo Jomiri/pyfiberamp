@@ -75,57 +75,6 @@ def to_dbm(power):
     return to_db(power * 1000)
 
 
-def overlap_from_freq(freq, r, na, doped_radius):
-    """Calculates the overlap factor of a fundamental fiber mode with frequency freq and the doped core.
-
-    :param freq: Frequency of the mode
-    :type freq: float
-    :param r: Core radius
-    :type r: float
-    :param na: Core numerical aperture
-    :type na: float
-    :param doped_radius: Core radius
-    :type doped_radius: float
-    :returns: Overlap factor
-    :rtype: float
-    """
-    return overlap_from_wl(freq_to_wl(freq), r, na, doped_radius)
-
-
-def overlap_from_wl(wl, r, na, doped_radius):
-    """Calculates the overlap factor of a fundamental fiber mode with wavelength wl and the doped core.
-
-    :param wl: Wavelength of the mode
-    :type wl: float
-    :param r: Core radius
-    :type r: float
-    :param na: Core numerical aperture
-    :type na: float
-    :param doped_radius: Core radius
-    :type doped_radius: float
-    :returns: Overlap factor
-    :rtype: float
-    """
-    mode_radius = fundamental_mode_radius_petermann_2(wl, r, na)
-    return overlap_integral(doped_radius, mode_radius)
-
-
-def effective_area_from_mfd(wl, r, na):
-    """Calculates an approximation of the nonlinear effective area of the fiber as pi*(mfd/2)**2.
-
-    :param wl: Wavelength of the mode
-    :type wl: float
-    :param r: Core radius
-    :type r: float
-    :param na: Core numerical aperture
-    :type na: float
-    :returns: Nonlinear effective area
-    :rtype: float
-    """
-    half_width_at_e = fundamental_mode_radius_petermann_2(wl, r, na)
-    return np.pi * half_width_at_e**2
-
-
 def fundamental_mode_mfd_marcuse(wl, r, na):
     """Calculates the mode field diameter of the fundamental mode with vacuum wavelength wl using Marcuse's equation.
 
@@ -172,19 +121,6 @@ def fundamental_mode_radius_petermann_2(wl, r, na):
     :rtype: float
     """
     return fundamental_mode_mfd_petermann_2(wl, r, na) / 2
-
-
-def overlap_integral(doped_radius, mode_radius):
-    """Overlap integral between the Gaussian-shaped fundamental mode (approximation) and rectangular doped core.
-
-    :param doped_radius: Radius of the dopant in the fiber (typically core radius)
-    :type doped_radius: float
-    :param mode_radius: Mode field radius of the propagating optical beam
-    :type mode_radius: float
-    :returns: Overlap integral between the mode and the dopant ions
-    :rtype: float
-    """
-    return 1 - np.exp(-doped_radius**2 / mode_radius**2)
 
 
 def fiber_v_parameter(wl, r, na):
@@ -296,9 +232,10 @@ def check_signal_reprate(f_rep):
 
 
 def apply_linear_ramp(arr, n_points):
-    start = np.ones_like(arr[:,0])*SIMULATION_MIN_POWER
+    start = np.full_like(arr[:, 0], SIMULATION_MIN_POWER)
     end = arr[:, n_points-1]
-    arr[:,:n_points] = linspace_2d(start, end, n_points)
+    arr[:, :n_points] = linspace_2d(start, end, n_points)
+
 
 def min_clamp(arr, min_value):
     arr[arr < min_value] = min_value

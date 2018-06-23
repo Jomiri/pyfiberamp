@@ -23,7 +23,7 @@ class OpticalChannel:
 
     @property
     def wavelength(self):
-        return freq_to_wl(self.v)
+        return freq_to_wl(self.v[0])
 
     @classmethod
     def create_signal_channel(cls, fiber, wl, wl_bandwidth, power, mode_shape_parameters, direction, label,
