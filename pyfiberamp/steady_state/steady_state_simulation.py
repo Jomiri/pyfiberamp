@@ -23,7 +23,7 @@ class SteadyStateSimulation:
         self.channels = Channels()
         self.solver_verbosity = 2
 
-    def add_cw_signal(self, wl, power, wl_bandwidth=0, mode_field_diameter=0.0, label=''):
+    def add_cw_signal(self, wl, power, wl_bandwidth=0, mode_shape_parameters=None, label=''):
         """Adds a new forward propagating single-frequency CW signal to the simulation.
 
         :param wl: Wavelength of the signal
@@ -39,9 +39,9 @@ class SteadyStateSimulation:
         :type label: str
 
         """
-        self.channels.add_forward_signal(wl, wl_bandwidth, power, mode_field_diameter, label)
+        self.channels.add_forward_signal(wl, wl_bandwidth, power, mode_shape_parameters, label)
 
-    def add_forward_pump(self, wl, power, wl_bandwidth=0, mode_field_diameter=0.0, label=''):
+    def add_forward_pump(self, wl, power, wl_bandwidth=0, mode_shape_parameters=None, label=''):
         """Adds a new forward propagating single-frequency pump to the simulation.
 
         :param wl: Wavelength of the signal
@@ -57,9 +57,9 @@ class SteadyStateSimulation:
         :type label: str
 
         """
-        self.channels.add_forward_pump(wl, wl_bandwidth, power, mode_field_diameter, label)
+        self.channels.add_forward_pump(wl, wl_bandwidth, power, mode_shape_parameters, label)
 
-    def add_backward_pump(self, wl, power, wl_bandwidth=0, mode_field_diameter=0.0, label=''):
+    def add_backward_pump(self, wl, power, wl_bandwidth=0, mode_shape_parameters=None, label=''):
         """Adds a new backward propagating single-frequency pump to the simulation.
 
         :param wl: Wavelength of the signal
@@ -75,7 +75,7 @@ class SteadyStateSimulation:
         :type label: str
 
         """
-        self.channels.add_backward_pump(wl, wl_bandwidth, power, mode_field_diameter, label)
+        self.channels.add_backward_pump(wl, wl_bandwidth, power, mode_shape_parameters, label)
 
     def add_ase(self, wl_start, wl_end, n_bins):
         """Adds amplified spontaneous emission (ASE) channels.
@@ -100,6 +100,8 @@ class SteadyStateSimulation:
         :type tol: float
 
         """
+        if self.fiber.num_ion_populations > 1:
+            raise RuntimeError('Use DynamicSimulation for calculations with multiple transverse ion populations.')
         self.channels.set_fiber(self.fiber)
         boundary_condition_residual = self.boundary_conditions(self.channels)
         model = self.model(self.channels, self.fiber)
@@ -163,7 +165,7 @@ class SteadyStateSimulation:
                                powers=sol.y,
                                upper_level_fraction=upper_level_func(sol.y),
                                channels=self.channels,
-                               is_passive_fiber=self.fiber.is_passive_fiber())
+                               fiber=self.fiber)
         return res
 
 

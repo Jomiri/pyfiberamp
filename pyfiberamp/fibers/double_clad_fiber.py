@@ -63,6 +63,9 @@ class DoubleCladFiber(ActiveFiber):
                          background_loss=background_loss,
                          core_na=core_na)
         self.core_to_cladding_ratio = ratio_of_core_and_cladding_diameters
+        self.default_pump_mode_shape_parameters = {'functional_form': 'tophat',
+                                                   'mode_diameter': 2 * self.pump_cladding_radius(),
+                                                   'overlaps': []}
 
     def pump_to_core_overlap(self):
         """Returns the overlap between the core and the pump beams, which equals to the ratio of core and cladding
@@ -72,48 +75,3 @@ class DoubleCladFiber(ActiveFiber):
     def pump_cladding_radius(self):
         """Returns the radius of the fiber's pump cladding."""
         return self.core_radius / self.core_to_cladding_ratio
-
-    def get_pump_channel_gain(self, freq, frequency_bandwidth, mode_field_radius):
-        if frequency_bandwidth == 0:
-            return self._single_frequency_pump_channel_gain(freq)
-        else:
-            return self._finite_bandwidth_pump_channel_gain(freq, frequency_bandwidth)
-
-    def get_pump_channel_absorption(self, freq, frequency_bandwidth, mode_field_radius):
-        if frequency_bandwidth == 0:
-            return self._single_frequency_pump_channel_absorption(freq)
-        else:
-            return self._finite_bandwidth_pump_channel_absorption(freq, frequency_bandwidth)
-
-    def _single_frequency_pump_channel_gain(self, freq):
-        """This is the maximum gain g* defined in the Giles model. The gain for a mode with a given frequency depends
-        on the the emission cross section, overlap between mode and core/ions (here ratio of core and cladding areas)
-        and the doping concentration."""
-        return self.spectroscopy.gain_cs_interp(freq) * self.pump_to_core_overlap() * self.ion_number_density
-
-    def _single_frequency_pump_channel_absorption(self, freq):
-        """This is the maximum absorption alpha defined in the Giles model. The absorption for a mode with a given
-         frequency depends on the the absorption cross section, overlap between mode and core/ions (here ratio of core
-         and cladding areas) and the doping concentration."""
-        return self.spectroscopy.absorption_cs_interp(freq) * self.pump_to_core_overlap() * self.ion_number_density
-
-    def _finite_bandwidth_pump_channel_gain(self, center_frequency, frequency_bandwidth):
-        """Calculates the maximum gain g* for a finite bandwidth signal by averaging over the start, end and middle
-        points."""
-        return self._averaged_value_of_finite_bandwidth_pump_spectrum(center_frequency, frequency_bandwidth,
-                                                                      self._single_frequency_pump_channel_gain)
-
-    def _finite_bandwidth_pump_channel_absorption(self, center_frequency, frequency_bandwidth):
-        """Calculates the maximum absorption alpha for a finite bandwidth signal by averaging over the start, end
-        and middle points."""
-        return self._averaged_value_of_finite_bandwidth_pump_spectrum(center_frequency, frequency_bandwidth,
-                                                                      self._single_frequency_pump_channel_absorption)
-
-    def _averaged_value_of_finite_bandwidth_pump_spectrum(self, center_frequency, frequency_bandwidth, spectrum_func):
-        """Actual function used to calculate the average gain or absorption of a finite bandwidth beam."""
-        start_frequency = center_frequency - frequency_bandwidth / 2
-        end_frequency = center_frequency + frequency_bandwidth / 2
-        start_value = spectrum_func(start_frequency)
-        middle_value = spectrum_func(center_frequency)
-        end_value = spectrum_func(end_frequency)
-        return np.mean([start_value, middle_value, end_value])

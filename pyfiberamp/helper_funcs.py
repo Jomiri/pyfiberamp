@@ -326,3 +326,13 @@ def dynamic_time_coordinates(max_time_steps, z_nodes, fiber_length, dt='auto'):
         cn = c / DEFAULT_GROUP_INDEX
         dt = dz / cn
     return np.linspace(0, max_time_steps, max_time_steps, endpoint=False) * dt
+
+
+def averaged_value_of_finite_bandwidth_spectrum(center_frequency, frequency_bandwidth, spectrum_func):
+    """Function used to calculate the average gain or absorption cross section of a finite bandwidth channel."""
+    start_frequency = center_frequency - frequency_bandwidth / 2
+    end_frequency = center_frequency + frequency_bandwidth / 2
+    start_value = spectrum_func(start_frequency)
+    middle_value = spectrum_func(center_frequency)
+    end_value = spectrum_func(end_frequency)
+    return np.mean([start_value, middle_value, end_value])

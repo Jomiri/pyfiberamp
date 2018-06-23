@@ -29,7 +29,9 @@ class YbDoubleCladWithGuessTestCase(unittest.TestCase):
         for pump_wl in pump_wavelengths:
             simulation = SteadyStateSimulation()
             simulation.fiber = fiber
-            simulation.add_cw_signal(wl=1030e-9, power=cls.input_signal_power, mode_field_diameter=2 * 4.8e-6)
+            simulation.add_cw_signal(wl=1030e-9, power=cls.input_signal_power,
+                                     mode_shape_parameters={'functional_form': 'gaussian',
+                                                            'mode_diameter': 2 * 4.8e-6})
             simulation.add_backward_pump(wl=pump_wl, power=cls.input_pump_power)
             if init_guess_array is not None:
                 simulation.set_guess_array(init_guess_array)

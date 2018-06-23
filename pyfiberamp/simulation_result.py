@@ -2,11 +2,10 @@ import matplotlib.pyplot as plt
 
 from pyfiberamp.util.sliced_array import SlicedArray
 from pyfiberamp.helper_funcs import *
-
+from pyfiberamp.fibers import PassiveFiber
 
 class SimulationResult:
-    def __init__(self, z, powers, upper_level_fraction, channels,
-                 is_passive_fiber, backward_raman_allowed=True):
+    def __init__(self, z, powers, upper_level_fraction, channels, fiber, backward_raman_allowed=True):
         self.z = z
         slices = channels.get_slices()
         self.channels = channels
@@ -15,13 +14,18 @@ class SimulationResult:
         self.wavelengths = channels.get_wavelengths()
         self.upper_level_fraction = upper_level_fraction
         self._backward_raman_allowed = backward_raman_allowed
-        self._is_passive_fiber = is_passive_fiber
-
+        self.fiber = fiber
         self.use_db_scale = False
 
     @property
-    def average_excitation(self):
-        return np.mean(self.upper_level_fraction)
+    def local_average_excitation(self):
+        weights = self.fiber.doping_profile.areas
+        norm_weights = weights[:, np.newaxis] / sum(weights) * len(weights)
+        return np.mean(self.upper_level_fraction * norm_weights, axis=0)
+
+    @property
+    def overall_average_excitation(self):
+        return np.mean(self.local_average_excitation)
 
     def make_result_dict(self):
         result_dict = {}
@@ -144,10 +148,10 @@ class SimulationResult:
         ax.grid(True)
 
     def plot_excited_ion_fraction(self, ax):
-        if self._is_passive_fiber:
+        if isinstance(self.fiber, PassiveFiber):
             ax.set_axis_off()
             return
-        ax.plot(self.z, self.upper_level_fraction * 100, '--', label='Excited ion fraction')
+        ax.plot(self.z, self.local_average_excitation * 100, '--', label='Excited ion fraction')
         ax.set_ylabel('Ions at the upper laser level (%)', fontsize=18)
         ax.yaxis.set_ticks_position('right')
         ax.tick_params(which='major', direction='in', left=False, right=True, top=True, bottom=True,
@@ -191,4 +195,27 @@ class SimulationResult:
 
     def plotting_transformation(self, power):
         return to_db(power * 1000) if self.use_db_scale else power
+
+    def plot_transverse_ion_excitation(self):
+        assert self.fiber.doping_profile.radii is not None, 'Doping profile radii not defined.'
+        assert self.fiber.num_ion_populations > 1, 'More than one ion population needed for transverse plotting.'
+        from mpl_toolkits.mplot3d import Axes3D
+        from matplotlib import cm
+
+        radii = self.fiber.doping_profile.radii
+        n2 = self.upper_level_fraction
+        n2_plot = np.vstack((n2[::-1,:], n2))
+        max_r = radii[-1]
+        r_plot = np.linspace(-max_r, max_r, len(radii) * 2)[:, np.newaxis] * np.ones(n2_plot.shape[1])[np.newaxis, :]
+        l_plot = self.z[np.newaxis, :] * np.ones(n2_plot.shape[0])[:, np.newaxis]
+
+        #plt.imshow(n2_plot, extent=(-max_r, max_r, 0, self.fiber.length))
+        fig = plt.figure()
+        ax = fig.gca(projection='3d')
+        ax.plot_surface(l_plot, r_plot*1e6, n2_plot, cmap=cm.coolwarm)
+        ax.set_xlabel('Distance (m)', fontsize=18)
+        ax.set_ylabel('Radius (um)', fontsize=18)
+        ax.set_zlabel('Fractional excitation', fontsize=18)
+        plt.show()
+
 

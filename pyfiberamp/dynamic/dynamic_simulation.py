@@ -62,7 +62,7 @@ class DynamicSimulation:
                                                                       'should be below the upper state life time.'
         return np.linspace(0, self.max_time_steps, self.max_time_steps, endpoint=False) * dt
 
-    def add_forward_signal(self, wl, input_power, wl_bandwidth=0.0, mode_field_diameter=0.0, label="",
+    def add_forward_signal(self, wl, input_power, wl_bandwidth=0.0, mode_shape_parameters=None, label="",
                            reflection_target='', reflectance=0):
         """Adds a new forward-propagating signal to the simulation.
 
@@ -81,11 +81,11 @@ class DynamicSimulation:
         :type reflection_target: str
         :param reflectance: Reflectance R [0,1] from this channel to the target channel
         """
-        self._check_input(wl, input_power, wl_bandwidth, mode_field_diameter, label, reflection_target, reflectance)
-        self.channels.add_forward_signal(wl, wl_bandwidth, input_power, mode_field_diameter, label, reflection_target,
+        self._check_input(wl, input_power, wl_bandwidth, mode_shape_parameters, label, reflection_target, reflectance)
+        self.channels.add_forward_signal(wl, wl_bandwidth, input_power, mode_shape_parameters, label, reflection_target,
                                          reflectance)
 
-    def add_backward_signal(self, wl, input_power, wl_bandwidth=0.0, mode_field_diameter=0.0, label="",
+    def add_backward_signal(self, wl, input_power, wl_bandwidth=0.0, mode_shape_parameters=None, label="",
                             reflection_target='', reflectance=0):
         """Adds a new backward-propagating signal to the simulation.
 
@@ -104,11 +104,11 @@ class DynamicSimulation:
         :type reflection_target: str
         :param reflectance: Reflectance R [0,1] from this channel to the target channel
         """
-        self._check_input(wl, input_power, wl_bandwidth, mode_field_diameter, label, reflection_target, reflectance)
-        self.channels.add_backward_signal(wl, wl_bandwidth, input_power, mode_field_diameter, label, reflection_target,
+        self._check_input(wl, input_power, wl_bandwidth, mode_shape_parameters, label, reflection_target, reflectance)
+        self.channels.add_backward_signal(wl, wl_bandwidth, input_power, mode_shape_parameters, label, reflection_target,
                                           reflectance)
 
-    def add_forward_pump(self, wl, input_power, wl_bandwidth=0.0, mode_field_diameter=0.0, label="",
+    def add_forward_pump(self, wl, input_power, wl_bandwidth=0.0, mode_shape_parameters=None, label="",
                          reflection_target='', reflectance=0):
         """Adds a new forward-propagating pump to the simulation.
 
@@ -127,11 +127,11 @@ class DynamicSimulation:
         :type reflection_target: str
         :param reflectance: Reflectance R [0,1] from this channel to the target channel
         """
-        self._check_input(wl, input_power, wl_bandwidth, mode_field_diameter, label, reflection_target, reflectance)
-        self.channels.add_forward_pump(wl, wl_bandwidth, input_power, mode_field_diameter, label, reflection_target,
+        self._check_input(wl, input_power, wl_bandwidth, mode_shape_parameters, label, reflection_target, reflectance)
+        self.channels.add_forward_pump(wl, wl_bandwidth, input_power, mode_shape_parameters, label, reflection_target,
                                        reflectance)
 
-    def add_backward_pump(self, wl, input_power, wl_bandwidth=0.0, mode_field_diameter=0.0, label='',
+    def add_backward_pump(self, wl, input_power, wl_bandwidth=0.0, mode_shape_parameters=None, label='',
                           reflection_target='', reflectance=0):
         """Adds a new backward-propagating pump to the simulation.
 
@@ -150,8 +150,8 @@ class DynamicSimulation:
         :type reflection_target: str
         :param reflectance: Reflectance R [0,1] from this channel to the target channel
         """
-        self._check_input(wl, input_power, wl_bandwidth, mode_field_diameter, label, reflection_target, reflectance)
-        self.channels.add_backward_pump(wl, wl_bandwidth, input_power, mode_field_diameter, label, reflection_target,
+        self._check_input(wl, input_power, wl_bandwidth, mode_shape_parameters, label, reflection_target, reflectance)
+        self.channels.add_backward_pump(wl, wl_bandwidth, input_power, mode_shape_parameters, label, reflection_target,
                                         reflectance)
 
     def add_ase(self, wl_start, wl_end, n_bins):
@@ -169,7 +169,7 @@ class DynamicSimulation:
         self.channels.add_ase(wl_start, wl_end, n_bins)
 
     def run(self, z_nodes, dt='auto', P=None, N2=None, stop_at_steady_state=False,
-            steady_state_tolerance=1e-4):
+            steady_state_tolerance=1e-4, convergence_checking_interval=10000):
         """
         Runs the simulation.
 
@@ -193,15 +193,14 @@ class DynamicSimulation:
 
         self.channels.set_fiber(self.fiber)
         solver = self.backend(self.channels, self.fiber, z_nodes, self.max_time_steps, dt, P, N2,
-                              stop_at_steady_state, steady_state_tolerance)
+                              stop_at_steady_state, steady_state_tolerance, convergence_checking_interval)
         res = solver.run()
         return res
 
-    def _check_input(self, wl, input_power, wl_bandwidth, mode_field_diameter, label, reflection_target, reflection_coeff):
+    def _check_input(self, wl, input_power, wl_bandwidth, mode_shape_parameters, label, reflection_target, reflection_coeff):
         assert isinstance(wl, float) and wl > 0
         self._check_input_power(input_power)
         assert isinstance(wl_bandwidth, float) and wl_bandwidth >= 0
-        assert mode_field_diameter >= 0
         assert isinstance(label, str)
         assert isinstance(reflection_target, str)
         assert 0 <= reflection_coeff <= 1

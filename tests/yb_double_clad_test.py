@@ -24,7 +24,9 @@ class YbDoubleCladTestCase(unittest.TestCase):
                                        background_loss, core_NA, core_to_cladding_ratio)
         simulation = SteadyStateSimulation()
         simulation.fiber = fiber
-        simulation.add_cw_signal(wl=1030e-9, power=cls.input_signal_power, mode_field_diameter=2 * 4.8e-6)
+        simulation.add_cw_signal(wl=1030e-9, power=cls.input_signal_power,
+                                 mode_shape_parameters={'functional_form': 'gaussian',
+                                                        'mode_diameter': 2 * 4.8e-6})
         simulation.add_backward_pump(wl=914e-9, power=cls.input_pump_power)
         simulation.set_number_of_nodes(npoints)
         cls.result = simulation.run(tol=tolerance)
@@ -49,5 +51,5 @@ class YbDoubleCladTestCase(unittest.TestCase):
 
     def test_average_excitation(self):
         expected_average_excitation = 0.219035968828
-        simulated_average_excitation = self.result.average_excitation
+        simulated_average_excitation = self.result.overall_average_excitation
         self.assertAlmostEqual(simulated_average_excitation, expected_average_excitation)

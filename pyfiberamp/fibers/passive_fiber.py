@@ -29,27 +29,11 @@ class PassiveFiber(FiberBase):
          non-zero to avoid division by zero."""
         return 1
 
-    def get_signal_channel_gain(self, freq, frequency_bandwidth, mode_field_radius):
+    def get_channel_emission_cross_section(self, freq, frequency_bandwidth):
         """Passive fiber has no gain."""
         return 0
 
-    def get_signal_channel_absorption(self, freq, frequency_bandwidth, mode_field_radius):
-        """Passive fiber has no absorption by dopant ions."""
-        return 0
-
-    def get_pump_channel_gain(self, freq, frequency_bandwidth, mode_field_radius):
-        """Passive fiber has no gain."""
-        return 0
-
-    def get_pump_channel_absorption(self, freq, frequency_bandwidth, mode_field_radius):
-        """Passive fiber has no absorption by dopant ions."""
-        return 0
-
-    def _finite_bandwidth_gain(self, center_frequency, frequency_bandwidth, mode_field_radius):
-        """Passive fiber has no gain."""
-        return 0
-
-    def _finite_bandwidth_absorption(self, center_frequency, frequency_bandwidth, mode_field_radius):
+    def get_channel_absorption_cross_section(self, freq, frequency_bandwidth):
         """Passive fiber has no absorption by dopant ions."""
         return 0
 
