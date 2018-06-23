@@ -3,7 +3,7 @@ from pyfiberamp.util.mode_shape import ModeShape
 
 
 class OpticalChannel:
-    def __init__(self, v, dv, input_power, direction, overlaps, gain, absorption, loss, label,
+    def __init__(self, v, dv, input_power, direction, overlaps, mode_func, gain, absorption, loss, label,
                  reflection_target_label, reflection_coeff, channel_type):
         self.v = v
         self.dv = dv
@@ -19,6 +19,7 @@ class OpticalChannel:
         self.reflection_target_label = reflection_target_label
         self.reflection_coeff = reflection_coeff
         self.channel_type = channel_type
+        self.mode_shape_func = mode_func
 
     @property
     def wavelength(self):
@@ -58,7 +59,7 @@ class OpticalChannel:
                         reflection_coeff, channel_type):
 
         n_ion_populations = fiber.num_ion_populations
-        overlaps = cls.get_overlaps(fiber, wl, mode_shape_parameters)
+        overlaps, mode_func = cls.get_overlaps_and_mode_func(fiber, wl, mode_shape_parameters)
         center_frequency = wl_to_freq(wl)
         frequency_bandwidth = wl_bw_to_freq_bw(wl_bandwidth, wl)
         gain = overlaps * fiber.get_channel_emission_cross_section(center_frequency, frequency_bandwidth) * fiber.doping_profile.ion_number_densities
@@ -67,12 +68,13 @@ class OpticalChannel:
         frequency_bandwidth = np.full(n_ion_populations, frequency_bandwidth)
         loss = np.full(n_ion_populations, fiber.background_loss)
         return OpticalChannel(center_frequency, frequency_bandwidth, power,
-                              direction, overlaps, gain, absorption, loss,
+                              direction, overlaps, mode_func, gain, absorption, loss,
                               label, reflection_target_label, reflection_coeff,
                               channel_type)
 
     @staticmethod
-    def get_overlaps(fiber, wl, mode_shape_parameters):
+    def get_overlaps_and_mode_func(fiber, wl, mode_shape_parameters):
+        mode_func = None
         # Case 1: overlaps predefined
         n_preset_overlaps = len(mode_shape_parameters['overlaps'])
         if n_preset_overlaps > 0:
@@ -86,6 +88,7 @@ class OpticalChannel:
         # Case 2: Mode shape and overlaps must be calculated
         mode_shape = ModeShape(fiber, wl, mode_shape_parameters)
         overlaps = mode_shape.get_ring_overlaps(doping_radii)
-        return overlaps
+        mode_func = mode_shape.mode_func
+        return overlaps, mode_func
 
 

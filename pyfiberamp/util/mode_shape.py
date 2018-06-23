@@ -20,11 +20,13 @@ class ModeShape:
                 warnings.warn('Bessel mode cannot use predefined mode diameter.')
             self.mode_func = self.solve_fundamental_bessel_mode(fiber, wavelength)
         elif functional_form == 'gaussian':
-            if  radius == 0:
+            if radius == 0:
                 self.mode_func = self.solve_fundamental_gaussian_mode(fiber, wavelength)
             else:
                 self.mode_func = self.make_normalized_gaussian_mode(radius)
         elif functional_form == 'tophat':
+            if radius == 0:
+                radius = fiber.core_radius
             self.mode_func = self.make_normalized_top_hat_mode(radius)
         else:
             raise RuntimeError('Unsupported mode shape: {}.'.format(functional_form))
