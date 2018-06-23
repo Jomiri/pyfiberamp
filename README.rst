@@ -25,8 +25,9 @@ Additional benefits include:
 - Open source: see what's happening under the hood
 
 Documentation (still in progress) is available on `Read the Docs <https://pyfiberamp.readthedocs.io/en/latest/index.html>`_.
-See also the examples folder above. If you have a question, comment or a feature request, please open a new issue on
-GitHub or contact me at pyfiberamp@gmail.com.
+See also the examples folder above. If you have a question, comment or feature request, please open a new issue on
+GitHub or contact me at pyfiberamp@gmail.com. If you find some good use for PyFiberAmp, I would also very much like to
+hear about it.
 
 A visual example
 =================
@@ -43,7 +44,7 @@ Download
 PyFiberAmp is not yet on PyPI. You can either download the code as zip-file or clone the repository with
 ::
 
-    $ git clone git://github.com/Jomiri/pyfiberamp.git
+    git clone git://github.com/Jomiri/pyfiberamp.git
 
 and then install the library with
 ::
@@ -60,8 +61,8 @@ provided that Python and the required packages are installed. The `Anaconda dist
 Even though all of PyFiberAmp's functionality is available in interpreted Python code, the use of the separate
 C++ extension is recommended for computationally intensive time-dynamic simulations.
 The system requirements of the C++ extension are stricter: Windows 7 or 10, Python 3.6 and a fairly modern
-CPU with AVX2 instruction support. If you cannot satisfy the requirements but the Python based solver is
-too slow for you, open a new issue or send me a message, and I'll try to provide you with a compatible C++ version.
+CPU with AVX2 instruction support. If the Python based solver is too slow for you but you cannot satisfy the
+requirements, open a new issue or send me a message, and I'll try to provide you with a compatible C++ version.
 
 Example
 ========
