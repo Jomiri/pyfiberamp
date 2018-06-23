@@ -12,7 +12,7 @@ class SteadyStateSimulation:
     """
     SteadyStateSimulation is the main class used for running steady state Giles model simulations \
     without Raman scattering. Only one ion population is supported. The class defines the fiber, boundary conditions and
-     optical channels used in the simulation.
+    optical channels used in the simulation.
     """
 
     def __init__(self):
@@ -35,7 +35,7 @@ class SteadyStateSimulation:
         :param mode_shape_parameters: Defines the mode field shape. Allowed key-value pairs:
          *functional_form* -> one of ['bessel', 'gaussian', 'tophat']  \
          *mode_diameter* -> float \
-         *overlaps* -> list of pre-calculated overlaps between the channel and the ion populations \
+         *overlaps* -> list of pre-calculated overlaps between the channel and the ion populations
         :type mode_shape_parameters: dict
         :param label: Optional label for the channel
         :type label: str
@@ -55,7 +55,7 @@ class SteadyStateSimulation:
         :param mode_shape_parameters: Defines the mode field shape. Allowed key-value pairs:
          *functional_form* -> one of ['bessel', 'gaussian', 'tophat']  \
          *mode_diameter* -> float \
-         *overlaps* -> list of pre-calculated overlaps between the channel and the ion populations \
+         *overlaps* -> list of pre-calculated overlaps between the channel and the ion populations
         :type mode_shape_parameters: dict
         :param label: Optional label for the channel
         :type label: str
@@ -75,7 +75,7 @@ class SteadyStateSimulation:
         :param mode_shape_parameters: Defines the mode field shape. Allowed key-value pairs:
          *functional_form* -> one of ['bessel', 'gaussian', 'tophat']  \
          *mode_diameter* -> float \
-         *overlaps* -> list of pre-calculated overlaps between the channel and the ion populations \
+         *overlaps* -> list of pre-calculated overlaps between the channel and the ion populations
         :type mode_shape_parameters: dict
         :param label: Optional label for the channel
         :type label: str

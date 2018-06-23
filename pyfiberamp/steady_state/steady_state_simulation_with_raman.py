@@ -5,9 +5,11 @@ from pyfiberamp.steady_state.models import GilesModelWithRaman
 
 
 class SteadyStateSimulationWithRaman(SteadyStateSimulation):
-    """SteadyStateSimulationWithRaman is the main class for running Giles model simulations with Raman scattering.
+    """
+    SteadyStateSimulationWithRaman is the main class for running Giles model simulations with Raman scattering.
     Only one ion population is supported. The class defines the fiber, boundary conditions and optical channels used in
-    the simulation."""
+    the simulation.
+    """
     def __init__(self):
         super().__init__()
         self.raman_is_included = False
@@ -29,9 +31,9 @@ class SteadyStateSimulationWithRaman(SteadyStateSimulation):
         :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means including ASE.
         :type wl_bandwidth: float
         :param mode_shape_parameters: Defines the mode field shape. Allowed key-value pairs:
-         'functional_form' -> ['bessel', 'gaussian', 'tophat']
-         'mode_diameter' -> float
-         'overlaps' -> list of pre-calculated overlaps between the channel and the ion populations
+         *functional_form* -> ['bessel', 'gaussian', 'tophat']
+         *mode_diameter* -> float
+         *overlaps* -> list of pre-calculated overlaps between the channel and the ion populations
         :type mode_shape_parameters: dict
         :param label: Optional label for the channel
         :type label: str
