@@ -7,10 +7,11 @@ import warnings
 
 
 class DynamicSimulation:
-    """DynamicSimulation is the main class used for running fiber amplifier simulations with arbitrarily varying input
+    """DynamicSimulation is the interface class used for running fiber amplifier simulations with arbitrarily varying input
      powers. It also supports reflective boundary conditions and thus modeling of simple CW, gain-switched or Q-switched
-     fiber lasers. With constant input powers, the result converges to the steady state simulation result.
-     The class defines the fiber, boundary conditions and optical channels used in the simulation."""
+     fiber lasers. With constant input powers, the result converges to the steady state simulation result. Setting
+     multiple ion populations is also supported. The class defines the fiber, boundary conditions and optical channels
+      used in the simulation."""
     def __init__(self, max_time_steps):
         self.fiber = None
         self.channels = Channels()

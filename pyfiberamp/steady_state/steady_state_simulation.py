@@ -11,8 +11,8 @@ from pyfiberamp.steady_state.steady_state_boundary_conditions import BasicBounda
 class SteadyStateSimulation:
     """
     SteadyStateSimulation is the main class used for running steady state Giles model simulations \
-    without Raman scattering. The class defines the fiber, boundary conditions and optical channels \
-    used in the simulation.
+    without Raman scattering. Only one ion population is supported. The class defines the fiber, boundary conditions and
+     optical channels used in the simulation.
     """
 
     def __init__(self):
@@ -76,7 +76,6 @@ class SteadyStateSimulation:
          *functional_form* -> one of ['bessel', 'gaussian', 'tophat']  \
          *mode_diameter* -> float \
          *overlaps* -> list of pre-calculated overlaps between the channel and the ion populations \
-        :type mode_shape_parameters: dict
         :type mode_shape_parameters: dict
         :param label: Optional label for the channel
         :type label: str
