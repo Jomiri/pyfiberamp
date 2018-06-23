@@ -365,14 +365,28 @@ ul.auto-toc {
 
 <div class="section" id="in-short">
 <h1>In short</h1>
-<p>PyFiberAmp is a rate equation simulation tool for rare-earth-doped fiber amplifiers and fiber lasers partly based on the Giles
-model <a class="footnote-reference" href="#id4" id="id1">[1]</a>. PyFiberAmp allows an arbitrary number of user-defined time-varying signals from continuous-wave to nanosecond pulses in both
-core-pumped and double-clad fiber amplifiers. It also includes reflective boundary conditions for modeling simple CW, gain-switched and
-Q-switched fiber lasers. The time-dynamic simulations are accelerated by a dedicated partial differential equation solver written in C++.
-In addition to signal and pump beams, PyFiberAmp also supports amplified spontaneous emission (ASE) and stimulated and spontaneous Raman scattering effects (SRS) <a class="footnote-reference" href="#id5" id="id2">[2]</a> (SRS only in steady-state simulations).
-Documentation (still in progress) is available on <a class="reference external" href="https://pyfiberamp.readthedocs.io/en/latest/index.html">Read the Docs</a>.
-Do you have a question, comment or a feature request? Please open a new issue on GitHub
-or contact me at <a class="reference external" href="mailto:pyfiberamp&#64;gmail.com">pyfiberamp&#64;gmail.com</a>.</p>
+<p>PyFiberAmp is a rate equation simulation library for rare-earth-doped fiber amplifiers and fiber lasers partly based on
+the Giles model <a class="footnote-reference" href="#id3" id="id1">[1]</a>.</p>
+<p>With PyFiberAmp you can simulate:</p>
+<ul class="simple">
+<li>Both core-pumped and double-clad fiber amplifiers</li>
+<li>Simple continuous-wave, gain-switched and Q-switched fiber lasers</li>
+<li>Unlimited number of pump, signal and ASE channels</li>
+<li>Limited number of Raman channels</li>
+<li>Arbitrarily time-dependent beams from continuous-wave to nanosecond pulses</li>
+<li>Radially varying dopant concentration and excitation</li>
+<li>Automatically calculated Bessel, Gaussian and top-hat mode shapes</li>
+</ul>
+<p>Additional benefits include:</p>
+<ul class="simple">
+<li>Built-in plotting commands: easy visualization of results</li>
+<li>Python interface: convenient for post-processing the data</li>
+<li>Dedicated C++ PDE solver: fast time-dynamic simulations</li>
+<li>Open source: see what's happening under the hood</li>
+</ul>
+<p>Documentation (still in progress) is available on <a class="reference external" href="https://pyfiberamp.readthedocs.io/en/latest/index.html">Read the Docs</a>.
+See also the examples folder above. If you have a question, comment or a feature request, please open a new issue on
+GitHub or contact me at <a class="reference external" href="mailto:pyfiberamp&#64;gmail.com">pyfiberamp&#64;gmail.com</a>.</p>
 </div>
 <div class="section" id="a-visual-example">
 <h1>A visual example</h1>
@@ -380,7 +394,6 @@ or contact me at <a class="reference external" href="mailto:pyfiberamp&#64;gmail
 The Gaussian pulse with its exponential leading edge retains its shape better than the square or saw-tooth
 pulses.</p>
 <img alt="docs/images/pulses.gif" class="align-center" src="docs/images/pulses.gif" />
-<!-- Listaus: 1) esimerkkinotebookit, 2) pÃ¤ivitetyt kuvat readmehen 3) asennustesti tÃ¤llÃ¤ ja toisella koneella 4) merge -->
 </div>
 <div class="section" id="download">
 <h1>Download</h1>
@@ -431,23 +444,22 @@ result = simulation.run(tol=1e-5)
 result.plot_amplifier_result()
 </pre>
 <p>The script plots the power evolution in the amplifier and the amplified spontaneous emission (ASE) spectra. The
-co-propagating pump is absorbed in the first ~1.8 m while the signal experiences gain. When the pump has been depleted,
-the signal starts to be reabsorbed by the fiber. This design is not perfect 1) because the fiber is too long and
-2) because the input signal is too weak to saturate the gain at the start of the fiber.</p>
+co-propagating pump is absorbed in the first ~1.2 m while the signal experiences gain. When the pump has been depleted,
+the signal starts to be reabsorbed. ASE is stronger against the pumping direction.</p>
 <img alt="docs/images/readme_power_evolution.png" class="align-center" src="docs/images/readme_power_evolution.png" style="width: 769px; height: 543px;" />
 <img alt="docs/images/readme_ase_spectra.png" class="align-center" src="docs/images/readme_ase_spectra.png" style="width: 769px; height: 543px;" />
-<p>For more usage examples, please see the Jupyter notebooks in the examples folder. Many more examples will be added in the
+<p>For more usage examples, please see the Jupyter notebooks in the examples folder. More examples will be added in the
 future.</p>
 </div>
 <div class="section" id="fiber-data">
 <h1>Fiber data</h1>
-<p>PyFiberAmp comes with spectroscopic data (absorption and emission cross sections) for Yb-doped germanosilicate fibers
-<a class="footnote-reference" href="#id6" id="id3">[3]</a> and supports importing spectra for other dopants/glass-compositions.</p>
+<p>PyFiberAmp comes with spectroscopic data (effective absorption and emission cross sections) for Yb-doped germanosilicate
+fibers <a class="footnote-reference" href="#id5" id="id2">[3]</a> and supports importing spectra for other dopants/glass-compositions.</p>
 </div>
 <div class="section" id="theory-basics">
 <h1>Theory basics</h1>
-<p>For a quick view on the theory, see the <a class="reference external" href="https://github.com/Jomiri/pyfiberamp/blob/master/pyfiberamp%20theory.pdf">pyfiberamp theory.pdf</a> file. A more complete description can be found in the
-references.</p>
+<p>For a quick view on the theory, see the <a class="reference external" href="https://github.com/Jomiri/pyfiberamp/blob/master/pyfiberamp%20theory.pdf">pyfiberamp theory.pdf</a> file. Theory on the time-dynamic
+simulations is not yet included. A more complete description can be found in the references.</p>
 </div>
 <div class="section" id="license">
 <h1>License</h1>
@@ -456,22 +468,22 @@ for their respective licenses.</p>
 </div>
 <div class="section" id="references">
 <h1>References</h1>
-<table class="docutils footnote" frame="void" id="id4" rules="none">
+<table class="docutils footnote" frame="void" id="id3" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td>C.R. Giles and E. Desurvire, &quot;Modeling erbium-doped fiber amplifiers,&quot; in Journal of Lightwave Technology, vol. 9, no. 2, pp. 271-283, Feb 1991. doi: 10.1109/50.65886</td></tr>
 </tbody>
 </table>
+<table class="docutils footnote" frame="void" id="id4" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[2]</td><td>R.G. Smith, &quot;Optical Power Handling Capacity of Low Loss Optical Fibers as Determined by Stimulated Raman and Brillouin Scattering,&quot; Appl. Opt. 11, 2489-2494 (1972)</td></tr>
+</tbody>
+</table>
 <table class="docutils footnote" frame="void" id="id5" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[2]</a></td><td>R.G. Smith, &quot;Optical Power Handling Capacity of Low Loss Optical Fibers as Determined by Stimulated Raman and Brillouin Scattering,&quot; Appl. Opt. 11, 2489-2494 (1972)</td></tr>
-</tbody>
-</table>
-<table class="docutils footnote" frame="void" id="id6" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id3">[3]</a></td><td><ol class="first last upperalpha simple" start="18">
+<tr><td class="label"><a class="fn-backref" href="#id2">[3]</a></td><td><ol class="first last upperalpha simple" start="18">
 <li>Paschotta, J. Nilsson, A. C. Tropper and D. C. Hanna, &quot;Ytterbium-doped fiber amplifiers,&quot; in IEEE Journal of Quantum Electronics, vol. 33, no. 7, pp. 1049-1056, Jul 1997. doi: 10.1109/3.594865</li>
 </ol>
 </td></tr>

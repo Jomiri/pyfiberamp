@@ -4,14 +4,29 @@
 
 In short
 ============
-PyFiberAmp is a rate equation simulation tool for rare-earth-doped fiber amplifiers and fiber lasers partly based on the Giles
-model [1]_. PyFiberAmp allows an arbitrary number of user-defined time-varying signals from continuous-wave to nanosecond pulses in both
-core-pumped and double-clad fiber amplifiers. It also includes reflective boundary conditions for modeling simple CW, gain-switched and
-Q-switched fiber lasers. The time-dynamic simulations are accelerated by a dedicated partial differential equation solver written in C++.
-In addition to signal and pump beams, PyFiberAmp also supports amplified spontaneous emission (ASE) and stimulated and spontaneous Raman scattering effects (SRS) [2]_ (SRS only in steady-state simulations).
+PyFiberAmp is a rate equation simulation library for rare-earth-doped fiber amplifiers and fiber lasers partly based on
+the Giles model [1]_.
+
+With PyFiberAmp you can simulate:
+
+- Both core-pumped and double-clad fiber amplifiers
+- Simple continuous-wave, gain-switched and Q-switched fiber lasers
+- Unlimited number of pump, signal and ASE channels
+- Limited number of Raman channels
+- Arbitrarily time-dependent beams from continuous-wave to nanosecond pulses
+- Radially varying dopant concentration and excitation
+- Automatically calculated Bessel, Gaussian and top-hat mode shapes
+
+Additional benefits include:
+
+- Built-in plotting commands: easy visualization of results
+- Python interface: convenient for post-processing the data
+- Dedicated C++ PDE solver: fast time-dynamic simulations
+- Open source: see what's happening under the hood
+
 Documentation (still in progress) is available on `Read the Docs <https://pyfiberamp.readthedocs.io/en/latest/index.html>`_.
-Do you have a question, comment or a feature request? Please open a new issue on GitHub
-or contact me at pyfiberamp@gmail.com.
+See also the examples folder above. If you have a question, comment or a feature request, please open a new issue on
+GitHub or contact me at pyfiberamp@gmail.com.
 
 A visual example
 =================
@@ -22,8 +37,6 @@ pulses.
 .. image:: docs/images/pulses.gif
     :align: center
 
-
-.. Listaus: 1) esimerkkinotebookit, 2) päivitetyt kuvat readmehen 3) asennustesti tällä ja toisella koneella 4) merge
 
 Download
 =========
@@ -78,9 +91,8 @@ The simple example below demonstrates a core-pumped Yb-doped fiber amplifier. Al
     result.plot_amplifier_result()
 
 The script plots the power evolution in the amplifier and the amplified spontaneous emission (ASE) spectra. The
-co-propagating pump is absorbed in the first ~1.8 m while the signal experiences gain. When the pump has been depleted,
-the signal starts to be reabsorbed by the fiber. This design is not perfect 1) because the fiber is too long and
-2) because the input signal is too weak to saturate the gain at the start of the fiber.
+co-propagating pump is absorbed in the first ~1.2 m while the signal experiences gain. When the pump has been depleted,
+the signal starts to be reabsorbed. ASE is stronger against the pumping direction.
 
 .. image:: docs/images/readme_power_evolution.png
     :align: center
@@ -92,19 +104,19 @@ the signal starts to be reabsorbed by the fiber. This design is not perfect 1) b
     :width: 769px
     :height: 543px
 
-For more usage examples, please see the Jupyter notebooks in the examples folder. Many more examples will be added in the
+For more usage examples, please see the Jupyter notebooks in the examples folder. More examples will be added in the
 future.
 
 Fiber data
 ==========
-PyFiberAmp comes with spectroscopic data (absorption and emission cross sections) for Yb-doped germanosilicate fibers
-[3]_ and supports importing spectra for other dopants/glass-compositions.
+PyFiberAmp comes with spectroscopic data (effective absorption and emission cross sections) for Yb-doped germanosilicate
+fibers [3]_ and supports importing spectra for other dopants/glass-compositions.
 
 Theory basics
 ==============
 For a quick view on the theory, see the `pyfiberamp theory.pdf
-<https://github.com/Jomiri/pyfiberamp/blob/master/pyfiberamp%20theory.pdf>`_ file. A more complete description can be found in the
-references.
+<https://github.com/Jomiri/pyfiberamp/blob/master/pyfiberamp%20theory.pdf>`_ file. Theory on the time-dynamic
+simulations is not yet included. A more complete description can be found in the references.
 
 License
 ========
