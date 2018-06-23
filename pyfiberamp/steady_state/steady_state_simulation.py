@@ -32,9 +32,11 @@ class SteadyStateSimulation:
         :type power: float
         :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means including ASE.
         :type wl_bandwidth: float
-        :param mode_field_diameter: Mode field diameter of the signal.
-         If left undefined, will be calculated using the Petermann II equation.
-        :type mode_field_diameter: float, optional
+        :param mode_shape_parameters: Defines the mode field shape. Allowed key-value pairs:
+         *functional_form* -> one of ['bessel', 'gaussian', 'tophat']  \
+         *mode_diameter* -> float \
+         *overlaps* -> list of pre-calculated overlaps between the channel and the ion populations \
+        :type mode_shape_parameters: dict
         :param label: Optional label for the channel
         :type label: str
 
@@ -50,9 +52,11 @@ class SteadyStateSimulation:
         :type power: float
         :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means including ASE.
         :type wl_bandwidth: float
-        :param mode_field_diameter: Mode field diameter of the signal.
-         If left undefined, will be calculated using the Petermann II equation.
-        :type mode_field_diameter: float, optional
+        :param mode_shape_parameters: Defines the mode field shape. Allowed key-value pairs:
+         *functional_form* -> one of ['bessel', 'gaussian', 'tophat']  \
+         *mode_diameter* -> float \
+         *overlaps* -> list of pre-calculated overlaps between the channel and the ion populations \
+        :type mode_shape_parameters: dict
         :param label: Optional label for the channel
         :type label: str
 
@@ -68,9 +72,12 @@ class SteadyStateSimulation:
         :type power: float
         :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means including ASE.
         :type wl_bandwidth: float
-        :param mode_field_diameter: Mode field diameter of the signal.
-         If left undefined, will be calculated using the Petermann II equation.
-        :type mode_field_diameter: float, optional
+        :param mode_shape_parameters: Defines the mode field shape. Allowed key-value pairs:
+         *functional_form* -> one of ['bessel', 'gaussian', 'tophat']  \
+         *mode_diameter* -> float \
+         *overlaps* -> list of pre-calculated overlaps between the channel and the ion populations \
+        :type mode_shape_parameters: dict
+        :type mode_shape_parameters: dict
         :param label: Optional label for the channel
         :type label: str
 

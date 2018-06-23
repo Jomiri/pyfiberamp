@@ -72,9 +72,11 @@ class DynamicSimulation:
         :type input_power: float or numpy array
         :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means including ASE.
         :type wl_bandwidth: float
-        :param mode_field_diameter: Mode field diameter of the signal.
-         If left undefined, will be calculated using the Petermann II equation.
-        :type mode_field_diameter: float, optional
+        :param mode_shape_parameters: Defines the mode field shape. Allowed key-value pairs:
+         *functional_form* -> one of ['bessel', 'gaussian', 'tophat']  \
+         *mode_diameter* -> float \
+         *overlaps* -> list of pre-calculated overlaps between the channel and the ion populations \
+        :type mode_shape_parameters: dict
         :param label: Optional label for the channel (required to receive reflected power from another channel)
         :type label: str
         :param reflection_target: Label of the channel receiving reflection from this channel
@@ -95,9 +97,11 @@ class DynamicSimulation:
         :type input_power: float or numpy array
         :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means including ASE.
         :type wl_bandwidth: float
-        :param mode_field_diameter: Mode field diameter of the signal.
-         If left undefined, will be calculated using the Petermann II equation.
-        :type mode_field_diameter: float, optional
+        :param mode_shape_parameters: Defines the mode field shape. Allowed key-value pairs:
+         *functional_form* -> one of ['bessel', 'gaussian', 'tophat']  \
+         *mode_diameter* -> float \
+         *overlaps* -> list of pre-calculated overlaps between the channel and the ion populations \
+        :type mode_shape_parameters: dict
         :param label: Optional label for the channel (required to receive reflected power from another channel)
         :type label: str
         :param reflection_target: Label of the channel receiving reflection from this channel
@@ -118,9 +122,11 @@ class DynamicSimulation:
         :type input_power: float or numpy array
         :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means including ASE.
         :type wl_bandwidth: float
-        :param mode_field_diameter: Mode field diameter of the signal.
-         If left undefined, will be calculated using the Petermann II equation.
-        :type mode_field_diameter: float, optional
+        :param mode_shape_parameters: Defines the mode field shape. Allowed key-value pairs:
+         *functional_form* -> one of ['bessel', 'gaussian', 'tophat']  \
+         *mode_diameter* -> float \
+         *overlaps* -> list of pre-calculated overlaps between the channel and the ion populations \
+        :type mode_shape_parameters: dict
         :param label: Optional label for the channel (required to receive reflected power from another channel)
         :type label: str
         :param reflection_target: Label of the channel receiving reflection from this channel
@@ -141,9 +147,11 @@ class DynamicSimulation:
         :type input_power: float or numpy array
         :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means including ASE.
         :type wl_bandwidth: float
-        :param mode_field_diameter: Mode field diameter of the signal.
-         If left undefined, will be calculated using the Petermann II equation.
-        :type mode_field_diameter: float, optional
+        :param mode_shape_parameters: Defines the mode field shape. Allowed key-value pairs:
+         *functional_form* -> one of ['bessel', 'gaussian', 'tophat']  \
+         *mode_diameter* -> float \
+         *overlaps* -> list of pre-calculated overlaps between the channel and the ion populations \
+        :type mode_shape_parameters: dict
         :param label: Optional label for the channel (required to receive reflected power from another channel)
         :type label: str
         :param reflection_target: Label of the channel receiving reflection from this channel
@@ -188,6 +196,10 @@ class DynamicSimulation:
         :type stop_at_steady_state: bool
         :param steady_state_tolerance: Sets the relative change in excitation that is used to detect the steady state.
         :type steady_state_tolerance: float
+        :param convergence_checking_interval: If aiming for steady state, the simulation checks convergence always after \
+        this number of iterations and prints the average excitation. In truly dynamic simulations, only prints the \
+        excitation.
+        :type convergence_checking_interval: positive int
 
         """
 
@@ -197,7 +209,8 @@ class DynamicSimulation:
         res = solver.run()
         return res
 
-    def _check_input(self, wl, input_power, wl_bandwidth, mode_shape_parameters, label, reflection_target, reflection_coeff):
+    def _check_input(self, wl, input_power, wl_bandwidth, mode_shape_parameters,
+                     label, reflection_target, reflection_coeff):
         assert isinstance(wl, float) and wl > 0
         self._check_input_power(input_power)
         assert isinstance(wl_bandwidth, float) and wl_bandwidth >= 0

@@ -27,8 +27,11 @@ class SteadyStateSimulationWithRaman(SteadyStateSimulation):
         :type fwhm_duration: float
         :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means including ASE.
         :type wl_bandwidth: float
-        :param mode_field_diameter: Mode field diameter of the signal.
-         If left undefined, will be calculated using the Petermann II equation.
+        :param mode_shape_parameters: Defines the mode field shape. Allowed key-value pairs:
+         'functional_form' -> ['bessel', 'gaussian', 'tophat']
+         'mode_diameter' -> float
+         'overlaps' -> list of pre-calculated overlaps between the channel and the ion populations
+        :type mode_shape_parameters: dict
         :type mode_field_diameter: float, optional
         :param label: Optional label for the channel
         :type label: str
@@ -44,6 +47,8 @@ class SteadyStateSimulationWithRaman(SteadyStateSimulation):
          :type backward_raman_allowed: bool, default True
          :param input_power: Input power of the Raman beam(s)
          :type input_power: float, default ~0 W
+         :param raman_gain: Raman gain value to be used in the simulation.
+         :type raman_gain: float, default 1e-13 m/W
 
          """
         self.channels.add_raman(input_power, backward_raman_allowed)
