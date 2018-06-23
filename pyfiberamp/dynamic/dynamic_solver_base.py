@@ -8,7 +8,7 @@ import numpy as np
 
 class DynamicSolverBase(ABC):
     def __init__(self, channels, fiber, n_nodes, max_iterations, dt, P, N2,
-                 stop_at_steady_state, steady_state_tolerance):
+                 stop_at_steady_state, steady_state_tolerance, convergence_checking_interval):
         self.channels = channels
         self.fiber = fiber
         self.reflections = self.channels.get_reflections()
@@ -24,6 +24,7 @@ class DynamicSolverBase(ABC):
 
         self.stop_at_steady_state = stop_at_steady_state
         self.steady_state_tolerance = steady_state_tolerance
+        self.convergence_checking_interval = convergence_checking_interval
 
     def _check_P(self, P, simulation_array_shape):
         if P is None:
@@ -64,7 +65,8 @@ class DynamicSolverBase(ABC):
         n_iter = self.solve(self.P, self.N2, g, a, l, v, dv, self.P_in_out, self.reflections,
                                     ion_cross_section_areas, self.fiber.spectroscopy.upper_state_lifetime,
                                     self.fiber.length, ion_number_densities, n_forward,
-                                    self.steady_state_tolerance, self.dt, self.stop_at_steady_state, n_channels)
+                                    self.steady_state_tolerance, self.dt, self.stop_at_steady_state, n_channels,
+                            self.convergence_checking_interval)
 
         P_out = self.P_in_out[:, :n_iter]
         self.N2 = self.extrapolate_first_point(self.N2)

@@ -169,7 +169,7 @@ class DynamicSimulation:
         self.channels.add_ase(wl_start, wl_end, n_bins)
 
     def run(self, z_nodes, dt='auto', P=None, N2=None, stop_at_steady_state=False,
-            steady_state_tolerance=1e-4):
+            steady_state_tolerance=1e-4, convergence_checking_interval=10000):
         """
         Runs the simulation.
 
@@ -193,7 +193,7 @@ class DynamicSimulation:
 
         self.channels.set_fiber(self.fiber)
         solver = self.backend(self.channels, self.fiber, z_nodes, self.max_time_steps, dt, P, N2,
-                              stop_at_steady_state, steady_state_tolerance)
+                              stop_at_steady_state, steady_state_tolerance, convergence_checking_interval)
         res = solver.run()
         return res
 

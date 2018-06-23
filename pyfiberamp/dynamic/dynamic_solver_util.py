@@ -30,7 +30,8 @@ class dNdT:
         for i in range(self.num_ion_populations):
             start = i * self.n_channels
             end = start + self.n_channels
-            out[i, :] = np.sum(P * (self.a_per_h_v_pi_r2[start:end, :] - self.a_g_per_h_v_pi_r2_Nt[start:end, :] * N2[i, :]), axis=0) - self.A * N2[i, :]
+            out[i, :] = np.sum(P * (self.a_per_h_v_pi_r2[start:end, :]
+                                    - self.a_g_per_h_v_pi_r2_Nt[start:end, :] * N2[i, :]), axis=0) - self.A * N2[i, :]
         return out
 
 

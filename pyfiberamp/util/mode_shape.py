@@ -98,8 +98,13 @@ class ModeShape:
         eps = 1e-6
         beta_lower_bound = k_clad + eps
         beta_upper_bound = k_core - eps
-        beta, res_data = brenth(mode_matching_func, beta_lower_bound, beta_upper_bound, full_output=True)
-        assert res_data.converged
+        from scipy.optimize import minimize_scalar
+        res = minimize_scalar(lambda r: abs(mode_matching_func(r)), bounds=[beta_lower_bound, beta_upper_bound],
+                               method='bounded')
+        beta = res.x
+        assert res.success
+        #beta, res_data = brenth(mode_matching_func, beta_lower_bound, beta_upper_bound, full_output=True)
+        #assert res_data.converged
         return beta
 
     @staticmethod

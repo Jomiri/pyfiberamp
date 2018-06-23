@@ -13,15 +13,18 @@ class DynamicSolverPython(DynamicSolverBase):
     def solve(self, P, N2, g, a, l, v, dv, P_in_out, reflections,
               ion_cross_section_areas, upper_state_lifetime,
               fiber_length, ion_number_densities, n_forward,
-              steady_state_tolerance, dt, stop_at_steady_state, n_channels):
+              steady_state_tolerance, dt, stop_at_steady_state, n_channels,
+              convergence_checking_interval):
         nodes = P.shape[1]
         max_iterations = P_in_out.shape[1] - 1
         dz = fiber_length / (nodes - 1)
+        n_ion_populations = int(len(ion_cross_section_areas) / n_channels)
         channel_params = ChannelParameters(a, g, l, v, dv, nodes, ion_cross_section_areas, ion_number_densities, n_channels)
         boundary_conditions = DynamicBoundaryConditions(P_in_out, reflections, n_forward)
         dn2dt = dNdT(channel_params, upper_state_lifetime)
         dpdz = dPdZ(channel_params)
-        convergence_checker = ConvergenceChecker(max_iterations, steady_state_tolerance, stop_at_steady_state)
+        convergence_checker = ConvergenceChecker(convergence_checking_interval, max_iterations, steady_state_tolerance,
+                                                 stop_at_steady_state, ion_cross_section_areas[:n_ion_populations])
         P_out, N2_out, n_iter = self._bfecc_simulation(P, N2, dpdz, dn2dt, boundary_conditions, convergence_checker, dz,
                                                        dt, n_forward)
         P[:n_forward, :] = P_out[:n_forward, :-1]
