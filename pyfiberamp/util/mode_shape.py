@@ -115,4 +115,5 @@ class ModeShape:
             u = core_radius * np.sqrt(k_core ** 2 - beta ** 2)
             v = core_radius * np.sqrt(beta ** 2 - k_clad ** 2)
             return v * J0(u) / J1(u) - u * K0(v) / K1(v)
+            #return u * J1(u) / J0(u) - v * K1(v) / K0(v)
         return f

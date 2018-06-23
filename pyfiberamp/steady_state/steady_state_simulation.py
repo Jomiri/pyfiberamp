@@ -100,6 +100,8 @@ class SteadyStateSimulation:
         :type tol: float
 
         """
+        if self.fiber.num_ion_populations > 1:
+            raise RuntimeError('Use DynamicSimulation for calculations with multiple transverse ion populations.')
         self.channels.set_fiber(self.fiber)
         boundary_condition_residual = self.boundary_conditions(self.channels)
         model = self.model(self.channels, self.fiber)
@@ -163,7 +165,7 @@ class SteadyStateSimulation:
                                powers=sol.y,
                                upper_level_fraction=upper_level_func(sol.y),
                                channels=self.channels,
-                               is_passive_fiber=self.fiber.is_passive_fiber())
+                               fiber=self.fiber)
         return res
 
 

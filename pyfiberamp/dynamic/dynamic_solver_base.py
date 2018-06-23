@@ -76,7 +76,7 @@ class DynamicSolverBase(ABC):
                                       upper_level_fraction=self.N2/self.fiber.doping_profile.ion_number_densities[:, np.newaxis],
                                       output_powers=P_out,
                                       channels=self.channels,
-                                      is_passive_fiber=self.fiber.is_passive_fiber())
+                                      fiber=self.fiber)
         return res
 
     def extrapolate_first_point(self, N2):

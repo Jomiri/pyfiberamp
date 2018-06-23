@@ -79,7 +79,7 @@ class OpticalChannel:
         n_preset_overlaps = len(mode_shape_parameters['overlaps'])
         if n_preset_overlaps > 0:
             assert n_preset_overlaps == len(fiber.doping_profile.areas)
-            return np.array(mode_shape_parameters['overlaps'])
+            return np.array(mode_shape_parameters['overlaps']), mode_func
 
         # No overlaps defined -> fiber must specify doping profile radii for overlap calculation
         doping_radii = fiber.doping_profile.radii

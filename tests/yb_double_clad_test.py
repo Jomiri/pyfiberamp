@@ -51,5 +51,5 @@ class YbDoubleCladTestCase(unittest.TestCase):
 
     def test_average_excitation(self):
         expected_average_excitation = 0.219035968828
-        simulated_average_excitation = self.result.average_excitation
+        simulated_average_excitation = self.result.overall_average_excitation
         self.assertAlmostEqual(simulated_average_excitation, expected_average_excitation)

@@ -55,6 +55,6 @@ class SteadyStateSimulationWithRaman(SteadyStateSimulation):
                                powers=sol.y,
                                upper_level_fraction=upper_level_func(sol.y),
                                channels=self.channels,
-                               is_passive_fiber=self.fiber.is_passive_fiber(),
+                               fiber=self.fiber,
                                backward_raman_allowed=self.channels.backward_raman_allowed)
         return res

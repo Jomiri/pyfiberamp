@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import numpy as np
-from pyfiberamp.util.doping_profile import DopingProfile
 
+from pyfiberamp.util.doping_profile import DopingProfile
 from pyfiberamp.helper_funcs import *
 
 
@@ -37,6 +37,9 @@ class FiberBase(ABC):
         self.default_pump_mode_shape_parameters = {'functional_form': 'bessel',
                                                      'mode_diameter': 0,
                                                      'overlaps': []}
+
+    def v_parameter(self, wl):
+        return fiber_v_parameter(wl, self.core_radius, self.core_na)
 
     @property
     def num_ion_populations(self):
@@ -93,6 +96,3 @@ class FiberBase(ABC):
     def saturation_parameter(self):
         pass
 
-    def is_passive_fiber(self):
-        """Returns True if self is a PassiveFiber instance."""
-        return sum(self.doping_profile.ion_number_densities) == 0
