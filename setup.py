@@ -24,8 +24,9 @@ setup(
         'pyfiberamp.fibers',
         'pyfiberamp.dynamic',
         'pyfiberamp.steady_state',
+        'pyfiberamp.steady_state.models',
         'pyfiberamp.spectroscopies',
-        'pyfiberamp.util',
+        'pyfiberamp.util'
     ],
     package_data={'pyfiberamp': ['spectroscopies/fiber_spectra/*.dat',
                                  'dynamic/fiber_simulation_pybindings.cp36-win_amd64.pyd']}
