@@ -2,8 +2,6 @@
  Introduction to PyFiberAmp
 ===========================
 
-In short
-============
 PyFiberAmp is a rate equation simulation library for rare-earth-doped fiber amplifiers and fiber lasers partly based on
 the Giles model [1]_.
 
@@ -23,11 +21,12 @@ Additional benefits include:
 - Python interface: convenient for post-processing the data
 - Dedicated C++ PDE solver: fast time-dynamic simulations
 - Open source: see what's happening under the hood
+- Free of charge: install on as many computers as you like
 
-Documentation (still in progress) is available on `Read the Docs <https://pyfiberamp.readthedocs.io/en/latest/index.html>`_.
-See also the examples folder above. If you have a question, comment or feature request, please open a new issue on
-GitHub or contact me at pyfiberamp@gmail.com. If you find some good use for PyFiberAmp, I would also very much like to
-hear about it.
+Documentation is still in progress and available on `Read the Docs <https://pyfiberamp.readthedocs.io/en/latest/index.html>`_.
+For practical examples, see the examples folder above. If you have a question, comment or feature request, please open a new issue on
+GitHub or contact me at pyfiberamp@gmail.com. If you find PyFiberAmp useful in your own project, I would also very much
+like to hear about it.
 
 A visual example
 =================
@@ -41,28 +40,31 @@ pulses.
 
 Download
 =========
-PyFiberAmp is not yet on PyPI. You can either download the code as zip-file or clone the repository with
+PyFiberAmp is not yet on PyPI. You can either download the code as a zip-file or clone the repository with
 ::
 
     git clone git://github.com/Jomiri/pyfiberamp.git
 
-and then install the library with
+and then install the library by executing
 ::
 
     python setup.py install
+
+in the (unzipped) download directory.
 
 System requirements
 ===================
 PyFiberAmp depends on the standard scientific Python packages: Numpy, SciPy and Matplotlib and has been
 tested on Windows 7 and Windows 10. It should work on other operating systems as well
 provided that Python and the required packages are installed. The `Anaconda distribution
-<https://www.anaconda.com/download/>`_ contains everything out of the box.
+<https://www.anaconda.com/download/>`_ contains everything you'll need out of the box.
 
 Even though all of PyFiberAmp's functionality is available in interpreted Python code, the use of the separate
 C++ extension is recommended for computationally intensive time-dynamic simulations.
 The system requirements of the C++ extension are stricter: Windows 7 or 10, Python 3.6 and a fairly modern
-CPU with AVX2 instruction support. If the Python based solver is too slow for you but you cannot satisfy the
-requirements, open a new issue or send me a message, and I'll try to provide you with a compatible C++ version.
+CPU with AVX2 instruction support. If the Python-based solver is too slow for you but you cannot satisfy the
+requirements, open a new issue or send me a message, and I'll try to provide you with a compatible version of the C++
+extension.
 
 Example
 ========
@@ -91,9 +93,9 @@ The simple example below demonstrates a core-pumped Yb-doped fiber amplifier. Al
     result = simulation.run(tol=1e-5)
     result.plot_amplifier_result()
 
-The script plots the power evolution in the amplifier and the amplified spontaneous emission (ASE) spectra. The
-co-propagating pump is absorbed in the first ~1.2 m while the signal experiences gain. When the pump has been depleted,
-the signal starts to be reabsorbed. ASE is stronger against the pumping direction.
+The script calculates and plots the power evolution in the amplifier and the amplified spontaneous emission (ASE)
+spectra. The co-propagating pump is absorbed in the first ~1.2 m of the fiber while the signal experiences gain.
+When the pump has been depleted, the signal starts to be reabsorbed. ASE is stronger against the pumping direction.
 
 .. image:: docs/images/readme_power_evolution.png
     :align: center
@@ -111,11 +113,11 @@ future.
 Fiber data
 ==========
 PyFiberAmp comes with spectroscopic data (effective absorption and emission cross sections) for Yb-doped germanosilicate
-fibers [3]_ and supports importing spectra for other dopants/glass-compositions.
+fibers [3]_ and supports importing spectra for other dopants and glass compositions.
 
 Theory basics
 ==============
-For a quick view on the theory, see the `pyfiberamp theory.pdf
+For a quick review on the theory, see the `pyfiberamp theory.pdf
 <https://github.com/Jomiri/pyfiberamp/blob/master/pyfiberamp%20theory.pdf>`_ file. Theory on the time-dynamic
 simulations is not yet included. A more complete description can be found in the references.
 
