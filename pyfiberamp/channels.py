@@ -6,6 +6,7 @@ from .helper_funcs import *
 from pyfiberamp.util import DelayedExecutor
 from pyfiberamp.optical_channel import OpticalChannel
 
+
 class Channels:
     def __init__(self):
         self.fiber = None
@@ -107,8 +108,8 @@ class Channels:
         self.forward_pumps.append(channel)
 
     def _init_ase(self, wl_start, wl_end, n_bins):
-        assert (wl_end > wl_start)
-        assert (isinstance(n_bins, int) and n_bins > 0)
+        assert wl_end > wl_start, 'End wavelength must be greater than start wavelength.'
+        assert isinstance(n_bins, int) and n_bins > 0, 'Number of ASE bins must be a positive integer.'
         ase_wl_bandwidth = (wl_end - wl_start) / n_bins
         ase_wls = np.linspace(wl_start, wl_end, n_bins)
         for wl in ase_wls:
@@ -175,7 +176,7 @@ class Channels:
         all_labels = np.array(np.hstack([ch.label for ch in self._all_channels()]))
         valid_labels = all_labels[all_labels!='']
         _, counts = np.unique(valid_labels, return_counts=True)
-        assert np.all(counts==1), 'Multiple channels have the same label!'
+        assert np.all(counts == 1), 'Multiple channels have the same label!'
         return all_labels
 
     def get_reflections(self):
@@ -259,9 +260,9 @@ class Channels:
 
     def get_label_index(self, label):
         if isinstance(label, int):
-            assert(0 <= label < self.number_of_channels)
+            assert (0 <= label < self.number_of_channels)
             return label
         elif isinstance(label, str):
             all_labels = self.get_labels()
-            return int(np.where(all_labels==label)[0])
+            return int(np.where(all_labels == label)[0])
 

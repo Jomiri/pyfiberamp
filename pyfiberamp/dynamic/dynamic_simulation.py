@@ -17,7 +17,7 @@ class DynamicSimulation:
     def __init__(self, max_time_steps):
         self.fiber = None
         self.channels = Channels()
-        self.max_time_steps = max_time_steps
+        self.max_time_steps = int(max_time_steps)
         self.backend = None
         self.use_cpp_backend()
 
@@ -214,12 +214,12 @@ class DynamicSimulation:
 
     def _check_input(self, wl, input_power, wl_bandwidth, mode_shape_parameters,
                      label, reflection_target, reflection_coeff):
-        assert isinstance(wl, float) and wl > 0
+        assert isinstance(wl, (float, int)) and wl > 0, 'Wavelength must be a positive number.'
         self._check_input_power(input_power)
-        assert isinstance(wl_bandwidth, float) and wl_bandwidth >= 0
-        assert isinstance(label, str)
-        assert isinstance(reflection_target, str)
-        assert 0 <= reflection_coeff <= 1
+        assert isinstance(wl_bandwidth, float) and wl_bandwidth >= 0, 'Wavelength bandwidth must be a positive float.'
+        assert isinstance(label, str), 'Label must be a string.'
+        assert isinstance(reflection_target, str), 'Reflection target label must be a string.'
+        assert 0 <= reflection_coeff <= 1, 'Reflectance must be between 0 and 1.'
 
     def _check_input_power(self, input_power):
         assert (isinstance(input_power, (float, int)) and input_power >= 0) or \
