@@ -1,6 +1,6 @@
 from pyfiberamp.helper_funcs import *
 
-from scipy.interpolate import UnivariateSpline
+from scipy.interpolate import UnivariateSpline, interp1d
 import matplotlib.pyplot as plt
 
 
@@ -27,7 +27,7 @@ class Spectroscopy:
         if interpolate == 'spline':
             interp_func = UnivariateSpline(frequency, cross_section, s=CROSS_SECTION_SMOOTHING_FACTOR, ext='zeros')
         if interpolate == 'linear':
-            interp_func = interp1d(frequency, cross_section)
+            interp_func = interp1d(frequency, cross_section, fill_value=0.0, bounds_error=False)
 
         def interp(freq):
             cross_sec = interp_func(freq)
