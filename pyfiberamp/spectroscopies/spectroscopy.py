@@ -6,28 +6,31 @@ import matplotlib.pyplot as plt
 
 class Spectroscopy:
     @classmethod
-    def from_files(cls, absorption_cross_section_file, emission_cross_section_file, upper_state_lifetime):
+    def from_files(cls, absorption_cross_section_file, emission_cross_section_file, upper_state_lifetime, interpolate='spline'):
         absorption_spectrum = load_spectrum(absorption_cross_section_file)
         gain_spectrum = load_spectrum(emission_cross_section_file)
-        return cls(absorption_spectrum, gain_spectrum, upper_state_lifetime)
+        return cls(absorption_spectrum, gain_spectrum, upper_state_lifetime, interpolate)
 
-    def __init__(self, absorption_cross_sections, emission_cross_sections, upper_state_lifetime):
+    def __init__(self, absorption_cross_sections, emission_cross_sections, upper_state_lifetime, interpolate):
         self.absorption_cs_spectrum = absorption_cross_sections
         self.emission_cs_spectrum = emission_cross_sections
-        self.absorption_cs_interp = self._make_cross_section_interpolate(absorption_cross_sections)
-        self.gain_cs_interp = self._make_cross_section_interpolate(emission_cross_sections)
+        self.absorption_cs_interp = self._make_cross_section_interpolate(absorption_cross_sections, interpolate)
+        self.gain_cs_interp = self._make_cross_section_interpolate(emission_cross_sections, interpolate)
         self.upper_state_lifetime = upper_state_lifetime
 
     @staticmethod
-    def _make_cross_section_interpolate(spectrum):
+    def _make_cross_section_interpolate(spectrum, interpolate):
         """Creates a cubic spline interpolate from the imported cross section data. Cross section is assumed to be
         zero outside the imported data range."""
         frequency = wl_to_freq(spectrum[::-1, 0])
         cross_section = spectrum[::-1, 1]
-        spline = UnivariateSpline(frequency, cross_section, s=CROSS_SECTION_SMOOTHING_FACTOR, ext='zeros')
+        if interpolate == 'spline':
+            interp_func = UnivariateSpline(frequency, cross_section, s=CROSS_SECTION_SMOOTHING_FACTOR, ext='zeros')
+        if interpolate == 'linear':
+            interp_func = interp1d(frequency, cross_section)
 
         def interp(freq):
-            cross_sec = spline(freq)
+            cross_sec = interp_func(freq)
             cross_sec[cross_sec < 0] = 0
             return cross_sec
 
@@ -53,4 +56,4 @@ class Spectroscopy:
         plt.show()
 
 
-YbGermanoSilicate= Spectroscopy.from_files(YB_ABSORPTION_CS_FILE, YB_EMISSION_CS_FILE, YB_UPPER_STATE_LIFETIME)
+YbGermanoSilicate = Spectroscopy.from_files(YB_ABSORPTION_CS_FILE, YB_EMISSION_CS_FILE, YB_UPPER_STATE_LIFETIME)
