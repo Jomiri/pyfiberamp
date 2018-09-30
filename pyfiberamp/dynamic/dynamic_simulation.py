@@ -174,7 +174,7 @@ class DynamicSimulation:
         :param wl_end: The longest wavelength of the ASE band
         :type wl_end: float
         :param n_bins: The number of simulated ASE channels.
-        :type n_bins: float
+        :type n_bins: positive int
 
         """
         self.channels.add_ase(wl_start, wl_end, n_bins)

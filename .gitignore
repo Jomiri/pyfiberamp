@@ -12,3 +12,4 @@ test_scripts/
 validation/
 .pypirc
 docs/_*
+pyfiberamp/taper
