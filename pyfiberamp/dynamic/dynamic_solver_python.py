@@ -35,8 +35,8 @@ class DynamicSolverPython(DynamicSolverBase):
     def _bfecc_simulation(self, P_fiber_in, N2_in, dPdz, dN2dt,
                           boundary_conditions, convergence_checker, dz, dt, n_forward):
         P = np.zeros((P_fiber_in.shape[0], P_fiber_in.shape[1] + 1))
-        P_hat_forward = np.empty_like(P)
-        P_hat_backward = np.empty_like(P)
+        P_hat_forward = np.zeros_like(P)
+        P_hat_backward = np.zeros_like(P)
         P[:, :-1] = P_fiber_in
         P[:, -1] = P_fiber_in[:, -1]
 
