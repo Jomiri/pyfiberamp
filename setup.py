@@ -1,8 +1,22 @@
-from setuptools import setup
+from setuptools import setup, dist
+try:
+    # Try to compile pythran binary extension module.
+    from pythran.dist import PythranExtension, PythranBuildExt
+    dist.Distribution(dict(setup_requires='pythran'))
+    ext_modules = [
+        PythranExtension(
+            'pyfiberamp.dynamic.fiber_simulation_pythran_bindings',
+            ['pyfiberamp/dynamic/inner_loop_functions.py'],
+        ),
+    ]
+    cmdclass = {"build_ext": PythranBuildExt}
+except ImportError:
+    ext_modules = []
+    cmdclass = {}
 
 VERSION = '0.3.0'
 
-long_description = '''PyFiberAmp is a powerful simulation library for modeling 
+long_description = '''PyFiberAmp is a powerful simulation library for modeling
 rare-earth-doped fiber lasers and amplifiers using rate equations.'''
 
 setup(
@@ -28,6 +42,8 @@ setup(
         'pyfiberamp.spectroscopies',
         'pyfiberamp.util'
     ],
+    ext_modules=ext_modules,
+    cmdclass=cmdclass,
     package_data={'pyfiberamp': ['spectroscopies/fiber_spectra/*.dat',
                                  'dynamic/fiber_simulation_pybindings.cp36-win_amd64.pyd']}
 )

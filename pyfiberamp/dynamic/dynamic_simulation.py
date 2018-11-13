@@ -37,8 +37,16 @@ class DynamicSimulation:
             from pyfiberamp.dynamic.dynamic_solver_cpp import DynamicSolverCpp
             self.backend = DynamicSolverCpp
         except ModuleNotFoundError:
-            warnings.warn('C++ backend could not be loaded! Defaulting to slow Python backend.', RuntimeWarning)
-            self.use_python_backend()
+            try:
+                from pyfiberamp.dynamic.dynamic_solver_pythran import DynamicSolverPythran
+                self.backend = DynamicSolverPythran
+            except ImportError:
+                try:
+                    from pyfiberamp.dynamic.dynamic_solver_numba import DynamicSolverNumba
+                    self.backend = DynamicSolverNumba
+                except ImportError:
+                    warnings.warn('Fast backend could not be loaded! Defaulting to slow Python backend.', RuntimeWarning)
+                    self.use_python_backend()
 
     def get_time_coordinates(self, fiber, z_nodes, dt='auto'):
         """
