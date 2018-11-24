@@ -21,6 +21,10 @@ class DynamicSimulationTest(unittest.TestCase):
         cls.z_nodes = 150
         cls.steady_state_dt = 1e-5
 
+    def test_available_backends(self):
+        dynamic_simulation = DynamicSimulation(self.time_steps)
+        print('Tested dynamic backends: {}'.format(dynamic_simulation.backends))
+
     def test_steady_state_python_and_cpp_single_ring(self):
         steady_state_simulation = SteadyStateSimulation()
         steady_state_simulation.fiber = self.fiber
@@ -43,11 +47,21 @@ class DynamicSimulationTest(unittest.TestCase):
         dynamic_simulation.use_python_backend()
         python_result = dynamic_simulation.run(z_nodes=self.z_nodes, dt=self.steady_state_dt, stop_at_steady_state=True)
 
+        dynamic_simulation.use_pythran_backend()
+        pythran_result = dynamic_simulation.run(z_nodes=self.z_nodes, dt=self.steady_state_dt, stop_at_steady_state=True)
+
+        dynamic_simulation.use_numba_backend()
+        numba_result = dynamic_simulation.run(z_nodes=self.z_nodes, dt=self.steady_state_dt, stop_at_steady_state=True)
+
         steady_state_output_powers = steady_state_result.powers_at_fiber_end()
         cpp_output_powers = cpp_result.powers_at_fiber_end()
         python_output_powers = python_result.powers_at_fiber_end()
+        pythran_output_powers = pythran_result.powers_at_fiber_end()
+        numba_output_powers = numba_result.powers_at_fiber_end()
         self.assertTrue(np.allclose(steady_state_output_powers, cpp_output_powers, rtol=1e-3))
         self.assertTrue(np.allclose(cpp_output_powers, python_output_powers, rtol=1e-6))
+        self.assertTrue(np.allclose(pythran_output_powers, python_output_powers, rtol=1e-6))
+        self.assertTrue(np.allclose(numba_output_powers, python_output_powers, rtol=1e-6))
 
     def test_steady_state_python_and_cpp_two_rings(self):
         dynamic_simulation = DynamicSimulation(self.time_steps)
@@ -66,14 +80,24 @@ class DynamicSimulationTest(unittest.TestCase):
         dynamic_simulation.use_python_backend()
         python_result = dynamic_simulation.run(z_nodes=self.z_nodes, dt=self.steady_state_dt, stop_at_steady_state=True)
 
+        dynamic_simulation.use_pythran_backend()
+        pythran_result = dynamic_simulation.run(z_nodes=self.z_nodes, dt=self.steady_state_dt, stop_at_steady_state=True)
+
+        dynamic_simulation.use_numba_backend()
+        numba_result = dynamic_simulation.run(z_nodes=self.z_nodes, dt=self.steady_state_dt, stop_at_steady_state=True)
+
         cpp_output_powers = cpp_result.powers_at_fiber_end()
         python_output_powers = python_result.powers_at_fiber_end()
+        pythran_output_powers = pythran_result.powers_at_fiber_end()
+        numba_output_powers = numba_result.powers_at_fiber_end()
 
         expected_output_regression = np.array([1.24777656e-01, 3.00423131e-01, 2.20330515e-07,
                                                2.32158298e-07, 1.80295869e-07, 3.01233048e-01,
                                                2.42165526e-07, 2.52453304e-07, 1.91762386e-07])
         self.assertTrue(np.allclose(cpp_output_powers, python_output_powers, rtol=1e-6))
         self.assertTrue(np.allclose(cpp_output_powers, expected_output_regression, rtol=1e-6))
+        self.assertTrue(np.allclose(pythran_output_powers, expected_output_regression, rtol=1e-6))
+        self.assertTrue(np.allclose(numba_output_powers, expected_output_regression, rtol=1e-6))
 
     def test_steady_state_python_and_cpp_preset_areas_and_overlaps(self):
         dynamic_simulation = DynamicSimulation(self.time_steps)
@@ -103,11 +127,24 @@ class DynamicSimulationTest(unittest.TestCase):
                                                dt=self.steady_state_dt/10,
                                                stop_at_steady_state=True)
 
+        dynamic_simulation.use_pythran_backend()
+        pythran_result = dynamic_simulation.run(z_nodes=self.z_nodes,
+                                               dt=self.steady_state_dt/10,
+                                               stop_at_steady_state=True)
+        dynamic_simulation.use_numba_backend()
+        numba_result = dynamic_simulation.run(z_nodes=self.z_nodes,
+                                               dt=self.steady_state_dt/10,
+                                               stop_at_steady_state=True)
+
         expected_output_regression = np.array([0.1166232, 0.23989275, 0.23988858])
         cpp_output_powers = cpp_result.powers_at_fiber_end()
         python_output_powers = python_result.powers_at_fiber_end()
+        pythran_output_powers = pythran_result.powers_at_fiber_end()
+        numba_output_powers = numba_result.powers_at_fiber_end()
         self.assertTrue(np.allclose(cpp_output_powers, python_output_powers, rtol=1e-6))
         self.assertTrue(np.allclose(cpp_output_powers, expected_output_regression, rtol=1e-6))
+        self.assertTrue(np.allclose(pythran_output_powers, expected_output_regression, rtol=1e-6))
+        self.assertTrue(np.allclose(numba_output_powers, expected_output_regression, rtol=1e-6))
 
     def test_steady_state_reflection(self):
         dynamic_simulation = DynamicSimulation(self.time_steps)
@@ -133,8 +170,22 @@ class DynamicSimulationTest(unittest.TestCase):
                                             dt=self.steady_state_dt,
                                             stop_at_steady_state=True)
 
+        dynamic_simulation.use_pythran_backend()
+        pythran_res = dynamic_simulation.run(z_nodes=self.z_nodes,
+                                         dt=self.steady_state_dt,
+                                         stop_at_steady_state=True)
+
+        dynamic_simulation.use_numba_backend()
+        numba_res = dynamic_simulation.run(z_nodes=self.z_nodes,
+                                            dt=self.steady_state_dt,
+                                            stop_at_steady_state=True)
+
         cpp_output = cpp_res.powers_at_fiber_end()
         python_output = python_res.powers_at_fiber_end()
+        pythran_output = pythran_res.powers_at_fiber_end()
+        numba_output = numba_res.powers_at_fiber_end()
         expected_output = np.array([0.11878692, 0.00564412, 0.47651562])
-        self.assertTrue(np.allclose(cpp_output, expected_output, rtol=1e-6))
         self.assertTrue(np.allclose(cpp_output, python_output, rtol=1e-6))
+        self.assertTrue(np.allclose(cpp_output, expected_output, rtol=1e-6))
+        self.assertTrue(np.allclose(pythran_output, expected_output, rtol=1e-6))
+        self.assertTrue(np.allclose(numba_output, expected_output, rtol=1e-6))

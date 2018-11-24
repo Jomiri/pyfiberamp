@@ -14,7 +14,7 @@ except ImportError:
     ext_modules = []
     cmdclass = {}
 
-VERSION = '0.3.0'
+VERSION = '0.4.0'
 
 long_description = '''PyFiberAmp is a powerful simulation library for modeling
 rare-earth-doped fiber lasers and amplifiers using rate equations.'''

@@ -3,7 +3,7 @@
 from pyfiberamp.channels import Channels
 from pyfiberamp.dynamic.dynamic_solver_python import DynamicSolverPython
 from pyfiberamp.helper_funcs import *
-import warnings
+import logging
 
 
 class DynamicSimulation:
@@ -18,35 +18,77 @@ class DynamicSimulation:
         self.fiber = None
         self.channels = Channels()
         self.max_time_steps = int(max_time_steps)
-        self.backend = None
-        self.use_cpp_backend()
+        self.backends = self._get_available_backends()
+        self._use_backend(self._fastest_backend())  # use fastest available backend by default
+
+    @staticmethod
+    def _get_available_backends():
+        """ Returns available dynamic simulation backends ordered from the fastest to the slowest. """
+        backends = []
+        try:
+            from pyfiberamp.dynamic.dynamic_solver_cpp import DynamicSolverCpp
+            backends.append('cpp')
+        except ModuleNotFoundError:
+            pass
+        try:
+            from pyfiberamp.dynamic.dynamic_solver_pythran import DynamicSolverPythran
+            backends.append('pythran')
+        except ImportError:
+            pass
+        try:
+            from pyfiberamp.dynamic.dynamic_solver_numba import DynamicSolverNumba
+            backends.append('numba')
+        except ImportError:
+            pass
+        backends.append('python')
+        return backends
+
+    def _fastest_backend(self):
+        return self.backends[0]
 
     def use_python_backend(self):
         """
-        Sets the simulation to use the slow Python finite difference solver. Using the C++ solver instead
+        Sets the simulation to use the slow Python finite difference solver. Using one of the faster solvers instead
         is highly recommended.
         """
-        self.backend = DynamicSolverPython
+        self._use_backend('python')
 
     def use_cpp_backend(self):
         """
-        Sets the simulation to use the fast C++ solver. If the compiled C++ -extension is not compatible with the Python
-        version, falls back to the slow Python solver.
+        Sets the simulation to use the C++ backend if available.
         """
-        try:
-            from pyfiberamp.dynamic.dynamic_solver_cpp import DynamicSolverCpp
-            self.backend = DynamicSolverCpp
-        except ModuleNotFoundError:
-            try:
+        self._use_backend('cpp')
+
+    def use_pythran_backend(self):
+        """
+        Sets the simulation to use the pythran backend if available.
+        """
+        self._use_backend('pythran')
+
+    def use_numba_backend(self):
+        """
+        Sets the simulation to use the numba backend if available.
+        """
+        self._use_backend('numba')
+
+    def _use_backend(self, backend_name):
+        if backend_name not in self.backends:
+            default_backend = self._fastest_backend()
+            logging.warning('Backend {} is not available!\nDetected backends: [{}]\nDefaulting to: {}'
+                            .format(backend_name, ', '.join(self.backends), default_backend))
+            self._use_backend(default_backend)
+        else:
+            if backend_name == 'cpp':
+                from pyfiberamp.dynamic.dynamic_solver_cpp import DynamicSolverCpp
+                self.backend = DynamicSolverCpp
+            elif backend_name == 'pythran':
                 from pyfiberamp.dynamic.dynamic_solver_pythran import DynamicSolverPythran
                 self.backend = DynamicSolverPythran
-            except ImportError:
-                try:
-                    from pyfiberamp.dynamic.dynamic_solver_numba import DynamicSolverNumba
-                    self.backend = DynamicSolverNumba
-                except ImportError:
-                    warnings.warn('Fast backend could not be loaded! Defaulting to slow Python backend.', RuntimeWarning)
-                    self.use_python_backend()
+            elif backend_name == 'numba':
+                from pyfiberamp.dynamic.dynamic_solver_numba import DynamicSolverNumba
+                self.backend = DynamicSolverNumba
+            elif backend_name == 'python':
+                self.backend = DynamicSolverPython
 
     def get_time_coordinates(self, fiber, z_nodes, dt='auto'):
         """
