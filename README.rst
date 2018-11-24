@@ -19,7 +19,7 @@ Additional benefits include:
 
 - Built-in plotting commands: easy visualization of results
 - Python interface: convenient for post-processing the data
-- Dedicated C++ PDE solver: fast time-dynamic simulations
+- C++, Numba and Pythran backends: fast time-dynamic simulations
 - Open source: see what's happening under the hood
 - Free of charge: install on as many computers as you like
 
@@ -59,12 +59,12 @@ tested on Windows 7 and Windows 10. It should work on other operating systems as
 provided that Python and the required packages are installed. The `Anaconda distribution
 <https://www.anaconda.com/download/>`_ contains everything you'll need out of the box.
 
-Even though all of PyFiberAmp's functionality is available in interpreted Python code, the use of the separate
-C++ extension is recommended for computationally intensive time-dynamic simulations.
-The system requirements of the C++ extension are stricter: Windows 7 or 10, Python 3.6 and a fairly modern
-CPU with AVX2 instruction support. If the Python-based solver is too slow for you but you cannot satisfy the
-requirements, open a new issue or send me a message, and I'll try to provide you with a compatible version of the C++
-extension.
+Even though all of PyFiberAmp's functionality is available in interpreted Python code, the use of one of the compiled
+backends (C++, Numba or Pythran) is recommended for computationally intensive time-dynamic simulations.
+The hand-written C++ extension is fastest but has also the strictest system requirements: Windows 7 or 10, Python 3.6 and a fairly modern
+CPU with AVX2 instruction support. The Pythran backend probably only works on Linux and requires that `pythran <https://pythran.readthedocs.io/en/latest/>`_
+is installed before installing PyFiberAmp. The Numba backend should work on all operating systems provided that `Numba <https://numba.pydata.org/>`_
+is available. Please open a new issue if you encounter problems with a backend that should work but does not.
 
 Example
 ========

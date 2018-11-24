@@ -379,7 +379,7 @@ the Giles model <a class="footnote-reference" href="#id3" id="id1">[1]</a>.</p>
 <ul class="simple">
 <li>Built-in plotting commands: easy visualization of results</li>
 <li>Python interface: convenient for post-processing the data</li>
-<li>Dedicated C++ PDE solver: fast time-dynamic simulations</li>
+<li>C++, Numba and Pythran backends: fast time-dynamic simulations</li>
 <li>Open source: see what's happening under the hood</li>
 <li>Free of charge: install on as many computers as you like</li>
 </ul>
@@ -411,12 +411,12 @@ python setup.py install
 <p>PyFiberAmp depends on the standard scientific Python packages: Numpy, SciPy and Matplotlib and has been
 tested on Windows 7 and Windows 10. It should work on other operating systems as well
 provided that Python and the required packages are installed. The <a class="reference external" href="https://www.anaconda.com/download/">Anaconda distribution</a> contains everything you'll need out of the box.</p>
-<p>Even though all of PyFiberAmp's functionality is available in interpreted Python code, the use of the separate
-C++ extension is recommended for computationally intensive time-dynamic simulations.
-The system requirements of the C++ extension are stricter: Windows 7 or 10, Python 3.6 and a fairly modern
-CPU with AVX2 instruction support. If the Python-based solver is too slow for you but you cannot satisfy the
-requirements, open a new issue or send me a message, and I'll try to provide you with a compatible version of the C++
-extension.</p>
+<p>Even though all of PyFiberAmp's functionality is available in interpreted Python code, the use of one of the compiled
+backends (C++, Numba or Pythran) is recommended for computationally intensive time-dynamic simulations.
+The hand-written C++ extension is fastest but has also the strictest system requirements: Windows 7 or 10, Python 3.6 and a fairly modern
+CPU with AVX2 instruction support. The Pythran backend probably only works on Linux and requires that <a class="reference external" href="https://pythran.readthedocs.io/en/latest/">pythran</a>
+is installed before installing PyFiberAmp. The Numba backend should work on all operating systems provided that <a class="reference external" href="https://numba.pydata.org/">Numba</a>
+is available. Please open a new issue if you encounter problems with a backend that should work but does not.</p>
 </div>
 <div class="section" id="example">
 <h1>Example</h1>
