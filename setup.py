@@ -1,4 +1,5 @@
 from setuptools import setup, dist
+
 try:
     # Try to compile pythran binary extension module.
     from pythran.dist import PythranExtension, PythranBuildExt
@@ -10,7 +11,7 @@ try:
         ),
     ]
     cmdclass = {"build_ext": PythranBuildExt}
-except ImportError:
+except Exception:
     ext_modules = []
     cmdclass = {}
 

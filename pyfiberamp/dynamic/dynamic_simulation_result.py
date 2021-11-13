@@ -16,7 +16,7 @@ class DynamicSimulationResult(SimulationResult):
             if labels is not None and ch.label not in labels:
                 continue
             self.plot_single_output(ax, ch, idx, plot_density)
-        self.finalize_output_power_plot(ax)
+        self.finalize_output_power_plot(ax) # todo: currently wrong unit if output and fiber have different peak powers
         self.make_output_power_legend(ax)
         plt.show()
 
