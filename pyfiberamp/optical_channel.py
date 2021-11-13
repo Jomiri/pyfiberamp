@@ -27,25 +27,25 @@ class OpticalChannel:
 
     @classmethod
     def create_signal_channel(cls, fiber, wl, wl_bandwidth, power, mode_shape_parameters, direction, label,
-                              reflection_target_label, reflectance, channel_type=''):
+                              reflection_target_label, reflectance, loss, channel_type=''):
 
         mode_shape_parameters = cls.fill_mode_shape_parameters(mode_shape_parameters,
                                                                fiber.default_signal_mode_shape_parameters)
 
         return cls._create_channel(fiber, wl, wl_bandwidth, power, mode_shape_parameters,
                                    direction, label, reflection_target_label, reflectance,
-                                   channel_type)
+                                   loss, channel_type)
 
     @classmethod
     def create_pump_channel(cls, fiber, wl, wl_bandwidth, power, mode_shape_parameters, direction, label,
-                            reflection_target_label, reflectance, channel_type=''):
+                            reflection_target_label, reflectance, loss, channel_type=''):
 
         mode_shape_parameters = cls.fill_mode_shape_parameters(mode_shape_parameters,
                                                                fiber.default_pump_mode_shape_parameters)
 
         return cls._create_channel(fiber, wl, wl_bandwidth, power, mode_shape_parameters,
                                    direction, label, reflection_target_label, reflectance,
-                                   channel_type)
+                                   loss, channel_type)
 
     @staticmethod
     def fill_mode_shape_parameters(input_parameters, default_parameters):
@@ -56,7 +56,7 @@ class OpticalChannel:
     @classmethod
     def _create_channel(cls, fiber, wl, wl_bandwidth, power, mode_shape_parameters,
                         direction, label, reflection_target_label,
-                        reflection_coeff, channel_type):
+                        reflection_coeff, loss, channel_type):
 
         n_ion_populations = fiber.num_ion_populations
         overlaps, mode_func = cls.get_overlaps_and_mode_func(fiber, wl, mode_shape_parameters)
@@ -66,9 +66,10 @@ class OpticalChannel:
         absorption = overlaps * fiber.get_channel_absorption_cross_section(center_frequency, frequency_bandwidth) * fiber.doping_profile.ion_number_densities
         center_frequency = np.full(n_ion_populations, center_frequency)
         frequency_bandwidth = np.full(n_ion_populations, frequency_bandwidth)
-        loss = np.full(n_ion_populations, fiber.background_loss)
+        loss_value = loss if loss is not None else fiber.background_loss
+        loss_final = np.full(n_ion_populations, loss_value)
         return OpticalChannel(center_frequency, frequency_bandwidth, power,
-                              direction, overlaps, mode_func, gain, absorption, loss,
+                              direction, overlaps, mode_func, gain, absorption, loss_final,
                               label, reflection_target_label, reflection_coeff,
                               channel_type)
 

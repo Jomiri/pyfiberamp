@@ -3,8 +3,10 @@ from copy import deepcopy
 import unittest
 
 from pyfiberamp.fibers import YbDopedFiber
+from pyfiberamp.fibers import YbDopedDoubleCladFiber
 from pyfiberamp.dynamic import DynamicSimulation
 from pyfiberamp.steady_state import SteadyStateSimulation
+from pyfiberamp.helper_funcs import decibel_to_exp, to_db
 
 
 class DynamicSimulationTest(unittest.TestCase):
@@ -189,3 +191,38 @@ class DynamicSimulationTest(unittest.TestCase):
         self.assertTrue(np.allclose(cpp_output, expected_output, rtol=1e-6))
         self.assertTrue(np.allclose(pythran_output, expected_output, rtol=1e-6))
         self.assertTrue(np.allclose(numba_output, expected_output, rtol=1e-6))
+
+    def test_per_channel_loss(self):
+        nt = 1
+        r = 3e-6
+        fiber = YbDopedDoubleCladFiber(length=1, core_radius=r, core_na=0.12, ion_number_density=nt,
+                                       ratio_of_core_and_cladding_diameters=10, background_loss=decibel_to_exp(10))
+        pump_power = 0.5
+        signal_power = 0.1
+        signal_wl = 1040e-9
+        pump_wl = 980e-9
+        time_steps = 50000
+        z_nodes = 600
+
+        steady_state_simulation = SteadyStateSimulation()
+        steady_state_simulation.fiber = fiber
+        steady_state_simulation.add_cw_signal(wl=signal_wl, power=signal_power, loss=decibel_to_exp(1))
+        steady_state_simulation.add_backward_pump(wl=pump_wl, power=pump_power, loss=decibel_to_exp(2))
+        steady_state_simulation.add_forward_pump(wl=pump_wl, power=pump_power)
+        steady_state_result = steady_state_simulation.run(tol=1e-5)
+        steady_state_result.plot_power_evolution()
+        ss_losses = steady_state_result.powers_at_fiber_end() / np.array([signal_power, pump_power, pump_power])
+
+        dynamic_simulation = DynamicSimulation(time_steps)
+        dynamic_simulation.fiber = fiber
+        dynamic_simulation.add_forward_signal(wl=signal_wl, input_power=signal_power, loss=decibel_to_exp(1))
+        dynamic_simulation.add_backward_pump(wl=pump_wl, input_power=pump_power, loss=decibel_to_exp(2))
+        dynamic_simulation.add_forward_pump(wl=pump_wl, input_power=pump_power)
+        dynamic_result = dynamic_simulation.run(z_nodes, stop_at_steady_state=True, dt=1e-7)
+        dynamic_result.plot_power_evolution()
+        d_losses = dynamic_result.powers_at_fiber_end() / np.array([signal_power, pump_power, pump_power])
+
+        expected_losses = np.array([-1.0, -10.0, -2.0])
+
+        self.assertTrue(np.allclose(to_db(ss_losses), expected_losses, atol=1e-3, rtol=1e-5))
+        self.assertTrue(np.allclose(to_db(d_losses), expected_losses, atol=1e-2, rtol=1e-5))

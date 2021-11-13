@@ -23,7 +23,7 @@ class SteadyStateSimulation:
         self.channels = Channels()
         self.solver_verbosity = 2
 
-    def add_cw_signal(self, wl, power, wl_bandwidth=0, mode_shape_parameters=None, label=''):
+    def add_cw_signal(self, wl, power, wl_bandwidth=0, mode_shape_parameters=None, label='', loss=None):
         """Adds a new forward propagating single-frequency CW signal to the simulation.
 
         :param wl: Wavelength of the signal
@@ -41,9 +41,9 @@ class SteadyStateSimulation:
         :type label: str
 
         """
-        self.channels.add_forward_signal(wl, wl_bandwidth, power, mode_shape_parameters, label)
+        self.channels.add_forward_signal(wl, wl_bandwidth, power, mode_shape_parameters, label, loss)
 
-    def add_forward_pump(self, wl, power, wl_bandwidth=0, mode_shape_parameters=None, label=''):
+    def add_forward_pump(self, wl, power, wl_bandwidth=0, mode_shape_parameters=None, label='', loss=None):
         """Adds a new forward propagating single-frequency pump to the simulation.
 
         :param wl: Wavelength of the signal
@@ -61,9 +61,9 @@ class SteadyStateSimulation:
         :type label: str
 
         """
-        self.channels.add_forward_pump(wl, wl_bandwidth, power, mode_shape_parameters, label)
+        self.channels.add_forward_pump(wl, wl_bandwidth, power, mode_shape_parameters, label, loss)
 
-    def add_backward_pump(self, wl, power, wl_bandwidth=0, mode_shape_parameters=None, label=''):
+    def add_backward_pump(self, wl, power, wl_bandwidth=0, mode_shape_parameters=None, label='', loss=None):
         """Adds a new backward propagating single-frequency pump to the simulation.
 
         :param wl: Wavelength of the signal
@@ -81,7 +81,7 @@ class SteadyStateSimulation:
         :type label: str
 
         """
-        self.channels.add_backward_pump(wl, wl_bandwidth, power, mode_shape_parameters, label)
+        self.channels.add_backward_pump(wl, wl_bandwidth, power, mode_shape_parameters, label, loss)
 
     def add_ase(self, wl_start, wl_end, n_bins):
         """Adds amplified spontaneous emission (ASE) channels.
