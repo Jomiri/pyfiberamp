@@ -18,9 +18,9 @@ class DynamicSolverPythran(DynamicSolverPython):
         N2[:, -1] = N2_in[:, -1]
 
         # Unpack class attributes.
-        source_idx = np.array([i[0] for i in boundary_conditions.reflections], dtype=np.int)
-        target_idx = np.array([i[1] for i in boundary_conditions.reflections], dtype=np.int)
-        R = np.array([i[2] for i in boundary_conditions.reflections], dtype=np.float)
+        source_idx = np.array([i[0] for i in boundary_conditions.reflections], dtype=int)
+        target_idx = np.array([i[1] for i in boundary_conditions.reflections], dtype=int)
+        R = np.array([i[2] for i in boundary_conditions.reflections], dtype=float)
         P_in_out = boundary_conditions.P_in_out
         num_ion_populations = dN2dt.num_ion_populations
         n_channels = dN2dt.n_channels

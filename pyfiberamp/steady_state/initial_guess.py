@@ -30,9 +30,9 @@ class GuessParameters:
 
 
 class ChannelGuessParameters:
-    """ChannelGuessParameters defines the guessed gain and the functional form of the power evolution for
-    each type of channel (signal, pump, ASE, and Raman). The gain can be defined directly or as the output power.
-    The gain guess is stored as a function used to calculate the output power."""
+    """ChannelGuessParameters defines the guessed gain and the functional form of the input_power evolution for
+    each type of channel (signal, pump, ASE, and Raman). The gain can be defined directly or as the output input_power.
+    The gain guess is stored as a function used to calculate the output input_power."""
 
     @classmethod
     def from_gain_value(cls, gain_db, gain_shape):
@@ -53,7 +53,7 @@ class ChannelGuessParameters:
         self._gain_shape = None
 
     def set_gain_db(self, gain_db):
-        """Set new guessed gain value. Overrides default and previously set gain and output power guesses.
+        """Set new guessed gain value. Overrides default and previously set gain and output input_power guesses.
 
         :param gain_db: Guessed total gain in dB
         :type gain_db: float
@@ -62,18 +62,18 @@ class ChannelGuessParameters:
         self._output_power_func = lambda input_power: input_power * 10**(gain_db / 10)
 
     def set_output_power(self, output_power):
-        """Set new guessed output power value. Overrides default and previously set gain and output power guesses.
+        """Set new guessed output input_power value. Overrides default and previously set gain and output input_power guesses.
 
-        :param output_power: Guessed output power in W
+        :param output_power: Guessed output input_power in W
         :type output_power: float
 
         """
         self._output_power_func = lambda x: np.full_like(x, output_power)
 
     def set_gain_shape(self, gain_shape):
-        """Set new guessed shape of the power evolution. Overrides default or previously set values.
+        """Set new guessed shape of the input_power evolution. Overrides default or previously set values.
 
-        :param gain_shape: New guess for the functional form of power evolution
+        :param gain_shape: New guess for the functional form of input_power evolution
         :type gain_shape: Member of GainShapes Enum
 
         """
@@ -81,9 +81,9 @@ class ChannelGuessParameters:
         self._gain_shape = gain_shape
 
     def get_output_power(self, input_power):
-        """Getter for the guessed output power.
+        """Getter for the guessed output input_power.
 
-        :returns: The guessed output power
+        :returns: The guessed output input_power
         :rtype: float
 
         """

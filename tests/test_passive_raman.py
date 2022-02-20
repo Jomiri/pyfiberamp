@@ -8,15 +8,15 @@ import numpy as np
 class PassiveRamanTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        core_r = np.sqrt(50e-12 / np.pi)
+        core_radius = np.sqrt(50e-12 / np.pi)
         background_loss = decibel_to_exp(0.0002)
         length = 20000
-        core_NA = 0.12
-        fiber = PassiveFiber(length, core_r, background_loss, core_NA)
-        fiber.effective_area_type = 'core_area'
-        simulation = SteadyStateSimulationWithRaman()
+        core_na = 0.12
+        fiber = PassiveFiber(length, core_radius, background_loss, core_na)
+        fiber.effective_area_type = 'core'
+        simulation = SteadyStateSimulationWithRaman(fiber)
         simulation.fiber = fiber
-        simulation.add_cw_signal(wl=1550e-9, power=0.600)
+        simulation.add_forward_signal(wl=1550e-9, input_power=0.600)
         simulation.add_raman(backward_raman_allowed=False)
         cls.result = simulation.run(tol=1e-11)
 

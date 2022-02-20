@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from pyfiberamp.doping_profile import DopingProfile
 from pyfiberamp.helper_funcs import *
 from pyfiberamp.mode_shape import ModeShape
+from pyfiberamp.mode_solver.lp_mode_solver import default_mode_solver
 
 
 class FiberBase(ABC):
@@ -28,15 +29,17 @@ class FiberBase(ABC):
         self.core_radius = core_radius
         self.background_loss = background_loss
         self.core_na = core_na
-        self.effective_area_type = 'core_area'
         self.core_refractive_index = DEFAULT_GROUP_INDEX
-        self.doping_profile = DopingProfile(ion_number_densities=[0], radii=[core_radius])
-        self.default_signal_mode_shape_parameters = {'functional_form': 'bessel',
-                                                     'mode_diameter': 0,
-                                                     'overlaps': []}
-        self.default_pump_mode_shape_parameters = {'functional_form': 'bessel',
-                                                     'mode_diameter': 0,
-                                                     'overlaps': []}
+        self.effective_area_type = 'mode'
+        self.doping_profile = DopingProfile(ion_number_densities=[0], radii=[core_radius],
+                                            num_of_angular_sections=1, core_radius=core_radius)
+
+    def default_signal_mode(self, freq):
+        return default_mode_solver.find_mode(l=0, m=1,
+                                             core_radius=self.core_radius, na=self.core_na, wl=freq_to_wl(freq))
+
+    def default_pump_mode(self, freq):
+        return self.default_signal_mode(freq)
 
     def v_parameter(self, wl):
         return fiber_v_parameter(wl, self.core_radius, self.core_na)
@@ -44,38 +47,6 @@ class FiberBase(ABC):
     @property
     def num_ion_populations(self):
         return len(self.doping_profile.ion_number_densities)
-
-    def nonlinear_effective_area(self, freq):
-        """Returns the nonlinear effective area of the fundamental fiber mode with the given frequency. The method used
-        is determined by the attribute self.effective_area_type.
-
-        :param freq: The frequency of the optical signal (Hz).
-        :type freq: float or numpy float array
-        :returns: The nonlinear effective area
-        :rtype: Same as argument type.
-
-        """
-        if self.effective_area_type == 'core_area':
-            return self._effective_area_from_core_area(freq)
-        elif self.effective_area_type in ['gaussian', 'bessel']:
-            return self._effective_area_from_mode_shape(freq)
-
-    def _effective_area_from_core_area(self, freq):
-        """Returns a numpy array with len(freq) items. All items are equal to the fiber's core area."""
-        return self.core_area() * np.ones_like(freq)
-
-    def _effective_area_from_mode_shape(self, freq):
-        """Returns a numpy array with len(freq) items. The effective core area is calculated for each frequency as
-        pi*(mfd/2)**2, where mfd is the mode field diameter. This is not exactly physically correct but computationally
-        easy."""
-        mode_shape = ModeShape(self, freq_to_wl(freq), {'functional_form': self.effective_area_type,
-                                                        'mode_diameter': 0})
-        a_eff = mode_shape.nonlinear_effective_area(self.core_radius)
-        print(a_eff)
-        return a_eff
-
-    def _effective_area_from_bessel_distribution(self, freq):
-        raise NotImplementedError()
 
     def core_area(self):
         """Returns the core area of the fiber defined as pi*r**2, where r is the core radius.

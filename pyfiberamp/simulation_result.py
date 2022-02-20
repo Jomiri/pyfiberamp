@@ -9,7 +9,7 @@ class SimulationResult:
         self.z = z
         slices = channels.get_slices()
         self.channels = channels
-        self.labels = channels.get_labels()
+        self.labels = channels.get_channel_ids()
         self.powers = SlicedArray(powers, slices)
         self.wavelengths = channels.get_wavelengths()
         self.upper_level_fraction = upper_level_fraction
@@ -78,12 +78,12 @@ class SimulationResult:
             forward_ase = np.sum(self.powers.forward_ase, axis=0)
             forward_ase_power = forward_ase[-1]
             ax.plot(self.z, self.plotting_transformation(forward_ase),
-                    label='Forward ASE, power={:.2f} mW'.format(forward_ase_power * 1000))
+                    label='Forward ASE, input_power={:.2f} mW'.format(forward_ase_power * 1000))
 
             backward_ase = np.sum(self.powers.backward_ase, axis=0)
             backward_ase_power = backward_ase[0]
             ax.plot(self.z, self.plotting_transformation(backward_ase),
-                    label='Backward ASE, power={:.2f} mW'.format(backward_ase_power * 1000))
+                    label='Backward ASE, input_power={:.2f} mW'.format(backward_ase_power * 1000))
 
     def plot_normal_channel_power_evolution(self, ax, channel_type):
         wls = getattr(self.wavelengths, channel_type)
@@ -185,9 +185,9 @@ class SimulationResult:
     def plot_total_power(self):
         fig, ax = plt.subplots()
         total_power = np.sum(self.powers, axis=0)
-        ax.plot(self.z, total_power, label='Total power in fiber')
+        ax.plot(self.z, total_power, label='Total input_power in fiber')
         ax.set_xlabel('Z (m)', fontsize=18)
-        ax.set_ylabel('Total power in fiber (W)', fontsize=18)
+        ax.set_ylabel('Total input_power in fiber (W)', fontsize=18)
         ax.set_ylim([0, ax.get_ylim()[1]])
 
     def power_evolution_unit(self):

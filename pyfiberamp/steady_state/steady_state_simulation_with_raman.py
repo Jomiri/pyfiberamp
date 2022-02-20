@@ -1,3 +1,4 @@
+from functools import partial
 from pyfiberamp.helper_funcs import *
 from pyfiberamp.simulation_result import SimulationResult
 from pyfiberamp.steady_state import SteadyStateSimulation
@@ -10,19 +11,21 @@ class SteadyStateSimulationWithRaman(SteadyStateSimulation):
     Only one ion population is supported. The class defines the fiber, boundary conditions and optical channels used in
     the simulation.
     """
-    def __init__(self):
-        super().__init__()
+    def __init__(self, fiber):
+        super().__init__(fiber)
         self.raman_is_included = False
         self.model = GilesModelWithRaman
 
-    def add_pulsed_signal(self, wl, power, f_rep, fwhm_duration, wl_bandwidth=0, mode_shape_parameters=None, label=''):
+    def add_pulsed_forward_signal(self, wl, input_power, f_rep, fwhm_duration,
+                                  wl_bandwidth=0.0, loss=None, mode=None, channel_id=None,
+                                  reflection_target_id=None, reflectance=0.0):
         """Adds a new forward propagating single-frequency pulsed signal to the simulation. A pulsed signal has a higher
-        peak power resulting in stronger nonlinear effects, in particular spontaneous and stimulated Raman scattering.
+        peak input_power resulting in stronger nonlinear effects, in particular spontaneous and stimulated Raman scattering.
         The pulse shape is assumed to be Gaussian.
 
         :param wl: Wavelength of the signal
         :type wl: float
-        :param power: Input power of the signal at the beginning of the fiber
+        :param power: Input input_power of the signal at the beginning of the fiber
         :type power: float
         :param f_rep: Repetition frequency of the signal
         :type f_rep: float
@@ -39,21 +42,56 @@ class SteadyStateSimulationWithRaman(SteadyStateSimulation):
         :type label: str
 
         """
-        self.channels.add_pulsed_forward_signal(wl, wl_bandwidth, power, f_rep, fwhm_duration,
-                                                mode_shape_parameters, label)
+        check_signal_reprate(f_rep)
+        self.channels.create_channel(channel_type='signal',
+                                     direction=1,
+                                     fiber=self.fiber,
+                                     input_power=input_power,
+                                     wl=wl,
+                                     mode=mode,
+                                     channel_id=channel_id,
+                                     wl_bandwidth=wl_bandwidth,
+                                     loss=loss,
+                                     reflection_target_id=reflection_target_id,
+                                     reflectance=reflectance,
+                                     peak_power_func=partial(gaussian_peak_power, (f_rep, fwhm_duration)))
 
-    def add_raman(self, input_power=SIMULATION_MIN_POWER, backward_raman_allowed=True, raman_gain=DEFAULT_RAMAN_GAIN):
+    def add_raman(self, input_power=SIMULATION_MIN_POWER, backward_raman_allowed=True, raman_gain=DEFAULT_RAMAN_GAIN,
+                  loss=None, mode=None, channel_id=None):
         """Adds Raman channels to the simulation.
 
          :param backward_raman_allowed: Determines if only the forward propagating Raman beam is simulated.
          :type backward_raman_allowed: bool, default True
-         :param input_power: Input power of the Raman beam(s)
+         :param input_power: Input input_power of the Raman beam(s)
          :type input_power: float, default ~0 W
          :param raman_gain: Raman gain value to be used in the simulation.
          :type raman_gain: float, default 1e-13 m/W
 
          """
-        self.channels.add_raman(input_power, backward_raman_allowed)
+        assert len(self.channels.forward_signals) == 1 and len(self.channels.backward_signals) == 0, \
+            'Raman modeling is supported only with a single forward signal.'
+
+        raman_freq = self.channels.forward_signals[0].v - RAMAN_FREQ_SHIFT
+        self.channels.create_channel(channel_type='raman',
+                                     direction=1,
+                                     fiber=self.fiber,
+                                     input_power=input_power,
+                                     wl=freq_to_wl(raman_freq),
+                                     mode=mode,
+                                     channel_id=channel_id,
+                                     wl_bandwidth=RAMAN_GAIN_WL_BANDWIDTH,
+                                     loss=loss,
+                                     num_of_modes=RAMAN_MODES_IN_PM_FIBER)
+        self.channels.create_channel(channel_type='raman',
+                                     direction=-1,
+                                     fiber=self.fiber,
+                                     input_power=input_power,
+                                     wl=freq_to_wl(raman_freq),
+                                     mode=mode,
+                                     channel_id=channel_id,
+                                     wl_bandwidth=RAMAN_GAIN_WL_BANDWIDTH * backward_raman_allowed,
+                                     loss=loss,
+                                     num_of_modes=RAMAN_MODES_IN_PM_FIBER)
         self.raman_is_included = True
         self.model.raman_gain = raman_gain
 

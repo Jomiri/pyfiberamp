@@ -56,10 +56,21 @@ class ActiveFiber(FiberBase):
                          core_na=core_na)
 
         self.spectroscopy = spectroscopy
-        self.doping_profile = DopingProfile(ion_number_densities=[ion_number_density], radii=[core_radius])
+        self.doping_profile = DopingProfile(ion_number_densities=[ion_number_density], radii=[core_radius],
+                                            num_of_angular_sections=1, core_radius=core_radius)
 
-    def set_doping_profile(self, ion_number_densities, radii=None, areas=None):
-        self.doping_profile = DopingProfile(ion_number_densities, radii, areas)
+    def set_doping_profile(self, ion_number_densities, radii=None, num_angular_sections=1):
+        if radii is None:
+            radii = [self.core_radius]
+        self.doping_profile = DopingProfile(ion_number_densities, radii, num_angular_sections, self.core_radius)
+
+    def set_ion_number_density_based_on_core_absorption(self, wl: float, absorption: float):
+        cross_section = self.get_channel_absorption_cross_section(wl_to_freq(wl), 0.0)
+        core_mode = self.default_signal_mode(wl_to_freq(wl))
+        overlap = core_mode.core_overlap
+        ion_number_density = decibel_to_exp(absorption) / (overlap * cross_section)
+        self.doping_profile.ion_number_densities = np.full_like(self.doping_profile.ion_number_densities,
+                                                                ion_number_density)
 
     @property
     def ion_number_density(self):

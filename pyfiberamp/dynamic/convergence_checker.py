@@ -12,7 +12,7 @@ class ConvergenceChecker:
         self.stop_at_steady_state = stop_at_steady_state
         self.prev_mean_N2 = 0
         self.current_mean_N2 = 0
-        self.weigths = weights[:, np.newaxis] / np.sum(weights) * len(weights)
+        self.weights = weights[:, np.newaxis] / np.sum(weights) * len(weights)
 
     def has_not_converged(self, N2, n_iteration):
         if n_iteration == 0:
@@ -36,7 +36,7 @@ class ConvergenceChecker:
 
     def update_mean_N2(self, N2):
         self.prev_mean_N2 = self.current_mean_N2
-        self.current_mean_N2 = np.mean(N2[:, 1:-1] * self.weigths)  # Boundary points with N2=0 excluded
+        self.current_mean_N2 = np.mean(N2[:, 1:-1] * self.weights)  # Boundary points with N2=0 excluded
 
     def print_status(self, n_iteration):
         print("Iteration {:d}, average excitation: {:.5E}".format(n_iteration, self.current_mean_N2))

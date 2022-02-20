@@ -5,7 +5,6 @@ from pyfiberamp.dynamic import DynamicSimulationResult
 import numpy as np
 
 
-
 class DynamicSolverBase(ABC):
     def __init__(self, channels, fiber, n_nodes, max_iterations, dt, P, N2,
                  stop_at_steady_state, steady_state_tolerance, convergence_checking_interval):
@@ -30,7 +29,7 @@ class DynamicSolverBase(ABC):
         if P is None:
             P = np.ones(simulation_array_shape) * SIMULATION_MIN_POWER
         else:
-            assert(P.shape == simulation_array_shape)
+            assert (P.shape == simulation_array_shape)
         return P
 
     def _check_N2(self, N2, simulation_array_shape, num_ion_populations):
@@ -38,7 +37,7 @@ class DynamicSolverBase(ABC):
         if N2 is None:
             N2 = np.zeros(n2_shape)
         else:
-            assert(N2.shape == n2_shape)
+            assert (N2.shape == n2_shape)
         return N2
 
     def _check_dt(self, dt):
@@ -46,7 +45,7 @@ class DynamicSolverBase(ABC):
             cn = c / self.fiber.core_refractive_index
             dt = self.dz / cn
         else:
-            assert(dt < self.fiber.spectroscopy.upper_state_lifetime)
+            assert (dt < self.fiber.spectroscopy.upper_state_lifetime)
         return dt
 
     def run(self):
@@ -63,9 +62,9 @@ class DynamicSolverBase(ABC):
         ion_cross_section_areas = np.tile(self.fiber.doping_profile.areas, n_channels)
 
         n_iter = self.solve(self.P, self.N2, g, a, l, v, dv, self.P_in_out, self.reflections,
-                                    ion_cross_section_areas, self.fiber.spectroscopy.upper_state_lifetime,
-                                    self.fiber.length, ion_number_densities, n_forward,
-                                    self.steady_state_tolerance, self.dt, self.stop_at_steady_state, n_channels,
+                            ion_cross_section_areas, self.fiber.spectroscopy.upper_state_lifetime,
+                            self.fiber.length, ion_number_densities, n_forward,
+                            self.steady_state_tolerance, self.dt, self.stop_at_steady_state, n_channels,
                             self.convergence_checking_interval)
 
         P_out = self.P_in_out[:, :n_iter]
@@ -73,7 +72,8 @@ class DynamicSolverBase(ABC):
         res = DynamicSimulationResult(z=self.z,
                                       t=self.t[:n_iter],
                                       powers=self.P,
-                                      upper_level_fraction=self.N2/self.fiber.doping_profile.ion_number_densities[:, np.newaxis],
+                                      upper_level_fraction=self.N2 / self.fiber.doping_profile.ion_number_densities[:,
+                                                                     np.newaxis],
                                       output_powers=P_out,
                                       channels=self.channels,
                                       fiber=self.fiber)
@@ -86,5 +86,3 @@ class DynamicSolverBase(ABC):
     @abstractmethod
     def solve(self, *args):
         pass
-
-

@@ -14,9 +14,9 @@ class DynamicSimulation:
      multiple ion populations is also supported. The class defines the fiber, boundary conditions and optical channels
      used in the simulation.
      """
-    def __init__(self, max_time_steps):
-        self.fiber = None
-        self.channels = Channels()
+    def __init__(self, max_time_steps, fiber):
+        self.fiber = fiber
+        self.channels = Channels(fiber)
         self.max_time_steps = int(max_time_steps)
         self.backends = self._get_available_backends()
         self._use_backend(self._fastest_backend())  # use fastest available backend by default
@@ -115,108 +115,151 @@ class DynamicSimulation:
                                                                       'should be below the upper state life time.'
         return np.linspace(0, self.max_time_steps, self.max_time_steps, endpoint=False) * dt
 
-    def add_forward_signal(self, wl, input_power, wl_bandwidth=0.0, mode_shape_parameters=None, label="", loss=None,
-                           reflection_target='', reflectance=0):
-        """Adds a new forward-propagating signal to the simulation.
+    def add_forward_signal(self, wl: float, input_power, wl_bandwidth=0.0, loss=None, mode=None, channel_id=None,
+                           reflection_target_id=None, reflectance=0.0):
+        """Adds a new forward propagating single-frequency CW signal to the simulation.
 
         :param wl: Wavelength of the signal
         :type wl: float
-        :param input_power: Input power of the signal at the beginning of the fiber
-        :type input_power: float or numpy array
-        :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means including ASE.
+        :param input_power: Input input_power of the signal at the beginning of the fiber
+        :type input_power: float or np.ndarray
+        :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means seeding by
+         spontaneous emission.
         :type wl_bandwidth: float
-        :param mode_shape_parameters: Defines the mode field shape. Allowed key-value pairs:
-         *functional_form* -> one of ['bessel', 'gaussian', 'tophat']  \
-         *mode_diameter* -> float \
-         *overlaps* -> list of pre-calculated overlaps between the channel and the ion populations
-        :type mode_shape_parameters: dict
-        :param label: Optional label for the channel (required to receive reflected power from another channel)
-        :type label: str
-        :param reflection_target: Label of the channel receiving reflection from this channel
-        :type reflection_target: str
-        :param reflectance: Reflectance R [0,1] from this channel to the target channel
-        """
-        self._check_input(wl, input_power, wl_bandwidth, mode_shape_parameters, label, loss, reflection_target, reflectance)
-        self.channels.add_forward_signal(wl, wl_bandwidth, input_power, mode_shape_parameters, label, loss,
-                                         reflection_target, reflectance)
+        :param loss: Background loss of the channel. If None, the fiber's default loss is used.
+        :type loss: float
+        :param mode: Fiber mode class defining the channel's mode shape.
+        :type mode: Subclass of ModeBase (such as LPMode or TophatMode)
+        :param channel_id: Identifier for the channel, used for reflection definitions and plotting
+        :type channel_id: int or str
+        :param reflection_target_id: Identifier for the target channel that this channel reflects to
+        :type reflection_target_id: int or str
+        :param reflectance: Reflectance at the end of the channel 0<=R<=1
+        :type reflectance: float
 
-    def add_backward_signal(self, wl, input_power, wl_bandwidth=0.0, mode_shape_parameters=None, label="", loss=None,
-                            reflection_target='', reflectance=0):
-        """Adds a new backward-propagating signal to the simulation.
+        """
+        self.channels.create_channel(channel_type='signal',
+                                     direction=1,
+                                     fiber=self.fiber,
+                                     input_power=input_power,
+                                     wl=wl,
+                                     mode=mode,
+                                     channel_id=channel_id,
+                                     wl_bandwidth=wl_bandwidth,
+                                     loss=loss,
+                                     reflection_target_id=reflection_target_id,
+                                     reflectance=reflectance)
+
+    def add_backward_signal(self, wl: float, input_power, wl_bandwidth=0.0, loss=None,
+                            mode=None, channel_id=None,
+                            reflection_target_id=None, reflectance=0.0):
+        """Adds a new forward propagating single-frequency CW signal to the simulation.
+
+         :param wl: Wavelength of the signal
+        :type wl: float
+        :param input_power: Input input_power of the signal at the beginning of the fiber
+        :type input_power: float or np.ndarray
+        :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means seeding by
+         spontaneous emission.
+        :type wl_bandwidth: float
+        :param loss: Background loss of the channel. If None, the fiber's default loss is used.
+        :type loss: float
+        :param mode: Fiber mode class defining the channel's mode shape.
+        :type mode: Subclass of ModeBase (such as LPMode or TophatMode)
+        :param channel_id: Identifier for the channel, used for reflection definitions and plotting
+        :type channel_id: int or str
+        :param reflection_target_id: Identifier for the target channel that this channel reflects to
+        :type reflection_target_id: int or str
+        :param reflectance: Reflectance at the end of the channel 0<=R<=1
+        :type reflectance: float
+
+        """
+        self.channels.create_channel(channel_type='signal',
+                                     direction=-1,
+                                     fiber=self.fiber,
+                                     input_power=input_power,
+                                     wl=wl,
+                                     mode=mode,
+                                     channel_id=channel_id,
+                                     wl_bandwidth=wl_bandwidth,
+                                     loss=loss,
+                                     reflection_target_id=reflection_target_id,
+                                     reflectance=reflectance)
+
+    def add_forward_pump(self, wl:float, input_power, wl_bandwidth=0.0, loss=None, mode=None, channel_id=None,
+                         reflection_target_id=None, reflectance=0.0):
+        """Adds a new forward propagating single-frequency pump to the simulation.
 
         :param wl: Wavelength of the signal
         :type wl: float
-        :param input_power: Input power of the signal at the beginning of the fiber
-        :type input_power: float or numpy array
-        :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means including ASE.
+        :param input_power: Input input_power of the signal at the beginning of the fiber
+        :type input_power: float or np.ndarray
+        :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means seeding by
+         spontaneous emission.
         :type wl_bandwidth: float
-        :param mode_shape_parameters: Defines the mode field shape. Allowed key-value pairs:
-         *functional_form* -> one of ['bessel', 'gaussian', 'tophat']  \
-         *mode_diameter* -> float \
-         *overlaps* -> list of pre-calculated overlaps between the channel and the ion populations
-        :type mode_shape_parameters: dict
-        :param label: Optional label for the channel (required to receive reflected power from another channel)
-        :type label: str
-        :param reflection_target: Label of the channel receiving reflection from this channel
-        :type reflection_target: str
-        :param reflectance: Reflectance R [0,1] from this channel to the target channel
-        """
-        self._check_input(wl, input_power, wl_bandwidth, mode_shape_parameters, label, loss, reflection_target, reflectance)
-        self.channels.add_backward_signal(wl, wl_bandwidth, input_power, mode_shape_parameters, label, loss,
-                                          reflection_target, reflectance)
+        :param loss: Background loss of the channel. If None, the fiber's default loss is used.
+        :type loss: float
+        :param mode: Fiber mode class defining the channel's mode shape.
+        :type mode: Subclass of ModeBase (such as LPMode or TophatMode)
+        :param channel_id: Identifier for the channel, used for reflection definitions and plotting
+        :type channel_id: int or str
+        :param reflection_target_id: Identifier for the target channel that this channel reflects to
+        :type reflection_target_id: int or str
+        :param reflectance: Reflectance at the end of the channel 0<=R<=1
+        :type reflectance: float
 
-    def add_forward_pump(self, wl, input_power, wl_bandwidth=0.0, mode_shape_parameters=None, label="", loss=None,
-                         reflection_target='', reflectance=0):
-        """Adds a new forward-propagating pump to the simulation.
+        """
+        self.channels.create_channel(channel_type='pump',
+                                     direction=1,
+                                     fiber=self.fiber,
+                                     input_power=input_power,
+                                     wl=wl,
+                                     mode=mode,
+                                     channel_id=channel_id,
+                                     wl_bandwidth=wl_bandwidth,
+                                     loss=loss,
+                                     reflection_target_id=reflection_target_id,
+                                     reflectance=reflectance)
+
+    def add_backward_pump(self, wl: float, input_power, wl_bandwidth=0.0, loss=None, mode=None, channel_id=None,
+                          reflection_target_id=None, reflectance=0.0):
+        """Adds a new backward propagating single-frequency pump to the simulation.
 
         :param wl: Wavelength of the signal
         :type wl: float
-        :param input_power: Input power of the signal at the beginning of the fiber
-        :type input_power: float or numpy array
-        :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means including ASE.
+        :param input_power: Input input_power of the signal at the beginning of the fiber
+        :type input_power: float or np.ndarray
+        :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means seeding by
+         spontaneous emission.
         :type wl_bandwidth: float
-        :param mode_shape_parameters: Defines the mode field shape. Allowed key-value pairs:
-         *functional_form* -> one of ['bessel', 'gaussian', 'tophat']  \
-         *mode_diameter* -> float \
-         *overlaps* -> list of pre-calculated overlaps between the channel and the ion populations
-        :type mode_shape_parameters: dict
-        :param label: Optional label for the channel (required to receive reflected power from another channel)
-        :type label: str
-        :param reflection_target: Label of the channel receiving reflection from this channel
-        :type reflection_target: str
-        :param reflectance: Reflectance R [0,1] from this channel to the target channel
-        """
-        self._check_input(wl, input_power, wl_bandwidth, mode_shape_parameters, label, loss, reflection_target, reflectance)
-        self.channels.add_forward_pump(wl, wl_bandwidth, input_power, mode_shape_parameters, label, loss,
-                                       reflection_target, reflectance)
+        :param loss: Background loss of the channel. If None, the fiber's default loss is used.
+        :type loss: float
+        :param mode: Fiber mode class defining the channel's mode shape.
+        :type mode: Subclass of ModeBase (such as LPMode or TophatMode)
+        :param channel_id: Identifier for the channel, used for reflection definitions and plotting
+        :type channel_id: int or str
+        :param reflection_target_id: Identifier for the target channel that this channel reflects to
+        :type reflection_target_id: int or str
+        :param reflectance: Reflectance at the end of the channel 0<=R<=1
+        :type reflectance: float
 
-    def add_backward_pump(self, wl, input_power, wl_bandwidth=0.0, mode_shape_parameters=None, label='', loss=None,
-                          reflection_target='', reflectance=0):
-        """Adds a new backward-propagating pump to the simulation.
-
-        :param wl: Wavelength of the signal
-        :type wl: float
-        :param input_power: Input power of the signal at the beginning of the fiber
-        :type input_power: float or numpy array
-        :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means including ASE.
-        :type wl_bandwidth: float
-        :param mode_shape_parameters: Defines the mode field shape. Allowed key-value pairs:
-         *functional_form* -> one of ['bessel', 'gaussian', 'tophat']  \
-         *mode_diameter* -> float \
-         *overlaps* -> list of pre-calculated overlaps between the channel and the ion populations
-        :type mode_shape_parameters: dict
-        :param label: Optional label for the channel (required to receive reflected power from another channel)
-        :type label: str
-        :param reflection_target: Label of the channel receiving reflection from this channel
-        :type reflection_target: str
-        :param reflectance: Reflectance R [0,1] from this channel to the target channel
         """
-        self._check_input(wl, input_power, wl_bandwidth, mode_shape_parameters, label, loss, reflection_target, reflectance)
-        self.channels.add_backward_pump(wl, wl_bandwidth, input_power, mode_shape_parameters, label, loss,
-                                        reflection_target, reflectance)
+        self._check_input_power(input_power)
+        self.channels.create_channel(channel_type='pump',
+                                     direction=-1,
+                                     fiber=self.fiber,
+                                     input_power=input_power,
+                                     wl=wl,
+                                     mode=mode,
+                                     channel_id=channel_id,
+                                     wl_bandwidth=wl_bandwidth,
+                                     loss=loss,
+                                     reflection_target_id=reflection_target_id,
+                                     reflectance=reflectance)
 
     def add_ase(self, wl_start, wl_end, n_bins):
-        """Adds amplified spontaneous emission (ASE) channels.
+        """
+        Adds amplified spontaneous emission (ASE) channels.
         Using more channels improves accuracy, but incurs a heavier computational cost to the simulation.
 
         :param wl_start: The shorted wavelength of the ASE band
@@ -227,7 +270,26 @@ class DynamicSimulation:
         :type n_bins: positive int
 
         """
-        self.channels.add_ase(wl_start, wl_end, n_bins)
+        assert wl_end > wl_start, 'End wavelength must be greater than start wavelength.'
+        assert isinstance(n_bins, int) and n_bins > 0, 'Number of ASE bins must be a positive integer.'
+        ase_wl_bandwidth = (wl_end - wl_start) / n_bins
+        ase_wls = np.linspace(wl_start, wl_end, n_bins)
+        for wl in ase_wls:
+            self.channels.create_channel(channel_type='ase',
+                                         direction=1,
+                                         fiber=self.fiber,
+                                         input_power=SIMULATION_MIN_POWER,
+                                         wl=wl,
+                                         wl_bandwidth=ase_wl_bandwidth,
+                                         mode=None)
+
+            self.channels.create_channel(channel_type='ase',
+                                         direction=-1,
+                                         fiber=self.fiber,
+                                         input_power=SIMULATION_MIN_POWER,
+                                         wl=wl,
+                                         wl_bandwidth=ase_wl_bandwidth,
+                                         mode=None)
 
     def run(self, z_nodes, dt='auto', P=None, N2=None, stop_at_steady_state=False,
             steady_state_tolerance=1e-4, convergence_checking_interval=10000):
@@ -255,22 +317,10 @@ class DynamicSimulation:
         :type convergence_checking_interval: positive int
 
         """
-
-        self.channels.set_fiber(self.fiber)
         solver = self.backend(self.channels, self.fiber, z_nodes, self.max_time_steps, dt, P, N2,
                               stop_at_steady_state, steady_state_tolerance, convergence_checking_interval)
         res = solver.run()
         return res
-
-    def _check_input(self, wl, input_power, wl_bandwidth, mode_shape_parameters,
-                     label, loss, reflection_target, reflection_coeff):
-        assert isinstance(wl, (float, int)) and wl > 0, 'Wavelength must be a positive number.'
-        self._check_input_power(input_power)
-        assert isinstance(wl_bandwidth, float) and wl_bandwidth >= 0, 'Wavelength bandwidth must be a positive float.'
-        assert isinstance(label, str), 'Label must be a string.'
-        assert isinstance(reflection_target, str), 'Reflection target label must be a string.'
-        assert 0 <= reflection_coeff <= 1, 'Reflectance must be between 0 and 1.'
-        assert loss is None or loss >= 0, 'Background loss must be >=0'
 
     def _check_input_power(self, input_power):
         assert (isinstance(input_power, (float, int)) and input_power >= 0) or \

@@ -8,12 +8,17 @@ class GilesModelWithRaman(GilesModel):
     Brillouin Scattering," Appl. Opt. 11, 2489-2494 (1972)
     """
     raman_gain = DEFAULT_RAMAN_GAIN
+
     def __init__(self, channels, fiber):
         """The model is initialized with the optical channels and the simulated fiber. The parameters are named in the
-        same way as in the paper by Giles and Desurvire. A pulsed signal is taken into account in the peak power
+        same way as in the paper by Giles and Desurvire. A pulsed signal is taken into account in the peak input_power
         function."""
         super().__init__(channels, fiber)
         self.peak_power_func = channels.forward_signals[0].peak_power_func
+        if fiber.effective_area_type == 'mode':
+            self.signal_effective_area = channels.forward_signals[0].mode.nonlinear_effective_area()
+        elif fiber.effective_area_type == 'core':
+            self.signal_effective_area = fiber.core_area()
         self.backward_raman_allowed = channels.backward_raman_allowed
         self.slices = channels.get_slices()
 
@@ -40,13 +45,12 @@ class GilesModelWithRaman(GilesModel):
         g_r_forward = self.raman_gain
         g_r_backward = self.raman_gain if self.backward_raman_allowed else 0
         photon_energy_ratio = signal_vs / raman_vs
-        effective_area = self.fiber.nonlinear_effective_area(signal_vs)
 
         def signal_intensity(P_signal):
-            """Calculates the intensity of the signal using the peak power if the signal is pulsed and the nonlinear
+            """Calculates the intensity of the signal using the peak input_power if the signal is pulsed and the nonlinear
             effective area of the fiber."""
             peak_power = self.peak_power_func(P_signal)
-            return peak_power / effective_area
+            return peak_power / self.signal_effective_area
 
         def upper_level_excitation(P):
             """The fraction of ions in the upper level (n_2 / n_t in the Giles model)"""

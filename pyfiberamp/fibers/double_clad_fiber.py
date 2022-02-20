@@ -1,5 +1,6 @@
 from .active_fiber import *
 from pyfiberamp.optical_channel import OpticalChannel
+from pyfiberamp.mode_solver.tophat_mode import TophatMode
 
 
 class DoubleCladFiber(ActiveFiber):
@@ -63,9 +64,6 @@ class DoubleCladFiber(ActiveFiber):
                          background_loss=background_loss,
                          core_na=core_na)
         self.core_to_cladding_ratio = ratio_of_core_and_cladding_diameters
-        self.default_pump_mode_shape_parameters = {'functional_form': 'tophat',
-                                                   'mode_diameter': 2 * self.pump_cladding_radius(),
-                                                   'overlaps': []}
 
     def pump_to_core_overlap(self):
         """Returns the overlap between the core and the pump beams, which equals to the ratio of core and cladding
@@ -75,3 +73,14 @@ class DoubleCladFiber(ActiveFiber):
     def pump_cladding_radius(self):
         """Returns the radius of the fiber's pump cladding."""
         return self.core_radius / self.core_to_cladding_ratio
+
+    def default_pump_mode(self, freq):
+        return TophatMode(mode_radius=self.pump_cladding_radius(), core_radius=self.core_radius)
+
+    def set_ion_number_density_based_on_cladding_absorption(self, wl: float, absorption: float):
+        cross_section = self.get_channel_absorption_cross_section(wl_to_freq(wl), 0.0)
+        cladding_mode = TophatMode(mode_radius=self.pump_cladding_radius(), core_radius=self.core_radius)
+        overlap = cladding_mode.core_overlap
+        ion_number_density = decibel_to_exp(absorption) / (overlap * cross_section)
+        self.doping_profile.ion_number_densities = np.full_like(self.doping_profile.ion_number_densities,
+                                                                ion_number_density)
