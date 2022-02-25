@@ -12,7 +12,7 @@ class DynamicSimulationResult(SimulationResult):
 
     def plot_outputs(self, labels=None, plot_density=1):
         fig, ax = plt.subplots()
-        for idx, ch in enumerate(self.channels._all_channels()):
+        for idx, ch in enumerate(self.channels.as_iterator()):
             if labels is not None and ch.label not in labels:
                 continue
             self.plot_single_output(ax, ch, idx, plot_density)

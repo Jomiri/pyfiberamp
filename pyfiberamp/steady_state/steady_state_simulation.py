@@ -210,7 +210,9 @@ class SteadyStateSimulation:
         """
         if self.fiber.num_ion_populations > 1:
             raise RuntimeError('Use DynamicSimulation for calculations with multiple transverse ion populations.')
-        boundary_condition_residual = self.boundary_conditions(self.channels)
+        boundary_condition_residual = self.boundary_conditions(self.channels.get_input_powers(),
+                                                               self.channels.get_reflections(),
+                                                               self.channels.number_of_forward_channels)
         model = self.model(self.channels, self.fiber)
         rate_equation_rhs, upper_level_func = model.make_rate_equation_rhs()
 

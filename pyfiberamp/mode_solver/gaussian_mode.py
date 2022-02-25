@@ -5,16 +5,20 @@ from pyfiberamp.mode_solver.mode_base import ModeBase
 
 class GaussianMode(ModeBase):
 
+
     @classmethod
-    def from_fiber_parameters(cls, a: float, core_na: float, wl: float):
-        mode_radius = fundamental_mode_radius_petermann_2(wl, a, core_na)
-        return GaussianMode(2*mode_radius)
+    def from_fiber_parameters(cls, core_radius: float, na: float, wl: float):
+        mode_radius = fundamental_mode_radius_petermann_2(wl, core_radius, na)
+        return GaussianMode(2*mode_radius, core_radius)
 
     def __init__(self, mfd, core_radius):
+        super().__init__(core_radius)
         self.mode_radius = mfd / 2
-        self.core_radius = core_radius
 
     def intensity(self, r: float, phi=None):
+        return self._radial_intensity(r)
+
+    def _radial_intensity(self, r):
         return 2 / (np.pi * self.mode_radius**2) * np.exp(-2 * r**2 / self.mode_radius**2)
 
     @property

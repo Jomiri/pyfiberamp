@@ -1,13 +1,9 @@
 import numpy as np
-import warnings
 import inspect
 from numpy.polynomial import Polynomial as Poly
 from scipy.special import jv, kn
-from scipy.optimize import brentq
-import scipy.special as sc
 from scipy.integrate import quad
 import matplotlib.pyplot as plt
-from collections import namedtuple
 import pyfiberamp.mode_solver.lp_mode_solver
 from pyfiberamp.helper_funcs import *
 from pyfiberamp.mode_solver.mode_base import ModeBase
@@ -32,7 +28,9 @@ def core_index(na: float, wl: float):
 
 
 class LPMode(ModeBase):
-    def __init__(self, l: int, m: int, u: float, na: float, a: float, wl: float, rotation: str, n_core_func=core_index):
+    def __init__(self, l: int, m: int, u: float, na: float, a: float, wl: float, rotation: str, cutoff_wl: float,
+                 n_core_func=core_index):
+        super().__init__(a)
         self.l = l
         self.m = m
         self.u = u
@@ -40,17 +38,26 @@ class LPMode(ModeBase):
         self.a = a
         self.wl = wl
         self.rotation = rotation
+        self.cutoff_wl = cutoff_wl
         self.n_core = n_core_func
         assert rotation in ['sin', 'cos']
         self.norm_constant = 1 / self._normalization_integral()
 
     def __str__(self):
         return inspect.cleandoc(f"""
-        LP_{self.l}{self.m} mode ({self.rotation} variant) of 
-        fiber with core diameter {2*self.a*1e6} um, NA {self.na} at {self.wl*1e9} nm.
+        {self.name} of 
+        fiber with core diameter {2*self.a*1e6} um, NA {self.na} at {self.wl*1e9:.2f} nm
         Effective index: {self.effective_index:.6f}
-        Core overlap: {self.core_overlap:.3f}\n
+        Core overlap: {self.core_overlap:.3f}
+        Cutoff wavelength: {self.cutoff_wl*1e9:.2f} nm
+        Effective area: {self.effective_area*1e12:.1f} um^2
+        Effective MFD: {self.effective_mfd*1e6:.2f} um\n
         """)
+
+    @property
+    def name(self):
+        rotation_str = f'{self.rotation} variant' if self.l != 0 else 'no variants'
+        return f'LP_{self.l},{self.m} mode, {rotation_str}'
 
     @property
     def v(self):
@@ -116,6 +123,10 @@ class LPMode(ModeBase):
         """Computes the mode's normalized overlap with the core."""
         return self.radial_integral(0, self.a) * self._angular_full_integral()
 
+    @property
+    def effective_mfd(self):
+        return np.sqrt(self.effective_area / np.pi) * 2
+
     def radial_integral(self, start: float, stop: float):
         return (quad(lambda r: self._radial_intensity(r) * r, start, stop, epsrel=1e-14, points=self.a)[0]
                 * self.norm_constant)
@@ -158,16 +169,17 @@ class LPMode(ModeBase):
         x = np.linspace(-2 * self.a, 2 * self.a, 1000)
         y = np.linspace(-2 * self.a, 2 * self.a, 1000)
         xv, yv = np.meshgrid(x, y)
-        intensity = self.intensity(np.sqrt(xv ** 2 + yv ** 2), np.arctan2(xv, yv))
+        intensity = self.intensity(np.sqrt(xv ** 2 + yv ** 2), np.arctan2(yv, xv))
         xlim = np.array([x[0], x[-1]]) * 1e6
-        ylim = np.array([y[0], y[-1]]) * 1e6
+        ylim = xlim
         self._make_single_plot(intensity, xlim, ylim)
         plt.show()
 
     def _make_single_plot(self, intensity, xlim, ylim):
         fig, ax = plt.subplots(subplot_kw=dict(aspect="equal"))
         plt.imshow(intensity, extent=(*xlim, *ylim))
-        plt.title(f'LP_{self.l}{self.m} mode, {self.rotation} version')
+        rotation_str = f', {self.rotation} variant' if self.l != 0 else ''
+        plt.title(f'LP_{self.l}{self.m} mode{rotation_str}')
         plt.xlabel('X [um]')
         plt.ylabel('Y [um]')
         # Plot core as circle

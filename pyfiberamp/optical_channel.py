@@ -1,5 +1,6 @@
+import inspect
+
 from .helper_funcs import *
-from pyfiberamp.mode_solver import default_mode_solver, LPMode, GaussianMode, TophatMode
 
 
 class OpticalChannel:
@@ -72,11 +73,13 @@ class OpticalChannel:
                  gain=np.array([0]), absorption=np.array([0]), loss=np.array([0]),
                  reflection_target_id=None, reflectance=0,
                  peak_power_func=lambda x: x):
+        input_power = np.array(input_power)
         self._check_input(center_freq, input_power, frequency_bandwidth, loss, reflection_target_id, reflectance)
         self.channel_id = channel_id
         self.channel_type = channel_type
         self.direction = direction
 
+        min_clamp(input_power, SIMULATION_MIN_POWER)
         self.input_power = input_power
         self.v = center_freq
 
@@ -98,15 +101,35 @@ class OpticalChannel:
         # For Raman calculation based on peak input_power
         self.peak_power_func = peak_power_func
 
+    def __str__(self):
+        return inspect.cleandoc(f"""
+        --- Optical channel ---
+        ID: {self.channel_id} 
+        Type: {self.channel_type} 
+        Direction: {'forward' if self.direction==1 else 'backward'}
+        Input power: {self.input_power}
+        Center_wavelength: {self.wavelength}
+        Gain: {self.gain}
+        Absorption: {self.absorption}
+        Loss: {self.loss}
+        Mode: {str(self.mode)}
+        Reflection target ID: {self.reflection_target_id}
+        Reflectance: {self.end_reflection_coeff}
+         """)
+
     @property
     def wavelength(self):
         return freq_to_wl(self.v[0])
+
+    @property
+    def wavelength_bandwidth(self):
+        return freq_bw_to_wl_bw(self.dv, self.wavelength)
 
     @staticmethod
     def _check_input(freq, input_power, freq_bandwidth, loss, reflection_target, reflection_coeff):
         assert (isinstance(freq, (float, int)) and freq > 0) or (isinstance(freq, np.ndarray) and freq[0] > 0), \
             'Wavelength must be a positive number.'
-        assert (isinstance(input_power, (float, int, np.ndarray)) and input_power) >= 0
+        assert np.all(input_power >= 0)
         assert (isinstance(freq_bandwidth, (float, int))
                 and freq_bandwidth) >= 0, 'Wavelength bandwidth must be a positive float.'
         assert reflection_target is None or isinstance(reflection_target, (str, int)), \

@@ -31,14 +31,15 @@ class YbDoubleCladWithGuessTestCase(unittest.TestCase):
             simulation = SteadyStateSimulation(fiber)
             simulation.add_forward_signal(wl=1030e-9,
                                           input_power=cls.input_signal_power,
-                                          mode=GaussianMode(mfd=2 * 4.8e-6, core_radius=fiber.core_radius))
+                                          mode=GaussianMode(mfd=2 * 4.8e-6, core_radius=fiber.core_radius),
+                                          channel_id='signal')
             simulation.add_backward_pump(wl=pump_wl, input_power=cls.input_pump_power)
             if init_guess_array is not None:
                 simulation.set_guess_array(init_guess_array)
             result = simulation.run(tol=tolerance)
             init_guess_array = result.powers
             result_dict = result.make_result_dict()
-            signal_gain = result_dict['forward_signal']['gain'][0]
+            signal_gain = result_dict['signal']['gain']
             cls.gains.append(signal_gain)
 
     def test_gains(self):

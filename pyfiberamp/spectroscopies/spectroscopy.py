@@ -6,7 +6,11 @@ import matplotlib.pyplot as plt
 
 class Spectroscopy:
     @classmethod
-    def from_files(cls, absorption_cross_section_file, emission_cross_section_file, upper_state_lifetime, interpolate='spline'):
+    def from_files(cls,
+                   absorption_cross_section_file: str,
+                   emission_cross_section_file: str,
+                   upper_state_lifetime: float,
+                   interpolate='spline'):
         absorption_spectrum = load_spectrum(absorption_cross_section_file)
         gain_spectrum = load_spectrum(emission_cross_section_file)
         return cls(absorption_spectrum, gain_spectrum, upper_state_lifetime, interpolate)

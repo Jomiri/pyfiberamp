@@ -23,10 +23,10 @@ class Channels:
         self.backward_ramans = []
 
     def check_channel_id(self, channel_id):
-        existing_ids = [] if self.number_of_channels == 0 else self.get_channel_ids()
+        existing_ids = [] if self.number_of_channels == 0 else list(self.get_channel_ids())
         if channel_id is None:
             channel_id = next(self.id_generator)
-            while channel_id in list(existing_ids):
+            while channel_id in existing_ids:
                 channel_id = next(self.id_generator)
         elif channel_id in existing_ids:
             raise RuntimeError(f'Channel id {channel_id} already in use!')
@@ -79,38 +79,38 @@ class Channels:
             raise RuntimeError(f'Channel type {channel.channel_type} not supported')
 
     def get_channel_ids(self):
-        return self._to_sliced_array((np.hstack([ch.channel_id for ch in self._all_channels()])))
+        return self._to_sliced_array((np.hstack([ch.channel_id for ch in self.as_iterator()])))
 
     def get_wavelengths(self):
         return freq_to_wl(self.get_frequencies())
 
     def get_frequencies(self):
-        return self._to_sliced_array(np.hstack([ch.v for ch in self._all_channels()]))
+        return self._to_sliced_array(np.hstack([ch.v for ch in self.as_iterator()]))
 
     def get_frequency_bandwidths(self):
-        return self._to_sliced_array(np.hstack([ch.dv for ch in self._all_channels()]))
+        return self._to_sliced_array(np.hstack([ch.dv for ch in self.as_iterator()]))
 
     def get_propagation_directions(self):
-        return self._to_sliced_array(np.hstack([ch.direction for ch in self._all_channels()]))
+        return self._to_sliced_array(np.hstack([ch.direction for ch in self.as_iterator()]))
 
     def get_number_of_modes(self):
-        return self._to_sliced_array(np.hstack([ch.number_of_modes for ch in self._all_channels()]))
+        return self._to_sliced_array(np.hstack([ch.number_of_modes for ch in self.as_iterator()]))
 
     def get_absorption(self):
-        return self._to_sliced_array(np.hstack([ch.absorption for ch in self._all_channels()]))
+        return self._to_sliced_array(np.hstack([ch.absorption for ch in self.as_iterator()]))
 
     def get_gain(self):
-        return self._to_sliced_array(np.hstack([ch.gain for ch in self._all_channels()]))
+        return self._to_sliced_array(np.hstack([ch.gain for ch in self.as_iterator()]))
 
     def get_background_loss(self):
-        return self._to_sliced_array(np.hstack([ch.loss for ch in self._all_channels()]))
+        return self._to_sliced_array(np.hstack([ch.loss for ch in self.as_iterator()]))
 
     def get_input_powers(self):
-        return self._to_sliced_array(np.hstack([ch.input_power for ch in self._all_channels()]))
+        return self._to_sliced_array(np.hstack([ch.input_power for ch in self.as_iterator()]))
 
     def get_reflections(self):
         reflection_list = [(ch.channel_id, ch.reflection_target_id, ch.end_reflection_coeff)
-                           for ch in self._all_channels() if ch.reflection_target_id is not None]
+                           for ch in self.as_iterator() if ch.reflection_target_id is not None]
 
         return self._translate_reflection_ids(reflection_list)
 
@@ -125,9 +125,9 @@ class Channels:
 
     def get_dynamic_input_powers(self, max_time_steps):
         input_array = np.zeros((self.number_of_channels, max_time_steps+1))
-        for ch_idx, ch in enumerate(self._all_channels()):
+        for ch_idx, ch in enumerate(self.as_iterator()):
             input_power = ch.input_power
-            if isinstance(input_power, float) or isinstance(input_power, int):
+            if isinstance(input_power, float) or isinstance(input_power, int) or input_power.size == 1:
                 channel_input = np.ones(max_time_steps + 1) * input_power
             else:
                 channel_input = np.zeros(max_time_steps + 1)
@@ -138,7 +138,7 @@ class Channels:
         min_clamp(input_array, SIMULATION_MIN_POWER)
         return input_array
 
-    def _all_channels(self):
+    def as_iterator(self):
         return chain(self.forward_signals, self.forward_pumps, self.forward_ase, self.forward_ramans,
                      self.backward_signals, self.backward_pumps, self.backward_ase, self.backward_ramans)
 
@@ -186,8 +186,15 @@ class Channels:
 
     @property
     def number_of_channels(self):
-        return len(list(self._all_channels()))
+        return len(list(self.as_iterator()))
 
     def get_channel_id_index(self, channel_id):
         return int(np.where(self.get_channel_ids() == channel_id)[0])
 
+    def get_channel_by_id(self, channel_id):
+        return [ch for ch in self.as_iterator() if ch.channel_id == channel_id][0]
+
+    @property
+    def number_of_forward_channels(self):
+        directions = self.get_propagation_directions()
+        return int(np.sum(directions[directions == 1]))

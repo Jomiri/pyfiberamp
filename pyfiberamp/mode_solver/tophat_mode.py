@@ -3,12 +3,16 @@ from pyfiberamp.mode_solver.mode_base import ModeBase
 
 
 class TophatMode(ModeBase):
+
     def __init__(self, mode_radius, core_radius):
+        super().__init__(core_radius)
         self.mode_radius = mode_radius
-        self.core_radius = core_radius
         self.normalization_const = 1 / (np.pi * mode_radius ** 2)
 
     def intensity(self, r, phi=None):
+        return self._radial_intensity(r)
+
+    def _radial_intensity(self, r):
         return (r <= self.mode_radius) * self.normalization_const
 
     @property

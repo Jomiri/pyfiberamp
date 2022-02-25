@@ -15,7 +15,6 @@ class PassiveRamanTest(unittest.TestCase):
         fiber = PassiveFiber(length, core_radius, background_loss, core_na)
         fiber.effective_area_type = 'core'
         simulation = SteadyStateSimulationWithRaman(fiber)
-        simulation.fiber = fiber
         simulation.add_forward_signal(wl=1550e-9, input_power=0.600)
         simulation.add_raman(backward_raman_allowed=False)
         cls.result = simulation.run(tol=1e-11)

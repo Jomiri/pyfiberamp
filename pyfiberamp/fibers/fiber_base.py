@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 
 from pyfiberamp.doping_profile import DopingProfile
 from pyfiberamp.helper_funcs import *
-from pyfiberamp.mode_shape import ModeShape
 from pyfiberamp.mode_solver.lp_mode_solver import default_mode_solver
 
 

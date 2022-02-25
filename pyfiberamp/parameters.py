@@ -24,14 +24,13 @@ START_NODES = 20
 CROSS_SECTION_SMOOTHING_FACTOR = 1e-51
 SPECTRUM_PLOT_NPOINTS = 1000
 
+default_fig_width = 12
+golden_ratio = (5**0.5 - 1) / 2
+DEFAULT_FIGSIZE = (default_fig_width, golden_ratio*default_fig_width)
+
 
 # Default absorption and emission cross section files
 this_folder = os.path.dirname(os.path.realpath(__file__))
 spectrum_folder = os.path.join(this_folder, 'spectroscopies', 'fiber_spectra')
 YB_ABSORPTION_CS_FILE = os.path.join(spectrum_folder, 'ytterbium absorption cross sections.dat')
 YB_EMISSION_CS_FILE = os.path.join(spectrum_folder, 'ytterbium emission cross sections.dat')
-
-CHANNEL_TYPES = ['forward_signal', 'backward_signal',
-                'forward_pump', 'backward_pump',
-                'forward_ase', 'backward_ase',
-                'forward_raman', 'backward_raman']

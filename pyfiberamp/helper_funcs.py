@@ -36,13 +36,27 @@ def wl_bw_to_freq_bw(wl_bw: float, center_wl: float):
     into a spectral bandwidth in frequency.
 
     :param wl_bw: Wavelength bandwidth
-    :type name: float or numpy array of floats
+    :type wl_bw: float or numpy array of floats
     :param center_wl: Central wavelength of the spectrum
     :type center_wl: float or numpy array of floats
     :returns: Frequency bandwidth
     :rtype: float or numpy array
     """
-    return c/center_wl**2 * wl_bw
+    return c / center_wl**2 * wl_bw
+
+
+def freq_bw_to_wl_bw(freq_bw: float, center_wl: float):
+    """Transforms a spectral bandwidth in frequency centered at wavelength center_wl
+    into a spectral bandwidth in wavelength.
+
+    :param freq_bw: Wavelength bandwidth
+    :type freq_bw: float or numpy array of floats
+    :param center_wl: Central wavelength of the spectrum
+    :type center_wl: float or numpy array of floats
+    :returns: Frequency bandwidth
+    :rtype: float or numpy array
+    """
+    return center_wl**2 / c * freq_bw
 
 
 def wl_to_freq(wl: float):

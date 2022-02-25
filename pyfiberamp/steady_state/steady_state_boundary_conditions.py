@@ -1,4 +1,5 @@
 import numpy as np
+from copy import deepcopy
 
 from pyfiberamp.util.sliced_array import SlicedArray
 
@@ -6,8 +7,8 @@ from pyfiberamp.util.sliced_array import SlicedArray
 class BasicBoundaryConditions:
     """This class implements the most basic possible boundary conditions in the Giles model:
     all input powers should be those given to the model. Backward progapating beams have their inputs at the end."""
-    def __init__(self, channels):
-        expected_powers = channels.get_input_powers()
+    def __init__(self, expected_powers, reflections, n_forward):
+        self.expected_powers = expected_powers
         slices = expected_powers.slices
 
         def boundary_condition_func(powers_start, powers_end):
@@ -21,7 +22,14 @@ class BasicBoundaryConditions:
                                  powers_end.backward_pump,
                                  powers_end.backward_ase,
                                  powers_end.backward_raman))
-            return current - expected_powers
+            # reflections
+            p_exp = deepcopy(self.expected_powers)
+            for source_idx, target_idx, R in reflections:
+                if source_idx < n_forward:
+                    p_exp[target_idx] += R * powers_end[source_idx]
+                else:
+                    p_exp[target_idx] += R * powers_start[source_idx]
+            return current - p_exp
 
         self.boundary_condition_func = boundary_condition_func
 
