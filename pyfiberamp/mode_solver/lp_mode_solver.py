@@ -96,8 +96,7 @@ class LPModeSolver:
         :param na: The fiber's core numerical aperture
         :param wl: The mode's wavelength
         :param rotation: The rotational variant of the mode (sin or cos) when applicable.
-        :returns Instance of LPMode class if the mode is found
-        :raises ModeNotFoundError if the mode is not found
+        :return Instance of LPMode class if the mode is found
 
         """
         if rotation not in ['sin', 'cos']:

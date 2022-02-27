@@ -12,6 +12,7 @@ class GaussianMode(ModeBase):
     def from_fiber_parameters(cls, core_radius: float, na: float, wl: float):
         """
         Initialize a Gaussian mode from fiber parameters.
+
         :param core_radius: Fiber core radius
         :param na: Fiber core numerical aperture
         :param wl: Wavelength of the mode
@@ -27,6 +28,7 @@ class GaussianMode(ModeBase):
     def intensity(self, r: float, phi=None):
         """
         Normalized mode intensity at radial location r.
+
         :param r: Radial coordinate away from the center of the fiber core
         :param phi: Angular coordinate, not needed here but included for compatability with LPMode class
         :return: Intensity
