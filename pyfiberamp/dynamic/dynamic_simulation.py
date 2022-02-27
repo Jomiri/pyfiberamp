@@ -14,7 +14,14 @@ class DynamicSimulation:
      multiple ion populations is also supported. The class defines the fiber, boundary conditions and optical channels
      used in the simulation.
      """
-    def __init__(self, max_time_steps, fiber):
+    def __init__(self, max_time_steps: int, fiber):
+        """
+
+        :param max_time_steps: The maximum number of time steps the simulation is initialized to run.
+        :type max_time_steps: int
+        :param fiber: The fiber to be simulated.
+        :type fiber: Subclass of FiberBase
+        """
         self.fiber = fiber
         self.channels = Channels(fiber)
         self.max_time_steps = int(max_time_steps)

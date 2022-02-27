@@ -3,11 +3,9 @@ from copy import deepcopy
 import unittest
 
 from pyfiberamp.fibers import YbDopedFiber
-from pyfiberamp.fibers import YbDopedDoubleCladFiber
 from pyfiberamp.dynamic import DynamicSimulation
 from pyfiberamp.steady_state import SteadyStateSimulation
-from pyfiberamp.helper_funcs import decibel_to_exp, to_db
-from pyfiberamp.doping_profile import DopingProfile
+from pyfiberamp.fibers.doping_profile import DopingProfile
 
 
 class DynamicSimulationTest(unittest.TestCase):

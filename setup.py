@@ -15,7 +15,7 @@ except Exception:
     ext_modules = []
     cmdclass = {}
 
-VERSION = '0.4.0'
+VERSION = '0.5.0'
 
 long_description = '''PyFiberAmp is a powerful simulation library for modeling
 rare-earth-doped fiber lasers and amplifiers using rate equations.'''
@@ -41,7 +41,9 @@ setup(
         'pyfiberamp.steady_state',
         'pyfiberamp.steady_state.models',
         'pyfiberamp.spectroscopies',
-        'pyfiberamp.util'
+        'pyfiberamp.util',
+        'pyfiberamp.mode_solver',
+        'pyfiberamp.plotting'
     ],
     ext_modules=ext_modules,
     cmdclass=cmdclass,

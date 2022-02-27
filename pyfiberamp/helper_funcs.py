@@ -297,3 +297,12 @@ def averaged_value_of_finite_bandwidth_spectrum(center_frequency: float, frequen
     middle_value = spectrum_func(center_frequency)
     end_value = spectrum_func(end_frequency)
     return np.mean([start_value, middle_value, end_value])
+
+
+def to_deg(x):
+    """
+    Radians to degrees
+    :param x: Angle in radians
+    :return: Angle in degrees
+    """
+    return x / np.pi * 180

@@ -5,6 +5,15 @@
 PyFiberAmp is a rate equation simulation library for rare-earth-doped fiber amplifiers and fiber lasers partly based on
 the Giles model [1]_.
 
+NEW in version 0.5.0:
+
+- Integrated LP mode solver + support for user-defined mode shapes
+- Improved plotting functions
+- Ability to use fully 2D doping/inversion profiles in the core
+- Different background loss for each channel
+- Steady state model now supports reflections
+- License change to GPL3
+
 With PyFiberAmp you can simulate:
 
 - Both core-pumped and double-clad fiber amplifiers
@@ -12,8 +21,9 @@ With PyFiberAmp you can simulate:
 - Unlimited number of pump, signal and ASE channels
 - Limited number of Raman channels
 - Arbitrarily time-dependent beams from continuous-wave to nanosecond pulses
-- Radially varying dopant concentration and excitation
-- Automatically calculated Bessel, Gaussian and top-hat mode shapes
+- Radially and rotationally varying dopant concentration and inversion
+- Any LP mode shapes, including dispersion and effective area estimation using the built-in mode solver
+- Also Gaussian, top-hat and user-defined mode shapes
 
 Additional benefits include:
 
@@ -61,10 +71,12 @@ provided that Python and the required packages are installed. The `Anaconda dist
 
 Even though all of PyFiberAmp's functionality is available in interpreted Python code, the use of one of the compiled
 backends (C++, Numba or Pythran) is recommended for computationally intensive time-dynamic simulations.
-The hand-written C++ extension is fastest but has also the strictest system requirements: Windows 7 or 10, Python 3.6 and a fairly modern
+The hand-written C++ extension is fastest but has also the strictest system requirements: Windows 7 or 10, Python 3.9 and a fairly modern
 CPU with AVX2 instruction support. The Pythran backend probably only works on Linux and requires that `pythran <https://pythran.readthedocs.io/en/latest/>`_
 is installed before installing PyFiberAmp. The Numba backend should work on all operating systems provided that `Numba <https://numba.pydata.org/>`_
 is available. Please open a new issue if you encounter problems with a backend that should work but does not.
+
+Note that the C++ extension has been bumped to support Python 3.9 in version 0.5.0.
 
 Example
 ========
@@ -80,18 +92,18 @@ The simple example below demonstrates a core-pumped Yb-doped fiber amplifier. Al
     core_na = 0.12
 
     fiber = YbDopedFiber(length=length,
-                        core_radius=core_radius,
-                        ion_number_density=yb_number_density,
-                        background_loss=0,
-                        core_na=core_na)
-    simulation = SteadyStateSimulation()
-    simulation.fiber = fiber
-    simulation.add_cw_signal(wl=1035e-9, power=2e-3)
-    simulation.add_forward_pump(wl=976e-9, power=300e-3)
+                         core_radius=core_radius,
+                         ion_number_density=yb_number_density,
+                         background_loss=0,
+                         core_na=core_na)
+    simulation = SteadyStateSimulation(fiber=fiber)
+
+    simulation.add_forward_signal(wl=1035e-9, input_power=2e-3)
+    simulation.add_forward_pump(wl=976e-9, input_power=300e-3)
     simulation.add_ase(wl_start=1000e-9, wl_end=1080e-9, n_bins=80)
 
     result = simulation.run(tol=1e-5)
-    result.plot_amplifier_result()
+    result.plot()
 
 The script calculates and plots the power evolution in the amplifier and the amplified spontaneous emission (ASE)
 spectra. The co-propagating pump is absorbed in the first ~1.2 m of the fiber while the signal experiences gain.

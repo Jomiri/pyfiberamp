@@ -5,6 +5,7 @@ from pyfiberamp.spectroscopies import YbGermanoSilicate
 class YbDopedFiber(ActiveFiber):
     """YbDopedFiber is a convenience class for Yb-doped single-mode fiber that uses the default spectroscopic data
      for Yb-ions."""
+
     def __init__(self, length=0, core_radius=0, ion_number_density=0, background_loss=0, core_na=0):
         """
 

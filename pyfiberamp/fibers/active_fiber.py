@@ -1,7 +1,7 @@
 from pyfiberamp.helper_funcs import *
 from .fiber_base import FiberBase
 from pyfiberamp.spectroscopies import Spectroscopy
-from pyfiberamp.doping_profile import DopingProfile
+from pyfiberamp.fibers.doping_profile import DopingProfile
 
 
 class ActiveFiber(FiberBase):

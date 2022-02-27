@@ -1,5 +1,6 @@
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import numpy as np
 from cycler import cycler
 
 from pyfiberamp.fibers import PassiveFiber
@@ -85,10 +86,11 @@ def plot_single_non_ase_channel(ax, z, channel, power, use_db_scale):
     gain_or_absorption = to_db(output_power / input_power)
     ax.plot(z, plotting_transformation(power, use_db_scale),
             label=make_legend_entry(f'{dir_label} {channel.channel_type}',
-                                         wl,
-                                         gain_or_absorption,
-                                         output_power,
-                                         use_db_scale))
+                                    channel.channel_id,
+                                    wl,
+                                    gain_or_absorption,
+                                    output_power,
+                                    use_db_scale))
 
 
 def plot_ase_evolution(ax, z, channels, powers, use_db_scale):
@@ -105,10 +107,11 @@ def plot_ase_evolution(ax, z, channels, powers, use_db_scale):
                     label='Backward ASE, input_power={:.2f} mW'.format(backward_ase_power * 1000))
 
 
-def make_legend_entry(channel_type, wl, gain_or_absorption, output_power, use_db_scale):
+def make_legend_entry(channel_type, channel_id, wl, gain_or_absorption, output_power, use_db_scale):
     ch_type = channel_type.replace('-', ' ').title()
+    channel_id_label = f' {channel_id}' if isinstance(channel_id, str) else ''
     wl_nm = wl*1e9
-    label_start = f'{ch_type}, {wl_nm:.1f} nm, '
+    label_start = f'{ch_type}{channel_id_label}, {wl_nm:.1f} nm, '
     power_label = make_power_label(output_power, use_db_scale)
     db_label = make_db_label(gain_or_absorption, channel_type)
     return label_start + power_label + db_label
@@ -157,8 +160,11 @@ def plot_excited_ion_fraction(ax, z, fiber, local_average_excitation):
     if isinstance(fiber, PassiveFiber):
         ax.set_axis_off()
         return
+    weights = np.zeros_like(z)
+    weights[:-1] = np.diff(z)
+    weights[-1] = z[-1] - z[-2]
     ax.plot(z, local_average_excitation * 100, '--',
-            label=f'Excited ion fraction, average={np.mean(local_average_excitation)*100:.1f} %',
+            label=f'Excited ion fraction, average={np.average(local_average_excitation, weights=weights)*100:.1f} %',
             color='cyan')
     ax.set_ylabel('Ions at the upper laser level [%]')
     ax.yaxis.set_ticks_position('right')
@@ -188,6 +194,7 @@ def plot_ase_spectra(simulation_result, figsize=DEFAULT_FIGSIZE):
                      max(forward_ase_wls_nm[-1], backward_ase_wls_nm[-1])])
         style_axes(ax)
         ax.legend().get_frame().set_edgecolor('black')
+        ax.grid(True)
         plt.show()
 
 
@@ -208,6 +215,43 @@ def plot_total_power(self):
 
 def plotting_transformation(power, use_db_scale):
     return to_db(power * 1000) if use_db_scale else power
+
+
+
+
+
+# Dynamic outputs
+def plot_dynamic_outputs(simulation_result, channel_ids=None, plot_density=1, figsize=DEFAULT_FIGSIZE):
+    with mpl.rc_context(default_style):
+        fig, ax = plt.subplots(figsize=figsize)
+        for idx, ch in enumerate(simulation_result.channels.as_iterator()):
+            if channel_ids is None or ch.channel_id in channel_ids:
+                plot_single_output(ax, ch, simulation_result.t,
+                                   simulation_result.output_powers[idx, :],
+                                   plot_density,
+                                   simulation_result.use_db_scale,
+                                   ((channel_ids is not None and ch.channel_id in channel_ids)
+                                    or isinstance(ch.channel_id, str)))
+        ax.set_xlabel('Time [μs]')
+        ax.set_ylabel('Power [{unit}]'.format(unit='W' if not simulation_result.use_db_scale else 'dBm'))
+        ax.set_xlim(np.array([simulation_result.t[0], simulation_result.t[-1]]) * 1e6)
+        ax.legend().get_frame().set_edgecolor('black')
+        ax.grid(True)
+        plt.show()
+
+
+def plot_single_output(ax, ch, t, power, plot_density, use_db_scale, id_listed):
+    ax.plot(t[::plot_density]*1e6, plotting_transformation(power, use_db_scale)[::plot_density],
+            label=make_output_legend_entry(ch, id_listed))
+
+
+def make_output_legend_entry(channel, id_listed=False):
+    channel_type_str = ('forward' if channel.direction == 1 else 'backward') + ' ' + channel.channel_type
+    optional_label = ' (' + str(channel.channel_id) + ')' if id_listed else ''
+    wavelength = channel.wavelength * 1e9
+    return '{channel_type}{label}, {wl:.1f} nm'.format(channel_type=channel_type_str.title(),
+                                                       label=optional_label,
+                                                       wl=wavelength)
 
 
 def plot_transverse_ion_excitation(self):
@@ -231,5 +275,3 @@ def plot_transverse_ion_excitation(self):
     ax.set_ylabel('Radius (um)', fontsize=18)
     ax.set_zlabel('Fractional excitation', fontsize=18)
     plt.show()
-
-

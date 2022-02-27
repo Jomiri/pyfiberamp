@@ -56,8 +56,8 @@ class LPMode(ModeBase):
 
     @property
     def name(self):
-        rotation_str = f'{self.rotation} variant' if self.l != 0 else 'no variants'
-        return f'LP_{self.l},{self.m} mode, {rotation_str}'
+        rotation_str = f', {self.rotation} variant' if self.l != 0 else '\t'
+        return f'LP_{self.l},{self.m} mode{rotation_str}'
 
     @property
     def v(self):
@@ -166,8 +166,8 @@ class LPMode(ModeBase):
         return angular_amplitude**2
 
     def plot_intensity(self):
-        x = np.linspace(-2 * self.a, 2 * self.a, 1000)
-        y = np.linspace(-2 * self.a, 2 * self.a, 1000)
+        x = np.linspace(-2 * self.a, 2 * self.a, 500)
+        y = np.linspace(-2 * self.a, 2 * self.a, 500)
         xv, yv = np.meshgrid(x, y)
         intensity = self.intensity(np.sqrt(xv ** 2 + yv ** 2), np.arctan2(yv, xv))
         xlim = np.array([x[0], x[-1]]) * 1e6
@@ -177,7 +177,7 @@ class LPMode(ModeBase):
 
     def _make_single_plot(self, intensity, xlim, ylim):
         fig, ax = plt.subplots(subplot_kw=dict(aspect="equal"))
-        plt.imshow(intensity, extent=(*xlim, *ylim))
+        plt.imshow(intensity, extent=(*xlim, *ylim), cmap='inferno')
         rotation_str = f', {self.rotation} variant' if self.l != 0 else ''
         plt.title(f'LP_{self.l}{self.m} mode{rotation_str}')
         plt.xlabel('X [um]')
