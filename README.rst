@@ -12,6 +12,7 @@ NEW in version 0.5.0:
 - Ability to use fully 2D doping/inversion profiles in the core
 - Different background loss for each channel
 - Steady state model now supports reflections
+- Python 3.9 support for C++ addon
 - License change to GPL3
 
 With PyFiberAmp you can simulate:
