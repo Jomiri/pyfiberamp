@@ -251,7 +251,7 @@ tqdm==4.62.3
 traitlets==5.1.0
 typed-ast==1.4.3
 typing-extensions==3.10.0.2
-ujson==4.0.2
+ujson==5.1.0
 unicodecsv==0.14.1
 Unidecode==1.2.0
 urllib3==1.26.7
