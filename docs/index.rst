@@ -26,6 +26,7 @@ PyFiberAmp documentation
    /auto_source/boundary_conditions
    /auto_source/simulation_result
    /auto_source/helper_funcs
+   /auto_source/mode_solver
 
 
 
