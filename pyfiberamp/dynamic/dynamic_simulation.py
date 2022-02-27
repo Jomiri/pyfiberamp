@@ -16,7 +16,7 @@ class DynamicSimulation:
      """
     def __init__(self, max_time_steps: int, fiber):
         """
-
+        Constructor. The fiber must supplied already at this point and should be changed later.
         :param max_time_steps: The maximum number of time steps the simulation is initialized to run.
         :type max_time_steps: int
         :param fiber: The fiber to be simulated.

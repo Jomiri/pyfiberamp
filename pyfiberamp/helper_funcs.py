@@ -163,7 +163,7 @@ def fiber_v_parameter(wl: float, r: float, na: float):
 
 
 def zeta_from_fiber_parameters(core_radius: float, upper_state_lifetime: float, ion_number_density: float):
-    """Calculates the Giles modes saturation parameter zeta.
+    """Calculates the Giles mode's saturation parameter zeta.
 
     :param core_radius: Core radius of the fiber
     :type core_radius: float
@@ -196,6 +196,7 @@ def gaussian_peak_power(average_power: float, f_rep: float, fwhm_duration: float
 
 def resample_array(arr, N: int):
     """Changes the width of an array to N columns by using linear interpolation to each row.
+
     :param arr: Array to be resized
     :type arr: 2D numpy array
     :param N: Number of columns in the resized array
@@ -302,6 +303,7 @@ def averaged_value_of_finite_bandwidth_spectrum(center_frequency: float, frequen
 def to_deg(x):
     """
     Radians to degrees
+
     :param x: Angle in radians
     :return: Angle in degrees
     """

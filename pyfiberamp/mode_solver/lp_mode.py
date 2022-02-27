@@ -28,8 +28,24 @@ def core_index(na: float, wl: float):
 
 
 class LPMode(ModeBase):
+    """
+    The LPMode class represents a linearly polarized (LP) mode of a cylindrical step-index fiber.
+    """
     def __init__(self, l: int, m: int, u: float, na: float, a: float, wl: float, rotation: str, cutoff_wl: float,
                  n_core_func=core_index):
+        """
+        Constructor
+
+        :param l: l parameter of the LP_lm mode
+        :param m: m parameter of the LP_lm mode
+        :param u: u parameter / mode solver's solution
+        :param na: Fiber core numerical aperture
+        :param a: Fiber core radius
+        :param wl: Wavelength
+        :param rotation: Rotational variant of the mode (sin or cos)
+        :param cutoff_wl: Cutoff wavelength
+        :param n_core_func: Function returning core refractive index as a function of na and wavelength
+        """
         super().__init__(a)
         self.l = l
         self.m = m
@@ -56,6 +72,11 @@ class LPMode(ModeBase):
 
     @property
     def name(self):
+        """
+        Short string representation / Name of the mode
+
+        :return: Mode name
+        """
         rotation_str = f', {self.rotation} variant' if self.l != 0 else '\t'
         return f'LP_{self.l},{self.m} mode{rotation_str}'
 
@@ -69,10 +90,16 @@ class LPMode(ModeBase):
 
     @property
     def propagation_constant(self):
+        """
+        The mode's propagation constant beta
+
+        :return: Propagation constant
+        """
         return beta(self.u, self.a, self.n_core(self.na, self.wl), self.wl)
 
     def dispersion(self, n_points_per_side=20, delta_wl=5e-12, deg=7):
-        """Dispersion computation by the following technique:
+        """
+        Dispersion computation by the following technique:
         Run mode solver for a number of adjacent wavelengths (n_points_per_side*2) at delta_wl intervals.
         Compute propagation constant beta for each of those solutions.
         Compute angular frequency omega from the used wavelengths.
@@ -82,9 +109,13 @@ class LPMode(ModeBase):
 
         This is still an experimental feature. Please tune the parameters to make sure the solution converges.
 
+        :param n_points_per_side: number of fit points on each side of the center wavelength
+        :type n_points_per_side: int
         :param delta_wl: Wavelength step between fit points
         :type delta_wl: float
-        :params
+        :param deg: Degree of the fitting polynomial
+        :type deg: int
+
         """
         wl_points = np.linspace(self.wl - n_points_per_side * delta_wl,
                                 self.wl + n_points_per_side * delta_wl,
@@ -120,11 +151,18 @@ class LPMode(ModeBase):
 
     @property
     def core_overlap(self):
-        """Computes the mode's normalized overlap with the core."""
+        """
+        Computes the mode's normalized overlap with the core.
+        """
         return self.radial_integral(0, self.a) * self._angular_full_integral()
 
     @property
     def effective_mfd(self):
+        """
+        Mode field diameter computed from the mode's effective area.
+
+        :return: Mode field diameter
+        """
         return np.sqrt(self.effective_area / np.pi) * 2
 
     def radial_integral(self, start: float, stop: float):
@@ -135,6 +173,12 @@ class LPMode(ModeBase):
         return quad(self._angular_intensity, start, stop)[0]
 
     def intensity(self, r: float, phi: float):
+        """
+        Returns the mode's normalized intensity at polar coordinates (r, phi)
+        :param r: Radial coordinate
+        :param phi: Angular coordinate
+        :return: Mode's normalized intensity
+        """
         return self._radial_intensity(r) * self._angular_intensity(phi) * self.norm_constant
 
     def core_section_overlap(self, r_lim, phi_lim):
@@ -166,6 +210,11 @@ class LPMode(ModeBase):
         return angular_amplitude**2
 
     def plot_intensity(self):
+        """
+        Plots the mode's intensity profile.
+
+        :return: No return value.
+        """
         x = np.linspace(-2 * self.a, 2 * self.a, 500)
         y = np.linspace(-2 * self.a, 2 * self.a, 500)
         xv, yv = np.meshgrid(x, y)

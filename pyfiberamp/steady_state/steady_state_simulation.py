@@ -16,6 +16,10 @@ class SteadyStateSimulation:
     """
 
     def __init__(self, fiber):
+        """
+        Constructor. The fiber must be supplied here and should not be changed.
+        :param fiber: The fiber to be simulated. Subclass of FiberBase
+        """
         self.fiber = fiber
         self.model = GilesModel
         self.boundary_conditions = BasicBoundaryConditions

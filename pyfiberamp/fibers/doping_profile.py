@@ -13,6 +13,8 @@ class DopingProfile:
     """
     def __init__(self, radii, num_of_angular_sections, ion_number_densities, core_radius):
         """
+        Constructor
+
         :param radii: A list of radii corresponding to concentric radial sections of the doping profile.
         :param num_of_angular_sections: Number of angular sections in the doping profile.
         :param ion_number_densities: List of doping concentrations in the defined sections:
@@ -32,6 +34,7 @@ class DopingProfile:
     def section_radii(self, section_idx):
         """
         Get the radii of a transverse doping profile section.,
+
         :param section_idx: Index of the section
         :return: Two-element ndarray containing the inner and outer radii of the section
         """
@@ -41,6 +44,7 @@ class DopingProfile:
     def section_angles(self, section_idx):
         """
         Get the angles defining a transverse doping profile section
+
         :param section_idx: Index of the section
         :return: Two-element ndarray containing the inner and outer radii of the section.
         """
@@ -50,6 +54,7 @@ class DopingProfile:
     def section_area(self, section_idx):
         """
         Get the cross sectional area of a doping profile section.
+
         :param section_idx: Index of the section
         :return: The area
         """
@@ -61,6 +66,7 @@ class DopingProfile:
     def areas(self):
         """
         Get the cross sectional areas of oll the doping profile sections
+
         :return: A numpy array of the areas ordered by index.
         """
         return np.array([self.section_area(i) for i in range(self.num_of_total_sections)])
@@ -108,13 +114,3 @@ if __name__ == '__main__':
                             ion_number_densities=np.linspace(0, 2, 2)*1e25,
                             core_radius=6e-6)
     profile.plot()
-
-
-
-
-"""
-    @staticmethod
-    def calculate_areas(radii):
-        radii_with_zero = np.hstack((0, radii))
-        return np.pi * (radii_with_zero[1:]**2 - radii_with_zero[:-1]**2)
-"""

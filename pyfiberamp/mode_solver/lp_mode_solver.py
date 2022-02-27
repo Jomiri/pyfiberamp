@@ -23,9 +23,11 @@ class LPModeSolver:
     """
     def __init__(self, l_max: int, m_max: int):
         """
+
         Constructor for the LP mode solver.
         :param l_max: The highest l number the solver is initialized to find.
         :param m_max: The highest m number the solver is initialized to find.
+
         """
         self.l_max = l_max
         self.m_max = m_max
@@ -87,6 +89,7 @@ class LPModeSolver:
     def find_mode(self, l: int, m: int, core_radius: float, na: float, wl: float, rotation='cos'):
         """
         Run LP mode solver in order to find a single specific mode.
+
         :param l: The mode's l number
         :param m: The mode's m number
         :param core_radius: The fiber's core radius
@@ -95,6 +98,7 @@ class LPModeSolver:
         :param rotation: The rotational variant of the mode (sin or cos) when applicable.
         :returns Instance of LPMode class if the mode is found
         :raises ModeNotFoundError if the mode is not found
+
         """
         if rotation not in ['sin', 'cos']:
             raise ModeNotFoundError('Rotation must be sin or cos.')
@@ -113,10 +117,12 @@ class LPModeSolver:
     def find_all_modes(self, core_radius: float, na: float, wl: float):
         """
         Solve for a list of all modes with given step-index fiber parameters
+
         :param core_radius: The fiber's core radius
         :param na: The fiber's core numerical aperture
         :param wl: The mode's wavelength
         :return: List of all found LPModes
+
         """
         v = fiber_v_parameter(wl, core_radius, na)
         modes_out = []

@@ -5,7 +5,7 @@
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 SPHINXPROJ    = pyfiberamp
-SOURCEDIR     = "D:\Ohjelmointi\Fiber_amplifier\pyfiberamp\docs"
+SOURCEDIR     = "C:\Users\Joona\OneDrive\Softa\Fiber_amplifier\pyfifberamp\docs"
 BUILDDIR      = _build
 
 # Put it first so that "make" without argument is like "make help".

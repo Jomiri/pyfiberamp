@@ -4,10 +4,19 @@ from pyfiberamp.mode_solver.mode_base import ModeBase
 
 
 class GaussianMode(ModeBase):
-
-
+    """
+    The GaussianMode class describes a fundamental mode in an optical fiber using Gaussian approximation for the
+    mode shape.
+    """
     @classmethod
     def from_fiber_parameters(cls, core_radius: float, na: float, wl: float):
+        """
+        Initialize a Gaussian mode from fiber parameters.
+        :param core_radius: Fiber core radius
+        :param na: Fiber core numerical aperture
+        :param wl: Wavelength of the mode
+        :return:
+        """
         mode_radius = fundamental_mode_radius_petermann_2(wl, core_radius, na)
         return GaussianMode(2*mode_radius, core_radius)
 
@@ -16,6 +25,12 @@ class GaussianMode(ModeBase):
         self.mode_radius = mfd / 2
 
     def intensity(self, r: float, phi=None):
+        """
+        Normalized mode intensity at radial location r.
+        :param r: Radial coordinate away from the center of the fiber core
+        :param phi: Angular coordinate, not needed here but included for compatability with LPMode class
+        :return: Intensity
+        """
         return self._radial_intensity(r)
 
     def _radial_intensity(self, r):

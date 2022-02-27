@@ -33,19 +33,11 @@ default_style = {
 }
 
 
-
 # Steady state power evolution #
-
 def plot_simulation_result(simulation_result, figsize=DEFAULT_FIGSIZE):
     plot_power_evolution(simulation_result, figsize)
     plot_ase_spectra(simulation_result, figsize)
     plt.show()
-
-
-def style_axes(ax):
-    pass
-    ax.tick_params(which='minor', direction='in')
-    ax.tick_params(which='major', direction='in')
 
 
 def plot_power_evolution(simulation_result, figsize=DEFAULT_FIGSIZE):
