@@ -188,7 +188,7 @@ python-lsp-server==1.2.4
 python-slugify==5.0.2
 pytz==2021.3
 PyWavelets==1.1.1
-pywin32==228
+pywin32==301
 pywin32-ctypes==0.2.0
 pywinpty==0.5.7
 PyYAML==6.0
