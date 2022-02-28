@@ -136,7 +136,7 @@ simulations is not yet included. A more complete description can be found in the
 
 License
 ========
-PyFiberAmp is licensed under the MIT license. The C++ extension depends on the `pybind11
+As of version 0.5.0 PyFiberAmp is licensed under the GPL3 license. The C++ extension depends on the `pybind11
 <https://github.com/pybind/pybind11>`_  and `Armadillo <http://arma.sourceforge.net/>`_ projects. See the license file
 for their respective licenses.
 

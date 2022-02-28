@@ -141,7 +141,6 @@ def finalize_fiber_power_plot(ax, z, use_db_scale):
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
     xlim = [z[0], z[-1]]
-    style_axes(ax)
     ax.set_xlim(xlim)
     if not use_db_scale:
         ax.set_ylim([0, ax.get_ylim()[1]])
@@ -160,7 +159,6 @@ def plot_excited_ion_fraction(ax, z, fiber, local_average_excitation):
             color='cyan')
     ax.set_ylabel('Ions at the upper laser level [%]')
     ax.yaxis.set_ticks_position('right')
-    style_axes(ax)
     ax.set_xlim([z[0], z[-1]])
     ax.set_ylim([0, 100])
 
@@ -184,7 +182,6 @@ def plot_ase_spectra(simulation_result, figsize=DEFAULT_FIGSIZE):
         ax.set_ylabel('Power spectral density [dBm/nm]')
         ax.set_xlim([min(forward_ase_wls_nm[0], backward_ase_wls_nm[0]),
                      max(forward_ase_wls_nm[-1], backward_ase_wls_nm[-1])])
-        style_axes(ax)
         ax.legend().get_frame().set_edgecolor('black')
         ax.grid(True)
         plt.show()
