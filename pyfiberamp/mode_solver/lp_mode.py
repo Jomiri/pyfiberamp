@@ -152,7 +152,9 @@ class LPMode(ModeBase):
     @property
     def core_overlap(self):
         """
-        Computes the mode's normalized overlap with the core.
+        The mode's total overlap with the fiber core.
+
+        :return: Overlap as 0...1
         """
         return self.radial_integral(0, self.a) * self._angular_full_integral()
 
@@ -182,6 +184,13 @@ class LPMode(ModeBase):
         return self._radial_intensity(r) * self._angular_intensity(phi) * self.norm_constant
 
     def core_section_overlap(self, r_lim, phi_lim):
+        """
+        The mode's overlap with a single core section defined by r_lim, phi_lim
+
+        :param r_lim: Numpy array containing min and max radius defining the section.
+        :param phi_lim: Numpy array containing min and max angles defining the section.
+        :return: Overlap with the core section 0...1
+        """
         assert r_lim[1] > r_lim[0] >= 0
         assert 2*np.pi >= phi_lim[1] > phi_lim[0] >= 0
         return self.radial_integral(*r_lim) * self.angular_integral(*phi_lim)

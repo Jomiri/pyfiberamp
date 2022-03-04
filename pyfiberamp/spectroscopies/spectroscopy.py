@@ -5,17 +5,39 @@ import matplotlib.pyplot as plt
 
 
 class Spectroscopy:
+    """
+    The Spectroscopy class represents the absorption, stimulated emission and spontaneous emission properties of the
+    fiber's core material as an effective two-level system.
+    """
     @classmethod
     def from_files(cls,
                    absorption_cross_section_file: str,
                    emission_cross_section_file: str,
                    upper_state_lifetime: float,
                    interpolate='spline'):
+        """
+        Create a Spectroscopy from absorption and emission cross section files.
+
+        :param absorption_cross_section_file: File containing absorption cross section at different wavelengths. Must be readable with np.loadtxt using default parameters. Wavelength in nm, cross section in m^2.
+        :param emission_cross_section_file: File containing emission cross section at different wavelengths. Must be readable with np.loadtxt using default parameters. Wavelength in nm, cross section in m^2.
+        :param upper_state_lifetime: The life time of the excited state.
+        :param interpolate: Spectrum interpolation type, either "spline" or "linear"
+        :return: Spectroscopy object
+
+        """
         absorption_spectrum = load_spectrum(absorption_cross_section_file)
         gain_spectrum = load_spectrum(emission_cross_section_file)
         return cls(absorption_spectrum, gain_spectrum, upper_state_lifetime, interpolate)
 
     def __init__(self, absorption_cross_sections, emission_cross_sections, upper_state_lifetime, interpolate):
+        """
+        Create a Spectroscopy from arrays for absorption and emission cross sections.
+
+        :param absorption_cross_sections: Numpy array containing absorption cross sections at different wavelengths.
+        :param emission_cross_sections: Numpy array containing emission cross sections at different wavelengths.
+        :param upper_state_lifetime: The life time of the excited state.
+        :param interpolate: Spectrum interpolation type, either "spline" or "linear"
+        """
         self.absorption_cs_spectrum = absorption_cross_sections
         self.emission_cs_spectrum = emission_cross_sections
         self.absorption_cs_interp = self._make_cross_section_interpolate(absorption_cross_sections, interpolate)
@@ -24,8 +46,11 @@ class Spectroscopy:
 
     @staticmethod
     def _make_cross_section_interpolate(spectrum, interpolate):
-        """Creates a cubic spline interpolate from the imported cross section data. Cross section is assumed to be
-        zero outside the imported data range."""
+        """
+        Creates a cubic spline interpolate from the imported cross section data. Cross section is assumed to be
+        zero outside the imported data range.
+
+        """
         frequency = wl_to_freq(spectrum[::-1, 0])
         cross_section = spectrum[::-1, 1]
         if interpolate == 'spline':
@@ -41,8 +66,10 @@ class Spectroscopy:
         return interp
 
     def plot_gain_and_absorption_spectrum(self):
-        """Convenience plotting function to draw the imported cross section data and the calculated interpolates to
-        check that they match."""
+        """
+        Convenience plotting function to draw the imported cross section data and the calculated interpolates to
+        check that they match.
+        """
         fig, ax = plt.subplots()
         gain = self.emission_cs_spectrum
         absorption = self.absorption_cs_spectrum

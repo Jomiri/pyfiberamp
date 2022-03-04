@@ -20,13 +20,13 @@ PyFiberAmp documentation
    :caption: Class and function reference:
 
 
-   /auto_source/simulation
+   /auto_source/steady_state_simulation_package
+   /auto_source/dynamic_simulation_package
    /auto_source/fibers
    /auto_source/mode_solver
+   /auto_source/optical_channel
    /auto_source/doping_profile
-   /auto_source/initial_guess
-   /auto_source/boundary_conditions
-   /auto_source/simulation_result
+   /auto_source/spectroscopy
    /auto_source/helper_funcs
 
 

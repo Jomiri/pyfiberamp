@@ -34,7 +34,7 @@ Additional benefits include:
 - Open source: see what's happening under the hood
 - Free of charge: install on as many computers as you like
 
-Documentation is still in progress and available on `Read the Docs <https://pyfiberamp.readthedocs.io/en/latest/index.html>`_.
+Documentation is still in progress and available at `pyfiberamp.com <https://pyfiberamp.com>`_.
 For practical examples, see the examples folder above. If you have a question, comment or feature request, please open a new issue on
 GitHub or contact me at pyfiberamp@gmail.com. If you find PyFiberAmp useful in your own project, I would also very much
 like to hear about it.

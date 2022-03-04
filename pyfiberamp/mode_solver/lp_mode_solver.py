@@ -23,8 +23,8 @@ class LPModeSolver:
     """
     def __init__(self, l_max: int, m_max: int):
         """
-
         Constructor for the LP mode solver.
+
         :param l_max: The highest l number the solver is initialized to find.
         :param m_max: The highest m number the solver is initialized to find.
 
@@ -96,7 +96,7 @@ class LPModeSolver:
         :param na: The fiber's core numerical aperture
         :param wl: The mode's wavelength
         :param rotation: The rotational variant of the mode (sin or cos) when applicable.
-        :return Instance of LPMode class if the mode is found
+        :return: Instance of LPMode class if the mode is found
 
         """
         if rotation not in ['sin', 'cos']:

@@ -17,8 +17,10 @@ class SteadyStateSimulation:
 
     def __init__(self, fiber):
         """
+
         Constructor. The fiber must be supplied here and should not be changed.
         :param fiber: The fiber to be simulated. Subclass of FiberBase
+
         """
         self.fiber = fiber
         self.model = GilesModel
@@ -65,9 +67,10 @@ class SteadyStateSimulation:
     def add_backward_signal(self, wl: float, input_power: float, wl_bandwidth=0.0, loss=None,
                             mode=None, channel_id=None,
                             reflection_target_id=None, reflectance=0.0):
-        """Adds a new forward propagating single-frequency CW signal to the simulation.
+        """
+        Adds a new forward propagating single-frequency CW signal to the simulation.
 
-         :param wl: Wavelength of the signal
+        :param wl: Wavelength of the signal
         :type wl: float
         :param input_power: Input input_power of the signal at the beginning of the fiber
         :type input_power: float
@@ -100,7 +103,8 @@ class SteadyStateSimulation:
 
     def add_forward_pump(self, wl: float, input_power: float, wl_bandwidth=0.0, loss=None, mode=None, channel_id=None,
                          reflection_target_id=None, reflectance=0.0):
-        """Adds a new forward propagating single-frequency pump to the simulation.
+        """
+        Adds a new forward propagating single-frequency pump to the simulation.
 
         :param wl: Wavelength of the signal
         :type wl: float
@@ -135,7 +139,8 @@ class SteadyStateSimulation:
 
     def add_backward_pump(self, wl: float, input_power: float, wl_bandwidth=0.0, loss=None, mode=None, channel_id=None,
                           reflection_target_id=None, reflectance=0.0):
-        """Adds a new backward propagating single-frequency pump to the simulation.
+        """
+        Adds a new backward propagating single-frequency pump to the simulation.
 
         :param wl: Wavelength of the signal
         :type wl: float

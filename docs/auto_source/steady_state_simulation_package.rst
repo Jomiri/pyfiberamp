@@ -1,5 +1,5 @@
 
-Simulation types
+Steady-state simulation
 ---------------------------
 
 .. toctree::
@@ -7,6 +7,8 @@ Simulation types
 
    steady_state_simulation
    steady_state_simulation_with_raman
-   dynamic_simulation
+   simulation_result
+   initial_guess
+   boundary_conditions
 
 

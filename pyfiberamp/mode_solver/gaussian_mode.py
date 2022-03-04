@@ -40,12 +40,24 @@ class GaussianMode(ModeBase):
 
     @property
     def core_overlap(self):
+        """
+        The mode's total overlap with the fiber core.
+
+        :return: Overlap as 0...1
+        """
         return self.radial_integral(0, self.core_radius) * self._angular_full_integral()
 
     def radial_integral(self, start: float, stop: float):
         return quad(lambda r: self.intensity(r) * r, start, stop, epsrel=1e-14)[0]
 
     def core_section_overlap(self, r_lim, phi_lim):
+        """
+        The mode's overlap with a single core section defined by r_lim, phi_lim
+
+        :param r_lim: Numpy array containing min and max radius defining the section.
+        :param phi_lim: Numpy array containing min and max angles defining the section.
+        :return: Overlap with the core section 0...1
+        """
         assert r_lim[1] > r_lim[0] >= 0
         assert 2 * np.pi >= phi_lim[1] > phi_lim[0] >= 0
         return self.radial_integral(*r_lim) * (phi_lim[1]-phi_lim[0])

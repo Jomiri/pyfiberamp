@@ -21,6 +21,7 @@ class DynamicSimulation:
         :type max_time_steps: int
         :param fiber: The fiber to be simulated.
         :type fiber: Subclass of FiberBase
+
         """
         self.fiber = fiber
         self.channels = Channels(fiber)
@@ -105,9 +106,7 @@ class DynamicSimulation:
         :type fiber: Subclass of FiberBase
         :param z_nodes: Number of spatial nodes used in the simulation.
         :type z_nodes: int
-        :param dt: Time step size. The 'auto' option uses realistic time step calculated from the Courant condition \
-        based on the speed of light in glass and the spatial step size. Larger (and physically unrealistic) time steps \
-        can be used to drastically speed up the convergence of steady state simulations.
+        :param dt: Time step size. The 'auto' option uses realistic time step calculated from the Courant condition based on the speed of light in glass and the spatial step size. Larger (and physically unrealistic) time steps can be used to drastically speed up the convergence of steady state simulations.
         :type dt: float
         :returns: Time coordinate array
         :rtype: numpy float array
@@ -162,12 +161,11 @@ class DynamicSimulation:
                             reflection_target_id=None, reflectance=0.0):
         """Adds a new forward propagating single-frequency CW signal to the simulation.
 
-         :param wl: Wavelength of the signal
+        :param wl: Wavelength of the signal
         :type wl: float
         :param input_power: Input input_power of the signal at the beginning of the fiber
         :type input_power: float or np.ndarray
-        :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means seeding by
-         spontaneous emission.
+        :param wl_bandwidth: Wavelength bandwidth of the channel. Finite bandwidth means seeding by spontaneous emission.
         :type wl_bandwidth: float
         :param loss: Background loss of the channel. If None, the fiber's default loss is used.
         :type loss: float
