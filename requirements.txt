@@ -95,7 +95,7 @@ jupyter==1.0.0
 jupyter-client==6.1.12
 jupyter-console==6.4.0
 jupyter-core==4.8.1
-jupyter-server==1.4.1
+jupyter-server==1.15.4
 jupyterlab==3.2.1
 jupyterlab-pygments==0.1.2
 jupyterlab-server==2.8.2
