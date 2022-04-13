@@ -28,7 +28,7 @@ default_style = {
         "legend.fontsize": 12,
         "xtick.labelsize": 12,
         "ytick.labelsize": 12,
-        "xtick.top": True,
+        "xtick.top": False,
         "ytick.left": True
 }
 
@@ -176,8 +176,8 @@ def plot_ase_spectra(simulation_result, figsize=DEFAULT_FIGSIZE):
         backward_ase_wls_nm = simulation_result.wavelengths.backward_ase * 1e9
         backward_ase_wl_step = np.squeeze(np.array([ch.wavelength_bandwidth
                                                     for ch in simulation_result.channels.backward_ase]))
-        ax.plot(forward_ase_wls_nm, to_dbm(forward_ase_spectrum / forward_ase_wl_step), label='Forward ASE')
-        ax.plot(backward_ase_wls_nm, to_dbm(backward_ase_spectrum / backward_ase_wl_step), label='Backward ASE')
+        ax.plot(forward_ase_wls_nm, to_dbm(forward_ase_spectrum / (forward_ase_wl_step * 1e9)), label='Forward ASE')
+        ax.plot(backward_ase_wls_nm, to_dbm(backward_ase_spectrum / (backward_ase_wl_step * 1e9)), label='Backward ASE')
         ax.set_xlabel('Wavelength [nm]')
         ax.set_ylabel('Power spectral density [dBm/nm]')
         ax.set_xlim([min(forward_ase_wls_nm[0], backward_ase_wls_nm[0]),

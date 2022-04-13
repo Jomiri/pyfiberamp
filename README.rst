@@ -112,13 +112,9 @@ When the pump has been depleted, the signal starts to be reabsorbed. ASE is stro
 
 .. image:: docs/images/readme_power_evolution.png
     :align: center
-    :width: 769px
-    :height: 543px
 
 .. image:: docs/images/readme_ase_spectra.png
     :align: center
-    :width: 769px
-    :height: 543px
 
 For more usage examples, please see the Jupyter notebooks in the examples folder. More examples will be added in the
 future.
