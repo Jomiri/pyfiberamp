@@ -5,7 +5,7 @@ anyio==2.2.0
 appdirs==1.4.4
 argh==0.26.2
 argon2-cffi==20.1.0
-arrow==0.13.1
+arrow==0.15.1
 asn1crypto==1.4.0
 astroid==2.6.6
 astropy==4.3.1
