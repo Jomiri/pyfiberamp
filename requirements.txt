@@ -151,7 +151,7 @@ patsy==0.5.2
 pep8==1.7.1
 pexpect==4.8.0
 pickleshare==0.7.5
-Pillow==8.4.0
+Pillow==9.3.0
 pip==21.2.4
 pkginfo==1.7.1
 pluggy==0.13.1
