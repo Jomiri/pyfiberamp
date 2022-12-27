@@ -209,7 +209,7 @@ scikit-learn-intelex==2021.20210714.120553
 scipy==1.7.1
 seaborn==0.11.2
 Send2Trash==1.8.0
-setuptools==58.0.4
+setuptools==65.5.1
 simplegeneric==0.8.1
 singledispatch==3.7.0
 sip==4.19.13
