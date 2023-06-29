@@ -39,6 +39,9 @@ For practical examples, see the examples folder above. If you have a question, c
 GitHub or contact me at pyfiberamp@gmail.com. If you find PyFiberAmp useful in your own project, I would also very much
 like to hear about it.
 
+If you want to simulate nonlinear and/or dispersive pulse propagation in fiber amplifiers, the new `pyLaserPulse <https://github.com/jsfeehan/pyLaserPulse>`_
+package looks like a promising option, though I have not tested it yet myself.
+
 A visual example
 =================
 Few-nanosecond pulses propagating in an Yb-doped fiber amplifier are distorted because of gain saturation.
